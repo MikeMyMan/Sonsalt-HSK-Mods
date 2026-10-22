@@ -1,0 +1,219 @@
+CombatExtended/Defs/FT_AmmoCategories.xml	CombatExtended.AmmoCategoryDef	FT_Canister	
+CombatExtended/Defs/FT_AmmoCategories.xml	CombatExtended.AmmoCategoryDef	FT_HESH	
+CombatExtended/Defs/FT_AmmoCategories.xml	CombatExtended.AmmoCategoryDef	FT_SAPHE	
+CombatExtended/Defs/FT_AmmoCategories.xml	CombatExtended.AmmoCategoryDef	FT_Shrapnel	
+CombatExtended/Defs/FT_128x958mmR.xml	CombatExtended.AmmoSetDef	AmmoSet_128x958mmR	
+CombatExtended/Defs/FT_128x958mmR.xml	CombatExtended.AmmoSetDef	AmmoSet_128x958mmR_HV	
+CombatExtended/Defs/FT_105mmHowitzer.xml	CombatExtended.AmmoSetDef	AmmoSet_FT_105mmHowitzerShell	
+CombatExtended/Defs/FT_105mmHowitzer.xml	CombatExtended.AmmoSetDef	AmmoSet_FT_105mmHowitzerShell_directfire	
+CombatExtended/Defs/FT_155mmHowitzer.xml	CombatExtended.AmmoSetDef	AmmoSet_FT_155mmHowitzerShell	
+CombatExtended/Defs/FT_155mmHowitzer.xml	CombatExtended.AmmoSetDef	AmmoSet_FT_155mmHowitzerShell_directfire	
+CombatExtended/Defs/FT_15cmNebelwerfer.xml	CombatExtended.AmmoSetDef	AmmoSet_FT_15cmNebelwerfer	
+CombatExtended/Defs/FT_15cmNebelwerfer.xml	CombatExtended.AmmoSetDef	AmmoSet_FT_15cmNebelwerfer_directfire	
+CombatExtended/Defs/FT_37x223mmR.xml	CombatExtended.AmmoSetDef	AmmoSet_FT_37x223mmR	
+CombatExtended/Defs/FT_DamageDefs.xml	DamageDef	HESH_ShockWave	
+Defs/FT_Structure.xml	DesignatorDropdownGroupDef	FT_ConcreteBarriers	
+Defs/FT_Structure.xml	DesignatorDropdownGroupDef	FT_Floor_Concrete	
+Defs/FT_Effecter.xml	EffecterDef	FT_ArtilleryCastShot	
+Defs/FT_Effecter.xml	EffecterDef	FT_SignalPluse	
+Defs/FT_Effecter.xml	FleckDef	FT_ExhaustFlame	
+Defs/FT_Effecter.xml	FleckDef	FT_ExhaustFlameGlow	
+Defs/FT_Effecter.xml	FleckDef	FT_SignalPluse	
+Defs/FT_Effecter.xml	FleckDef	FT_TrailSmoke	
+Defs/FT_Hediff.xml	HediffDef	FT_ShellShock	
+Defs/FT_Misc.xml	JobDef	FT_EnterBunkerFacility	
+Defs/FT_Misc.xml	JobDef	FT_UseRadio	
+Defs/FT_Misc.xml	JoyGiverDef	ListenRadio	
+Defs/FT_Misc.xml	JoyKindDef	FT_RadioTuning	
+Defs/FT_Recipe.xml	RecipeDef	ABSTRACT:MakeConcreteBase	
+Defs/FT_Recipe.xml	RecipeDef	FT_Make_ComponentIndustrial	
+Defs/FT_Recipe.xml	RecipeDef	FT_Make_ComponentIndustrial_Bulk	
+Defs/FT_Recipe.xml	RecipeDef	FT_Make_ConcreteByBlock	
+Defs/FT_Recipe.xml	RecipeDef	FT_Make_ConcreteByChunk	
+Defs/FT_Recipe.xml	RecipeDef	FT_Make_ConcreteByStonyJunks	
+Defs/FT_Recipe.xml	RecipeDef	FT_Make_ConcreteCompressed	
+Defs/FT_Recipe.xml	RecipeDef	FT_Make_ConcreteWood	
+Defs/FT_Recipe.xml	RecipeDef	FT_Make_Dye	
+Defs/FT_Recipe.xml	RecipeDef	FT_Make_Neutroamine	
+Defs/FT_Recipe.xml	RecipeDef	FT_Make_ReinforcedBarrel	
+Defs/FT_Recipe.xml	RecipeDef	FT_Make_ReinforcedConcrete	
+Defs/FT_Recipe.xml	RecipeDef	FT_Unpack_ConcreteCompressed	
+CombatExtended/Defs/FT_128x958mmR.xml	RecipeDef	MakeAmmo_128x958mmR_AP	
+CombatExtended/Defs/FT_128x958mmR.xml	RecipeDef	MakeAmmo_128x958mmR_APHE	
+CombatExtended/Defs/FT_128x958mmR.xml	RecipeDef	MakeAmmo_128x958mmR_EMP	
+CombatExtended/Defs/FT_128x958mmR.xml	RecipeDef	MakeAmmo_128x958mmR_HE	
+CombatExtended/Defs/FT_15cmNebelwerfer.xml	RecipeDef	MakeAmmo_15cmNebelwerfer_EMP	
+CombatExtended/Defs/FT_15cmNebelwerfer.xml	RecipeDef	MakeAmmo_15cmNebelwerfer_Smoke	
+CombatExtended/Defs/FT_15cmNebelwerfer.xml	RecipeDef	MakeAmmo_15cmNebelwerfer_Toxic	Ludeon.RimWorld.Biotech
+CombatExtended/Defs/FT_37x223mmR.xml	RecipeDef	MakeAmmo_37x223mmR_AP-HE	
+CombatExtended/Defs/FT_37x223mmR.xml	RecipeDef	MakeAmmo_37x223mmR_APDS	
+CombatExtended/Defs/FT_37x223mmR.xml	RecipeDef	MakeAmmo_37x223mmR_Canister	
+CombatExtended/Defs/FT_37x223mmR.xml	RecipeDef	MakeAmmo_37x223mmR_EMP	
+CombatExtended/Defs/FT_37x223mmR.xml	RecipeDef	MakeAmmo_37x223mmR_Incendiary	
+CombatExtended/Defs/FT_37x223mmR.xml	RecipeDef	MakeAmmo_37x223mmR_Shrapnel	DwS.FunctionalAmmunition.Library
+Defs/FT_ResearchProject.xml	ResearchProjectDef	FT_Chemistry	
+Defs/FT_ResearchProject.xml	ResearchProjectDef	FT_Concrete	
+Defs/FT_ResearchProject.xml	ResearchProjectDef	FT_ENIAC	
+Defs/FT_ResearchProject.xml	ResearchProjectDef	FT_HeavyArtillery	
+Defs/FT_ResearchProject.xml	ResearchProjectDef	FT_IndustrialCannon	
+Defs/FT_ResearchProject.xml	ResearchProjectDef	FT_Lathe	
+Defs/FT_ResearchProject.xml	ResearchTabDef	HeavyIndustry	
+Defs/FT_Sound.xml	SoundDef	FT_AutoCannonShot	
+Defs/FT_Sound.xml	SoundDef	FT_CannonLaunchA	
+Defs/FT_Sound.xml	SoundDef	FT_CannonLaunchB	
+Defs/FT_Sound.xml	SoundDef	FT_CannonLaunchC	
+Defs/FT_Sound.xml	SoundDef	FT_MGShot	
+Defs/FT_Sound.xml	SoundDef	FT_NebelShot	
+Defs/FT_Stuff.xml	StuffAppearanceDef	Concrete	
+Defs/FT_Structure.xml	TerrainDef	FT_Concrete	
+Defs/FT_Structure.xml	TerrainDef	FT_ConcreteTile	
+Defs/FT_Structure.xml	TerrainDef	FT_FineConcreteTile	Ludeon.RimWorld.Royalty
+Defs/FT_Structure.xml	TerrainDef	FT_FlagstoneConcrete	
+Defs/FT_Structure.xml	TerrainDef	FT_PlankFloor	
+Defs/FT_Structure.xml	TerrainDef	FT_TileStoneConcrete	
+Defs/FT_CrossModContents.xml	TerrainDef	VFEArch_BridgeConcrete	vanillaexpanded.vfearchitect
+Defs/FT_CrossModContents.xml	TerrainDef	VFEArch_BridgeSteelConcrete	vanillaexpanded.vfearchitect
+Defs/FT_CrossModContents.xml	TerrainDef	VFEArch_CobblestoneFloorConcrete	vanillaexpanded.vfearchitect
+Defs/FT_CrossModContents.xml	TerrainDef	VFEArch_PolishedStoneFloorConcrete	vanillaexpanded.vfearchitect
+Defs/FT_CrossModContents.xml	TerrainDef	VFEArch_SlabsConcrete	vanillaexpanded.vfearchitect
+Defs/FT_CrossModContents.xml	TerrainDef	VFEArch_WoodPlankFloorConcrete	vanillaexpanded.vfearchitect
+Defs/FT_CrossModContents.xml	TerrainDef	VFEArch_WoodenParquetConcrete	vanillaexpanded.vfearchitect
+CombatExtended/Defs/FT_128x958mmR.xml	ThingCategoryDef	Ammo128x958mmR	
+CombatExtended/Defs/FT_128x958mmR.xml	ThingDef	ABSTRACT:128x958mmRShellBase	
+CombatExtended/Defs/FT_15cmNebelwerfer.xml	ThingDef	ABSTRACT:15cmNbW_Shell_Toxic_Releasing_Base	Ludeon.RimWorld.Biotech
+CombatExtended/Defs/FT_128x958mmR.xml	ThingDef	ABSTRACT:Base128x958mmRBullet	
+CombatExtended/Defs/FT_105mmHowitzer.xml	ThingDef	ABSTRACT:BaseFT105mmHowitzerShell	
+CombatExtended/Defs/FT_155mmHowitzer.xml	ThingDef	ABSTRACT:BaseFT155mmHowitzerShell	
+Defs/FT_Production.xml	ThingDef	ABSTRACT:BenchBase	
+CombatExtended/Defs/FT_Security_AutoTurrets_CE.xml	ThingDef	ABSTRACT:BuildingBase	
+CombatExtended/Defs/FT_Security_Light_CE.xml	ThingDef	ABSTRACT:FT_BaseCannonBuilding	
+CombatExtended/Defs/FT_Security_Deployable_CE.xml	ThingDef	ABSTRACT:FT_BaseCannonBuilding_Deployable	
+CombatExtended/Defs/FT_Security_Light_CE.xml	ThingDef	ABSTRACT:FT_BaseCannonBuilding_Mobile	
+CombatExtended/Defs/FT_Security_Medium_CE.xml	ThingDef	ABSTRACT:FT_BaseCannonBuilding_WithShieldOrCementBase	
+CombatExtended/Defs/FT_Security_Deployable_CE.xml	ThingDef	ABSTRACT:FT_MinifiedTurret	
+Defs/FT_Structure.xml	ThingDef	ABSTRACT:FT_SandBag_Base	
+CombatExtended/Defs/FT_128x958mmR.xml	ThingDef	Ammo_128x958mmR_AP	
+CombatExtended/Defs/FT_128x958mmR.xml	ThingDef	Ammo_128x958mmR_APHE	
+CombatExtended/Defs/FT_128x958mmR.xml	ThingDef	Ammo_128x958mmR_EMP	
+CombatExtended/Defs/FT_128x958mmR.xml	ThingDef	Ammo_128x958mmR_HE	
+CombatExtended/Defs/FT_15cmNebelwerfer.xml	ThingDef	Ammo_15cmNebelwerfer_EMP	
+CombatExtended/Defs/FT_15cmNebelwerfer.xml	ThingDef	Ammo_15cmNebelwerfer_Smoke	
+CombatExtended/Defs/FT_15cmNebelwerfer.xml	ThingDef	Ammo_15cmNebelwerfer_Toxic	Ludeon.RimWorld.Biotech
+CombatExtended/Defs/FT_37x223mmR.xml	ThingDef	Ammo_37x223mmR_AP-HE	
+CombatExtended/Defs/FT_37x223mmR.xml	ThingDef	Ammo_37x223mmR_APDS	
+CombatExtended/Defs/FT_37x223mmR.xml	ThingDef	Ammo_37x223mmR_Canister	
+CombatExtended/Defs/FT_37x223mmR.xml	ThingDef	Ammo_37x223mmR_EMP	
+CombatExtended/Defs/FT_37x223mmR.xml	ThingDef	Ammo_37x223mmR_Incendiary	
+CombatExtended/Defs/FT_37x223mmR.xml	ThingDef	Ammo_37x223mmR_Shrapnel	DwS.FunctionalAmmunition.Library
+CombatExtended/Defs/FT_128x958mmR.xml	ThingDef	Bullet_128x958mmR_AP	
+CombatExtended/Defs/FT_128x958mmR.xml	ThingDef	Bullet_128x958mmR_APHE	
+CombatExtended/Defs/FT_128x958mmR.xml	ThingDef	Bullet_128x958mmR_APHE_HV	
+CombatExtended/Defs/FT_128x958mmR.xml	ThingDef	Bullet_128x958mmR_AP_HV	
+CombatExtended/Defs/FT_128x958mmR.xml	ThingDef	Bullet_128x958mmR_EMP	
+CombatExtended/Defs/FT_128x958mmR.xml	ThingDef	Bullet_128x958mmR_HE	
+CombatExtended/Defs/FT_105mmHowitzer.xml	ThingDef	Bullet_FT_105mmHowitzerShell_Airburst	DwS.FunctionalAmmunition.Library
+CombatExtended/Defs/FT_105mmHowitzer.xml	ThingDef	Bullet_FT_105mmHowitzerShell_Airburst_directfire	DwS.FunctionalAmmunition.Library
+CombatExtended/Defs/FT_105mmHowitzer.xml	ThingDef	Bullet_FT_105mmHowitzerShell_EMP	
+CombatExtended/Defs/FT_105mmHowitzer.xml	ThingDef	Bullet_FT_105mmHowitzerShell_EMP_directfire	
+CombatExtended/Defs/FT_105mmHowitzer.xml	ThingDef	Bullet_FT_105mmHowitzerShell_HE	
+CombatExtended/Defs/FT_105mmHowitzer.xml	ThingDef	Bullet_FT_105mmHowitzerShell_HE_directfire	
+CombatExtended/Defs/FT_105mmHowitzer.xml	ThingDef	Bullet_FT_105mmHowitzerShell_Incendiary	
+CombatExtended/Defs/FT_105mmHowitzer.xml	ThingDef	Bullet_FT_105mmHowitzerShell_Incendiary_directfire	
+CombatExtended/Defs/FT_105mmHowitzer.xml	ThingDef	Bullet_FT_105mmHowitzerShell_Smoke	
+CombatExtended/Defs/FT_105mmHowitzer.xml	ThingDef	Bullet_FT_105mmHowitzerShell_Smoke_directfire	
+CombatExtended/Defs/FT_155mmHowitzer.xml	ThingDef	Bullet_FT_155mmHowitzerShell_Airburst	
+CombatExtended/Defs/FT_155mmHowitzer.xml	ThingDef	Bullet_FT_155mmHowitzerShell_Airburst_directfire	DwS.FunctionalAmmunition.Library
+CombatExtended/Defs/FT_155mmHowitzer.xml	ThingDef	Bullet_FT_155mmHowitzerShell_Anti	
+CombatExtended/Defs/FT_155mmHowitzer.xml	ThingDef	Bullet_FT_155mmHowitzerShell_Anti_directfire	
+CombatExtended/Defs/FT_155mmHowitzer.xml	ThingDef	Bullet_FT_155mmHowitzerShell_EMP	
+CombatExtended/Defs/FT_155mmHowitzer.xml	ThingDef	Bullet_FT_155mmHowitzerShell_EMP_directfire	
+CombatExtended/Defs/FT_155mmHowitzer.xml	ThingDef	Bullet_FT_155mmHowitzerShell_HE	
+CombatExtended/Defs/FT_155mmHowitzer.xml	ThingDef	Bullet_FT_155mmHowitzerShell_HE_directfire	
+CombatExtended/Defs/FT_155mmHowitzer.xml	ThingDef	Bullet_FT_155mmHowitzerShell_Incendiary	
+CombatExtended/Defs/FT_155mmHowitzer.xml	ThingDef	Bullet_FT_155mmHowitzerShell_Incendiary_directfire	
+CombatExtended/Defs/FT_155mmHowitzer.xml	ThingDef	Bullet_FT_155mmHowitzerShell_Smoke	
+CombatExtended/Defs/FT_155mmHowitzer.xml	ThingDef	Bullet_FT_155mmHowitzerShell_Smoke_directfire	
+CombatExtended/Defs/FT_15cmNebelwerfer.xml	ThingDef	Bullet_FT_15cmNebelwerfer_EMP	
+CombatExtended/Defs/FT_15cmNebelwerfer.xml	ThingDef	Bullet_FT_15cmNebelwerfer_EMP_directfire	
+CombatExtended/Defs/FT_15cmNebelwerfer.xml	ThingDef	Bullet_FT_15cmNebelwerfer_HE	
+CombatExtended/Defs/FT_15cmNebelwerfer.xml	ThingDef	Bullet_FT_15cmNebelwerfer_HE_directfire	
+CombatExtended/Defs/FT_15cmNebelwerfer.xml	ThingDef	Bullet_FT_15cmNebelwerfer_Smoke	
+CombatExtended/Defs/FT_15cmNebelwerfer.xml	ThingDef	Bullet_FT_15cmNebelwerfer_Smoke_directfire	
+CombatExtended/Defs/FT_15cmNebelwerfer.xml	ThingDef	Bullet_FT_15cmNebelwerfer_Toxic	Ludeon.RimWorld.Biotech
+CombatExtended/Defs/FT_15cmNebelwerfer.xml	ThingDef	Bullet_FT_15cmNebelwerfer_Toxic_directfire	Ludeon.RimWorld.Biotech
+CombatExtended/Defs/FT_37x223mmR.xml	ThingDef	Bullet_FT_37x223mmR_AP	
+CombatExtended/Defs/FT_37x223mmR.xml	ThingDef	Bullet_FT_37x223mmR_AP-HE	
+CombatExtended/Defs/FT_37x223mmR.xml	ThingDef	Bullet_FT_37x223mmR_APDS	
+CombatExtended/Defs/FT_37x223mmR.xml	ThingDef	Bullet_FT_37x223mmR_Canister	
+CombatExtended/Defs/FT_37x223mmR.xml	ThingDef	Bullet_FT_37x223mmR_EMP	
+CombatExtended/Defs/FT_37x223mmR.xml	ThingDef	Bullet_FT_37x223mmR_HE	
+CombatExtended/Defs/FT_37x223mmR.xml	ThingDef	Bullet_FT_37x223mmR_Incendiary	
+CombatExtended/Defs/FT_37x223mmR.xml	ThingDef	Bullet_FT_37x223mmR_Shrapnel	DwS.FunctionalAmmunition.Library
+CombatExtended/Defs/FT_Security_Deployable_CE.xml	ThingDef	FTC_SpotterLight_Gun	
+CombatExtended/Defs/FT_Security_Deployable_CE.xml	ThingDef	FTC_SpotterLight_Turret	
+Defs/FT_Misc.xml	ThingDef	FT_AntennaTower	
+CombatExtended/Defs/FT_Security_Deployable_CE.xml	ThingDef	FT_Artillery_Mortar	
+CombatExtended/Defs/FT_Security_Light_CE.xml	ThingDef	FT_AutoCannon	
+Defs/FT_Structure.xml	ThingDef	FT_Barrier	
+Defs/FT_Structure.xml	ThingDef	FT_BarrierDiagonal	
+Defs/FT_Stuff.xml	ThingDef	FT_BlocksConcrete	
+CombatExtended/Defs/FT_155mmHowitzer.xml	ThingDef	FT_Bullet_NuclearWarhead_CE_II	Aoba.Fortress.Industrial.NuclearDawn
+CombatExtended/Defs/FT_155mmHowitzer.xml	ThingDef	FT_Bullet_NuclearWarhead_CE_directfire_II	Aoba.Fortress.Industrial.NuclearDawn
+Defs/FT_Stuff.xml	ThingDef	FT_ConcreteCompressed	
+Defs/FT_Misc.xml	ThingDef	FT_ENIAC	
+Defs/FT_Misc.xml	ThingDef	FT_FirefoamPopper	
+Defs/FT_Misc.xml	ThingDef	FT_FuelGenerator	
+CombatExtended/Defs/FT_Security_Light_CE.xml	ThingDef	FT_Gun_Autocannon	
+CombatExtended/Defs/FT_Security_Light_CE.xml	ThingDef	FT_Gun_Autocannon_Twin	
+CombatExtended/Defs/FT_Security_AutoTurrets_CE.xml	ThingDef	FT_Gun_MG	
+CombatExtended/Defs/FT_Security_Light_CE.xml	ThingDef	FT_Gun_QuadMG	
+CombatExtended/Defs/FT_Security_Light_CE.xml	ThingDef	FT_Gun_Recoilless	
+CombatExtended/Defs/FT_Security_Medium_CE.xml	ThingDef	FT_Gun_TurretAA	
+CombatExtended/Defs/FT_Security_Medium_CE.xml	ThingDef	FT_Gun_TurretAT	
+CombatExtended/Defs/FT_Security_Medium_CE.xml	ThingDef	FT_Gun_TurretAT_Plus	
+CombatExtended/Defs/FT_Security_Heavy_CE.xml	ThingDef	FT_Gun_TurretEmpero	
+CombatExtended/Defs/FT_Security_HeavyFlak.xml	ThingDef	FT_Gun_TurretHeavyFlak	
+CombatExtended/Defs/FT_Security_Heavy_CE.xml	ThingDef	FT_Gun_TurretHexMortar	
+CombatExtended/Defs/FT_Security_Heavy_CE.xml	ThingDef	FT_Gun_TurretPrince	
+CombatExtended/Defs/FT_Security_Medium_CE.xml	ThingDef	FT_Gun_TurretQuadAA	
+CombatExtended/Defs/FT_Security_HeavyFlak.xml	ThingDef	FT_Gun_TurretUltraHeavyAT	
+CombatExtended/Defs/FT_Security_Light_CE.xml	ThingDef	FT_Maxim4M	
+CombatExtended/Defs/FT_Security_Deployable_CE.xml	ThingDef	FT_MinifiedTurret	
+Defs/FT_Power.xml	ThingDef	FT_PowerPole	co.uk.epicguru.rimforgepoles
+Defs/FT_Power.xml	ThingDef	FT_PowerPole_Lamp	co.uk.epicguru.rimforgepoles
+Defs/FT_Misc.xml	ThingDef	FT_Radio	
+CombatExtended/Defs/FT_Security_Light_CE.xml	ThingDef	FT_RecoillessGun	
+Defs/FT_Stuff.xml	ThingDef	FT_ReinforcedConcreteBag	
+Defs/FT_Structure.xml	ThingDef	FT_Sandbag	
+Defs/FT_Book.xml	ThingDef	FT_Schematic	
+Defs/FT_Production.xml	ThingDef	FT_TableChemistry	
+Defs/FT_Production.xml	ThingDef	FT_TableConcreteMixer	
+Defs/FT_Production.xml	ThingDef	FT_TableLathe	
+Defs/FT_Structure.xml	ThingDef	FT_TankTrap	
+Defs/FT_Structure.xml	ThingDef	FT_Tetrapods	
+CombatExtended/Defs/FT_Security_Medium_CE.xml	ThingDef	FT_TurretAA	
+CombatExtended/Defs/FT_Security_Medium_CE.xml	ThingDef	FT_TurretAT	
+CombatExtended/Defs/FT_Security_Medium_CE.xml	ThingDef	FT_TurretAT_Plus	
+CombatExtended/Defs/FT_Security_Light_CE.xml	ThingDef	FT_TurretAutoCannon_Twin	
+CombatExtended/Defs/FT_Security_Heavy_CE.xml	ThingDef	FT_TurretEmpero	
+CombatExtended/Defs/FT_Security_HeavyFlak.xml	ThingDef	FT_TurretHeavyFlak	
+CombatExtended/Defs/FT_Security_Heavy_CE.xml	ThingDef	FT_TurretHexMortar	
+CombatExtended/Defs/FT_Security_Heavy_CE.xml	ThingDef	FT_TurretPrince	
+CombatExtended/Defs/FT_Security_Medium_CE.xml	ThingDef	FT_TurretQuadAA	
+CombatExtended/Defs/FT_Security_HeavyFlak.xml	ThingDef	FT_TurretUltraHeavyAT	
+CombatExtended/Defs/FT_Security_AutoTurrets_CE.xml	ThingDef	FT_Turret_BunkerC	
+CombatExtended/Defs/FT_Security_AutoTurrets_CE.xml	ThingDef	FT_Turret_BunkerF	
+CombatExtended/Defs/FT_Security_AutoTurrets_CE.xml	ThingDef	FT_Turret_BunkerL	
+CombatExtended/Defs/FT_Security_AutoTurrets_CE.xml	ThingDef	FT_Turret_BunkerM	
+CombatExtended/Defs/FT_Security_Deployable_CE.xml	ThingDef	FT_Turret_Mortar	
+Defs/FT_Structure.xml	ThingDef	FT_WallSandbag	
+Defs/FT_Stuff.xml	ThingDef	FT_WoodConcrete	
+CombatExtended/Defs/FT_37x223mmR.xml	ThingDef	Fragment_FT_ShrapnelPellet	DwS.FunctionalAmmunition.Library
+CombatExtended/Defs/FT_37x223mmR.xml	ThingDef	Fragment_FT_Spark	
+Defs/FT_Effecter.xml	ThingDef	Mote_CasingEject	
+CombatExtended/Defs/FT_15cmNebelwerfer.xml	ThingDef	Shell_15cmNbW_Toxic_Releasing	Ludeon.RimWorld.Biotech
+CombatExtended/Defs/FT_15cmNebelwerfer.xml	ThingDef	Shell_15cmNbW_Toxic_Releasing_Water	Ludeon.RimWorld.Biotech
+Defs/FT_Recipe.xml	WorkGiverDef	FT_Operate	
+Defs/FT_Recipe.xml	WorkGiverDef	FT_Synthesizing	
+Defs/FT_Misc.xml	WorkGiverDef	RadioScan	
+XMLextension/Defs/SettingsMenuDef.xml	XmlExtensions.SettingsMenuDef	FTFI_SettingMenu	

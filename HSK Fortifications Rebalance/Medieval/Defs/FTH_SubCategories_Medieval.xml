@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ArchitectSense.DesignationSubCategoryDef>
+    <defName>SubCategory_FortressMedieval</defName>
+    <label>medieval fortifications</label>
+    <description>Castle walls, embrasures and stone-lined ditches.</description>
+    <defNames>
+      <li>FT_CastleWall</li>
+      <li>FT_CastleWallEmbrasures</li>
+      <li>FT_ReinforcedDitch</li>
+    </defNames>
+    <designationCategory>Security</designationCategory>
+    <debug>false</debug>
+    <order>2</order>
+    <types>
+      <li>Fortifications</li>
+    </types>
+  </ArchitectSense.DesignationSubCategoryDef>
+</Defs>

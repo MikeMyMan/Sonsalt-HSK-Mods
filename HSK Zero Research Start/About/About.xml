@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <name>HSK Zero Research Start</name>
+  <author>Sonsalt</author>
+  <packageId>sonsalt.hsk.zeroresearch</packageId>
+  <modVersion>1.0.0</modVersion>
+  <url>https://github.com/MikeMyMan/Sonsalt-HSK-Mods</url>
+  <supportedVersions>
+    <li>1.7</li>
+  </supportedVersions>
+  <modDependencies>
+    <li>
+      <packageId>skyarkhangel.HSK</packageId>
+      <displayName>Hardcore SK</displayName>
+      <downloadUrl>https://github.com/HardcoreSK/Hardcore-SK</downloadUrl>
+    </li>
+  </modDependencies>
+  <loadAfter>
+    <li>skyarkhangel.HSK</li>
+    <li>kebabebak.hsk.kebab.tweaks</li>
+    <li>HSK.WatcherContent2.5</li>
+  </loadAfter>
+  <description>Start a Hardcore SK colony with no research finished.
+
+- Scenarios "Lost Tribe (no research)" and "Crashlanded (no research)": HSK's scenarios with player factions that get no starting research or techprints.
+- Factions "new tribe (no research)" and "new arrivals (no research)" for your own scenarios (scenario editor, Player faction).
+- The copies inherit from HSK's originals, so HSK updates carry over. The originals are unchanged.
+
+Research gates: 12 buildings that HSK 1.7 or its addons leave without any research would otherwise be buildable on day one. They now need the research of their closest HSK peer: spike trap, both autoloaders, illumination turret (Watcher 2.5), hand assembling workbench, active gas cleaning (Watcher 2.5), Rimatomics PPC/PPHC, rooftop turbine vent, salt mine, silage pile, leatherworker table. This also applies to normal HSK starts, where you usually have that research already.
+
+First steps with no research: build a primitive research table, then research Basic knowledge of craft and Food Prep.</description>
+</ModMetaData>

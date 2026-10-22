@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Fortifications - Industrial patches AmmoSet_37x223mmR / Ammo_37x223mmR_AP / _HE, which HSK's CE fork
+       does not have. These empty stand-ins only exist during patching so those operations succeed;
+       FTH_01_Remove.xml deletes them before defs are loaded. -->
+  <CombatExtended.AmmoSetDef>
+    <defName>AmmoSet_37x223mmR</defName>
+    <ammoTypes />
+  </CombatExtended.AmmoSetDef>
+  <ThingDef>
+    <defName>Ammo_37x223mmR_AP</defName>
+    <graphicData />
+  </ThingDef>
+  <ThingDef>
+    <defName>Ammo_37x223mmR_HE</defName>
+    <graphicData />
+  </ThingDef>
+</Defs>

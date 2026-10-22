@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!--
+    HSK Watcher Content 2.5 (commit 160385bff6): the claymore mines use Watcher.Comps.PlaceWorker_DirectionalMine and
+    Watcher.Comps.CompProperties_DirectionalExplosive, which are not in the shipped DLL, and the non-lethal one costs
+    "Med-x", which no installed mod defines. Remove both mines (and their menu entry) so the rest of the mod loads clean.
+    Remove this file once Watcher ships the matching DLL.
+  -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="Claymore" or defName="ClaymoreNonLethal"][placeWorkers/li="Watcher.Comps.PlaceWorker_DirectionalMine"]</xpath>
+    <match Class="PatchOperationRemove">
+      <xpath>Defs/ThingDef[defName="Claymore" or defName="ClaymoreNonLethal"][placeWorkers/li="Watcher.Comps.PlaceWorker_DirectionalMine"]</xpath>
+    </match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ArchitectSense.DesignationSubCategoryDef/defNames/li[text()="Claymore" or text()="ClaymoreNonLethal"]</xpath>
+    <match Class="PatchOperationRemove">
+      <xpath>Defs/ArchitectSense.DesignationSubCategoryDef/defNames/li[text()="Claymore" or text()="ClaymoreNonLethal"]</xpath>
+    </match>
+  </Operation>
+</Patch>

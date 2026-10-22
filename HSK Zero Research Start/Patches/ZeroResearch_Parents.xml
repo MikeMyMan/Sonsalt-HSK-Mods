@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!-- Give the originals a Name so the no-research copies can inherit from them (patches run before inheritance,
+       so the copies also get every HSK / kebab tweaks change made to the originals). -->
+  <Operation Class="PatchOperationAttributeAdd">
+    <xpath>Defs/FactionDef[defName="PlayerTribe"]</xpath>
+    <attribute>Name</attribute>
+    <value>HSKZR_PlayerTribeParent</value>
+  </Operation>
+  <Operation Class="PatchOperationAttributeAdd">
+    <xpath>Defs/FactionDef[defName="PlayerColony"]</xpath>
+    <attribute>Name</attribute>
+    <value>HSKZR_PlayerColonyParent</value>
+  </Operation>
+  <Operation Class="PatchOperationAttributeAdd">
+    <xpath>Defs/ScenarioDef[defName="LostTribe"]</xpath>
+    <attribute>Name</attribute>
+    <value>HSKZR_LostTribeParent</value>
+  </Operation>
+  <!-- Crashlanded already has Name="Crashlanded" (the tutorial inherits from it), so no patch is needed for it. -->
+</Patch>

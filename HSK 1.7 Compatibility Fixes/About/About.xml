@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <name>HSK 1.7 Compatibility Fixes</name>
+  <author>Sonsalt</author>
+  <packageId>sonsalt.hsk.compatfixes</packageId>
+  <modVersion>1.0.0</modVersion>
+  <url>https://github.com/MikeMyMan/Sonsalt-HSK-Mods</url>
+  <supportedVersions>
+    <li>1.7</li>
+  </supportedVersions>
+  <modDependencies>
+    <li>
+      <packageId>skyarkhangel.HSK</packageId>
+      <displayName>Hardcore SK</displayName>
+      <downloadUrl>https://github.com/HardcoreSK/Hardcore-SK</downloadUrl>
+    </li>
+  </modDependencies>
+  <loadAfter>
+    <li>skyarkhangel.HSK</li>
+    <li>CETeam.CombatExtended</li>
+    <li>kaitorisenkou.ModularWeapons2</li>
+    <li>kaitorisenkou.ModularWeapons2.CEPatch</li>
+    <li>Elldar.tweaks</li>
+    <li>HSK.WatcherContent2.5</li>
+    <li>xenomacabre.HSKBiomes</li>
+  </loadAfter>
+  <description>Small fixes for addons that throw errors with Hardcore SK 1.7. Each fix does nothing unless its mod is active. Load after the mods below.
+
+- ModularWeapons 2 + its Combat Extended patch: the hunting rifle's .338 Lapua magazine uses an ammo set that HSK's Combat Extended doesn't have. It now uses 7.62x51mm NATO.
+- HSK Watcher Content 2.5: the two claymore mines use classes that are missing from the mod's DLL, and one needs an item no mod defines. Both are removed (with their menu entry) so the rest of the mod loads cleanly.
+- Elldar's Patches + Vile's Biomes: Elldar's smoother terraforming adds five peat/soft-clay terraform options that Vile's Biomes removes (570 errors). They're dropped when Vile's Biomes is active.
+
+Each fix can go once its upstream mod fixes the cause.</description>
+</ModMetaData>

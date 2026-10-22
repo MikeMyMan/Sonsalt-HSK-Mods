@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!--
+    Elldar's Patches (commit 4d3fbefec5), Patches/Extra Tweaks/Smoother Terraforming/RTPatch.xml adds the blueprints/frames
+    of five HSK terraform options to every terraform building's placement list. Vile's Biomes removes exactly those five
+    options, so with Vile's Biomes active the references don't exist (570 cross-reference errors). Only then, drop them.
+    Remove once Elldar wraps RTPatch.xml in a FindMod check for Vile's Biomes.
+  -->
+  <Operation Class="PatchOperationFindMod">
+    <mods>
+      <li>Vile's Biomes: From The Ground Up</li>
+    </mods>
+    <match Class="PatchOperationConditional">
+      <xpath>Defs/ThingDef/comps/li[@Class="SK.CompProperties_RestrictedPlacement"]/thingDefs/li[text()="Blueprint_Peat-WaterShallow" or text()="Blueprint_Peat-SoilRich" or text()="Blueprint_Peat-SavannaSoil" or text()="Blueprint_SoftClay-WaterShallow" or text()="Blueprint_SoftClay-SoilRich" or text()="Frame_Peat-WaterShallow" or text()="Frame_Peat-SoilRich" or text()="Frame_Peat-SavannaSoil" or text()="Frame_SoftClay-WaterShallow" or text()="Frame_SoftClay-SoilRich"]</xpath>
+      <match Class="PatchOperationRemove">
+        <xpath>Defs/ThingDef/comps/li[@Class="SK.CompProperties_RestrictedPlacement"]/thingDefs/li[text()="Blueprint_Peat-WaterShallow" or text()="Blueprint_Peat-SoilRich" or text()="Blueprint_Peat-SavannaSoil" or text()="Blueprint_SoftClay-WaterShallow" or text()="Blueprint_SoftClay-SoilRich" or text()="Frame_Peat-WaterShallow" or text()="Frame_Peat-SoilRich" or text()="Frame_Peat-SavannaSoil" or text()="Frame_SoftClay-WaterShallow" or text()="Frame_SoftClay-SoilRich"]</xpath>
+      </match>
+    </match>
+  </Operation>
+</Patch>

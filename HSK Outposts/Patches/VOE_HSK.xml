@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!-- HSK balance for Vanilla Outposts Expanded. Based on TheLoneTec's TSAP patch (v1.5/Patches/VanillaOutpostsExpanded.xml),
+       ported to RimWorld 1.7 / HSK 1.7. Top-level operations (no sequence) so one failure cannot silently skip the rest.
+       Differences to TSAP are marked "HSK 1.7:". -->
+
+  <!-- ===================== Food (all outposts, incl. Additional Outposts) =====================
+       HSK 1.7: HSK removes MealFine_Veg / MealFine_Meat, which VOE and Additional Outposts use. -->
+  <Operation Class="PatchOperationFindMod">
+    <mods><li>Vile's Amuse Bouche</li></mods>
+    <match Class="PatchOperationSequence">
+      <operations>
+        <li Class="PatchOperationConditional">
+          <xpath>Defs/WorldObjectDef/modExtensions/li/ProvidedFood[text()="MealFine_Veg"]</xpath>
+          <match Class="PatchOperationReplace">
+            <xpath>Defs/WorldObjectDef/modExtensions/li/ProvidedFood[text()="MealFine_Veg"]</xpath>
+            <value><ProvidedFood>MealFine_VegVile</ProvidedFood></value>
+          </match>
+        </li>
+        <li Class="PatchOperationConditional">
+          <xpath>Defs/WorldObjectDef/modExtensions/li/ProvidedFood[text()="MealFine_Meat"]</xpath>
+          <match Class="PatchOperationReplace">
+            <xpath>Defs/WorldObjectDef/modExtensions/li/ProvidedFood[text()="MealFine_Meat"]</xpath>
+            <value><ProvidedFood>MealFine_MeatVile</ProvidedFood></value>
+          </match>
+        </li>
+      </operations>
+    </match>
+    <nomatch Class="PatchOperationSequence">
+      <operations>
+        <li Class="PatchOperationConditional">
+          <xpath>Defs/WorldObjectDef/modExtensions/li/ProvidedFood[text()="MealFine_Veg"]</xpath>
+          <match Class="PatchOperationReplace">
+            <xpath>Defs/WorldObjectDef/modExtensions/li/ProvidedFood[text()="MealFine_Veg"]</xpath>
+            <value><ProvidedFood>FriedVegetables</ProvidedFood></value>
+          </match>
+        </li>
+        <li Class="PatchOperationConditional">
+          <xpath>Defs/WorldObjectDef/modExtensions/li/ProvidedFood[text()="MealFine_Meat"]</xpath>
+          <match Class="PatchOperationReplace">
+            <xpath>Defs/WorldObjectDef/modExtensions/li/ProvidedFood[text()="MealFine_Meat"]</xpath>
+            <value><ProvidedFood>RoastedMeat</ProvidedFood></value>
+          </match>
+        </li>
+      </operations>
+    </nomatch>
+  </Operation>
+
+  <!-- ===================== Farming ===================== -->
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Farming"]/modExtensions/li[@Class="Outposts.OutpostExtension_Choose"]/RequiredSkills</xpath>
+    <value>
+      <Construction>5</Construction>
+      <Crafting>3</Crafting>
+      <Cooking>3</Cooking>
+    </value>
+  </Operation>
+  <!-- HSK 1.7: TSAP required a spacer "seed cultivator" (bio-microchips); replaced with fertilizer + fasteners -->
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Farming"]/modExtensions/li[@Class="Outposts.OutpostExtension_Choose"]</xpath>
+    <value>
+      <CostToMake>
+        <OutpostMaterials>100</OutpostMaterials>
+        <Fertilizer>150</Fertilizer>
+        <ComponentMedieval>20</ComponentMedieval>
+      </CostToMake>
+    </value>
+  </Operation>
+
+  <!-- ===================== Defensive ===================== -->
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Defensive"]/modExtensions/li[@Class="Outposts.OutpostExtension"]</xpath>
+    <value>
+      <RequiredSkills>
+        <Construction>10</Construction>
+        <Crafting>3</Crafting>
+        <Shooting>10</Shooting>
+        <Melee>3</Melee>
+        <Cooking>3</Cooking>
+      </RequiredSkills>
+      <CostToMake>
+        <OutpostMaterials>150</OutpostMaterials>
+      </CostToMake>
+    </value>
+  </Operation>
+
+  <!-- ===================== Drilling ===================== -->
+  <Operation Class="PatchOperationReplace">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Drilling"]/description</xpath>
+    <value>
+      <description>Places a temporary, autonomously-led camp that taps an underground oil seep and distils it into chemfuel on site. Once an ample amount is collected, a delivery will be made at the outskirts of a faction's primary colony.</description>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Drilling"]/modExtensions/li[@Class="Outposts.OutpostExtension"]/RequiredSkills</xpath>
+    <value>
+      <Crafting>3</Crafting>
+      <Cooking>3</Cooking>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Drilling"]/modExtensions/li[@Class="Outposts.OutpostExtension"]</xpath>
+    <value>
+      <CostToMake>
+        <OutpostMaterials>200</OutpostMaterials>
+        <ComponentIndustrial>15</ComponentIndustrial>
+        <Mechanism>8</Mechanism>
+        <ReinforcedConcrete>30</ReinforcedConcrete>
+      </CostToMake>
+      <TicksToSetUp>180000</TicksToSetUp>
+    </value>
+  </Operation>
+  <!-- HSK 1.7: chemfuel per mining skill 50 -> 20 (Rimefeller provides the full oil chain at home) -->
+  <Operation Class="PatchOperationReplace">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Drilling"]/modExtensions/li[@Class="Outposts.OutpostExtension"]/ResultOptions/li[Thing="Chemfuel"]/AmountsPerSkills/Mining</xpath>
+    <value><Mining>20</Mining></value>
+  </Operation>
+
+  <!-- ===================== Encampment ===================== -->
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Encampment"]/modExtensions/li[@Class="Outposts.OutpostExtension"]</xpath>
+    <value>
+      <RequiredSkills>
+        <Construction>10</Construction>
+        <Shooting>6</Shooting>
+        <Melee>5</Melee>
+        <Cooking>3</Cooking>
+      </RequiredSkills>
+      <CostToMake>
+        <OutpostMaterials>100</OutpostMaterials>
+      </CostToMake>
+    </value>
+  </Operation>
+
+  <!-- ===================== Hunting ===================== -->
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Hunting"]/modExtensions/li[@Class="Outposts.OutpostExtension_Choose"]</xpath>
+    <value>
+      <RequiredSkills>
+        <Construction>5</Construction>
+        <Cooking>3</Cooking>
+      </RequiredSkills>
+      <CostToMake>
+        <OutpostMaterials>100</OutpostMaterials>
+      </CostToMake>
+    </value>
+  </Operation>
+
+  <!-- ===================== Logging: Vile's wood species (TSAP) ===================== -->
+  <Operation Class="PatchOperationFindMod">
+    <mods><li>Vile's Wood You Please</li></mods>
+    <match Class="PatchOperationReplace">
+      <xpath>Defs/WorldObjectDef[defName="Outpost_Logging"]/modExtensions/li[@Class="Outposts.OutpostExtension"]/ResultOptions</xpath>
+      <value>
+        <ResultOptions>
+          <li><AmountPerPawn>225</AmountPerPawn><Thing>CecropiaLog</Thing></li>
+          <li><AmountPerPawn>225</AmountPerPawn><Thing>PineLog</Thing></li>
+          <li><AmountPerPawn>225</AmountPerPawn><Thing>WillowLog</Thing></li>
+          <li><AmountPerPawn>225</AmountPerPawn><Thing>CypressLog</Thing></li>
+          <li><AmountPerPawn>225</AmountPerPawn><Thing>PoplarLog</Thing></li>
+          <li><AmountPerPawn>225</AmountPerPawn><Thing>MapleLog</Thing></li>
+          <li><AmountPerPawn>225</AmountPerPawn><Thing>TeakLog</Thing></li>
+          <li><AmountPerPawn>225</AmountPerPawn><Thing>BirchLog</Thing></li>
+          <li><AmountPerPawn>225</AmountPerPawn><Thing>OakLog</Thing></li>
+          <li><AmountPerPawn>225</AmountPerPawn><Thing>AcaciaLog</Thing></li>
+          <li><AmountPerPawn>225</AmountPerPawn><Thing>DragonwoodLog</Thing></li>
+          <li><AmountPerPawn>225</AmountPerPawn><Thing>MangroveLog</Thing></li>
+          <li><AmountPerPawn>225</AmountPerPawn><Thing>Bamboo</Thing></li>
+          <li><AmountPerPawn>325</AmountPerPawn><Thing>WoodLog</Thing></li>
+          <li><AmountPerPawn>425</AmountPerPawn><Thing>Kindling</Thing></li>
+        </ResultOptions>
+      </value>
+    </match>
+    <nomatch Class="PatchOperationReplace">
+      <xpath>Defs/WorldObjectDef[defName="Outpost_Logging"]/modExtensions/li[@Class="Outposts.OutpostExtension"]/ResultOptions</xpath>
+      <value>
+        <ResultOptions>
+          <li><AmountPerPawn>225</AmountPerPawn><Thing>WoodLog</Thing></li>
+          <li><AmountPerPawn>325</AmountPerPawn><Thing>Kindling</Thing></li>
+          <li><AmountPerPawn>225</AmountPerPawn><Thing>Bamboo</Thing></li>
+        </ResultOptions>
+      </value>
+    </nomatch>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Logging"]/modExtensions/li[@Class="Outposts.OutpostExtension"]</xpath>
+    <value>
+      <RequiredSkills>
+        <Construction>5</Construction>
+        <Cooking>3</Cooking>
+      </RequiredSkills>
+      <CostToMake>
+        <OutpostMaterials>100</OutpostMaterials>
+      </CostToMake>
+    </value>
+  </Operation>
+
+  <!-- ===================== Mining =====================
+       HSK 1.7: an entry is "resource -> minimum total mining skill"; the yield is computed from the HP of the rock that
+       drops it. HSK rocks drop ores, not steel/plasteel (TSAP's Steel entry is silently skipped on HSK), so list
+       HSK's mineable resources. Stone blocks of the tile's rock types are always offered by VOE itself. -->
+  <Operation Class="PatchOperationReplace">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Mining"]/modExtensions/li[@Class="VOE.OutpostExtension_Mining"]/Resources</xpath>
+    <value>
+      <Resources>
+        <Iron>10</Iron>
+        <Coal>10</Coal>
+        <Salt>10</Salt>
+        <Copper>12</Copper>
+        <Tin>12</Tin>
+        <Nitre>15</Nitre>
+        <Aluminium>18</Aluminium>
+        <Nickel>20</Nickel>
+        <Anglesite>22</Anglesite>
+        <Jade>22</Jade>
+        <Ilmenite>30</Ilmenite>
+        <Silver>30</Silver>
+        <Gold>35</Gold>
+        <Uranium>35</Uranium>
+        <Wolframite>40</Wolframite>
+        <ComponentIndustrial>45</ComponentIndustrial>
+      </Resources>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Mining"]/modExtensions/li[@Class="VOE.OutpostExtension_Mining"]/RequiredSkills</xpath>
+    <value>
+      <Construction>10</Construction>
+      <Cooking>3</Cooking>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Mining"]/modExtensions/li[@Class="VOE.OutpostExtension_Mining"]</xpath>
+    <value>
+      <CostToMake>
+        <OutpostMaterials>150</OutpostMaterials>
+      </CostToMake>
+      <TicksToSetUp>170000</TicksToSetUp>
+    </value>
+  </Operation>
+
+  <!-- ===================== Artillery ===================== -->
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Artillery"]/modExtensions/li[@Class="Outposts.OutpostExtension"]</xpath>
+    <value>
+      <RequiredSkills>
+        <Construction>20</Construction>
+        <Crafting>10</Crafting>
+        <Shooting>15</Shooting>
+        <Cooking>3</Cooking>
+      </RequiredSkills>
+      <CostToMake>
+        <OutpostMaterials>200</OutpostMaterials>
+        <ArtillaryOutpostSupplies>1</ArtillaryOutpostSupplies>
+      </CostToMake>
+      <TicksToSetUp>170000</TicksToSetUp>
+    </value>
+  </Operation>
+
+  <!-- ===================== Production: free component farm, removed (TSAP) ===================== -->
+  <Operation Class="PatchOperationRemove">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Production"]</xpath>
+  </Operation>
+
+  <!-- ===================== Scavenging ===================== -->
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Scavenging"]/modExtensions/li[@Class="Outposts.OutpostExtension"]</xpath>
+    <value>
+      <RequiredSkills>
+        <Construction>10</Construction>
+        <Cooking>3</Cooking>
+      </RequiredSkills>
+      <CostToMake>
+        <OutpostMaterials>100</OutpostMaterials>
+      </CostToMake>
+    </value>
+  </Operation>
+
+  <!-- HSK 1.7: scavenging delivers 750-2000 silver worth of standard reward items per cycle (hard-coded in VOE).
+       VOE's cycle = max(base - 10 days per pawn, 10 days). Base 60 -> 90 days: 1 pawn 80 d, 3 pawns 60 d, 5+ pawns 40 d
+       (was 50 / 30 / 10 d). -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Scavenging"]/modExtensions/li[@Class="Outposts.OutpostExtension"]/TicksPerProduction</xpath>
+    <match Class="PatchOperationReplace">
+      <xpath>Defs/WorldObjectDef[defName="Outpost_Scavenging"]/modExtensions/li[@Class="Outposts.OutpostExtension"]/TicksPerProduction</xpath>
+      <value><TicksPerProduction>5400000</TicksPerProduction></value>
+    </match>
+  </Operation>
+
+  <!-- ===================== Artillery outpost shells =====================
+       HSK 1.7: VOE hard-codes the vanilla mortar projectile Bullet_Shell_HighExplosive (50 Bomb, r2.9) for its
+       artillery strikes; in HSK only VOE uses it (HSK mortars fire CE shells). Bring it closer to HSK's 81 mm HE
+       (156 Bomb, r2.5): 120 Bomb, r2.5. One shell per pawn per strike. -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="Bullet_Shell_HighExplosive"]/projectile/damageAmountBase</xpath>
+    <match Class="PatchOperationReplace">
+      <xpath>Defs/ThingDef[defName="Bullet_Shell_HighExplosive"]/projectile/damageAmountBase</xpath>
+      <value><damageAmountBase>120</damageAmountBase></value>
+    </match>
+    <nomatch Class="PatchOperationAdd">
+      <xpath>Defs/ThingDef[defName="Bullet_Shell_HighExplosive"]/projectile</xpath>
+      <value><damageAmountBase>120</damageAmountBase></value>
+    </nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="Bullet_Shell_HighExplosive"]/projectile/explosionRadius</xpath>
+    <match Class="PatchOperationReplace">
+      <xpath>Defs/ThingDef[defName="Bullet_Shell_HighExplosive"]/projectile/explosionRadius</xpath>
+      <value><explosionRadius>2.5</explosionRadius></value>
+    </match>
+  </Operation>
+
+  <!-- ===================== Science ===================== -->
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Science"]/modExtensions/li[@Class="Outposts.OutpostExtension"]/RequiredSkills</xpath>
+    <value>
+      <Construction>5</Construction>
+      <Cooking>5</Cooking>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Science"]/modExtensions/li[@Class="Outposts.OutpostExtension"]</xpath>
+    <value>
+      <CostToMake>
+        <BatteryGeneratorAssemblyKit>1</BatteryGeneratorAssemblyKit>
+        <HiTechResearchBenchAssemblyKit>1</HiTechResearchBenchAssemblyKit>
+        <OutpostMaterials>150</OutpostMaterials>
+      </CostToMake>
+    </value>
+  </Operation>
+
+  <!-- ===================== Town ===================== -->
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Town"]/modExtensions/li[@Class="Outposts.OutpostExtension"]</xpath>
+    <value>
+      <RequiredSkills>
+        <Construction>10</Construction>
+        <Crafting>5</Crafting>
+        <Artistic>5</Artistic>
+        <Cooking>6</Cooking>
+      </RequiredSkills>
+      <CostToMake>
+        <OutpostMaterials>200</OutpostMaterials>
+      </CostToMake>
+    </value>
+  </Operation>
+
+  <!-- ===================== Trading ===================== -->
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Trading"]/modExtensions/li[@Class="Outposts.OutpostExtension"]/RequiredSkills</xpath>
+    <value>
+      <Construction>10</Construction>
+      <Crafting>5</Crafting>
+      <Shooting>5</Shooting>
+      <Cooking>3</Cooking>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Trading"]/modExtensions/li[@Class="Outposts.OutpostExtension"]</xpath>
+    <value>
+      <CostToMake>
+        <OutpostMaterials>150</OutpostMaterials>
+      </CostToMake>
+    </value>
+  </Operation>
+  <!-- HSK 1.7: silver per social skill 30 -> 15 -->
+  <Operation Class="PatchOperationReplace">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Trading"]/modExtensions/li[@Class="Outposts.OutpostExtension"]/ResultOptions/li[Thing="Silver"]/AmountsPerSkills/Social</xpath>
+    <value><Social>15</Social></value>
+  </Operation>
+
+  <!-- ===================== Drop-off spot in the HSK architect "spots" group ===================== -->
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/ArchitectSense.DesignationSubCategoryDef[defName="SubCategory_Spots"]/defNames</xpath>
+    <value>
+      <li>VEF_OutpostDeliverySpot</li>
+    </value>
+  </Operation>
+</Patch>

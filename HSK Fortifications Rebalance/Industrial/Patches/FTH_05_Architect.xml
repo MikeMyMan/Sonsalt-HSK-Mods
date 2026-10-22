@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/ArchitectSense.DesignationSubCategoryDef[defName="SubCategory_Machineguns"]/defNames</xpath>
+    <value><li>FT_Maxim4M</li></value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/ArchitectSense.DesignationSubCategoryDef[defName="SubCategory_ACannons"]/defNames</xpath>
+    <value><li>FT_TurretQuadAA</li></value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/ArchitectSense.DesignationSubCategoryDef[defName="SubCategory_Cannons"]/defNames</xpath>
+    <value><li>FT_TurretAT_Plus</li></value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/ArchitectSense.DesignationSubCategoryDef[defName="SubCategory_SentryTurrets"]/defNames</xpath>
+    <value><li>FT_Turret_BunkerF</li></value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/ArchitectSense.DesignationSubCategoryDef[defName="SubCategory_SentryTurrets"]/defNames</xpath>
+    <value><li>FT_Turret_BunkerC</li></value>
+  </Operation>
+</Patch>

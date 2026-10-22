@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!-- ===== Player factions without starting research ===== -->
+  <FactionDef ParentName="HSKZR_PlayerTribeParent">
+    <defName>HSKZR_PlayerTribe_NoResearch</defName>
+    <label>new tribe (no research)</label>
+    <description>A tribe that has lost all knowledge. Starts with no research finished.</description>
+    <startingResearchTags Inherit="False" />
+    <startingTechprintsResearchTags Inherit="False" />
+  </FactionDef>
+
+  <FactionDef ParentName="HSKZR_PlayerColonyParent">
+    <defName>HSKZR_PlayerColony_NoResearch</defName>
+    <label>new arrivals (no research)</label>
+    <description>Survivors with no usable knowledge. Starts with no research finished.</description>
+    <startingResearchTags Inherit="False" />
+    <startingTechprintsResearchTags Inherit="False" />
+  </FactionDef>
+
+  <!-- ===== Scenarios ===== -->
+  <ScenarioDef ParentName="HSKZR_LostTribeParent">
+    <defName>HSKZR_LostTribe_NoResearch</defName>
+    <label>Lost Tribe (no research)</label>
+    <description>Lost Tribe, but your tribe remembers nothing: no research is finished. Build a primitive research bench, then research Food Prep (butchering, simple meals) and Basic knowledge of craft (stone blocks, burning) first.</description>
+    <scenario>
+      <playerFaction>
+        <factionDef>HSKZR_PlayerTribe_NoResearch</factionDef>
+      </playerFaction>
+      <summary>Five lost tribespeople, no knowledge at all.</summary>
+    </scenario>
+  </ScenarioDef>
+
+  <ScenarioDef ParentName="Crashlanded">
+    <defName>HSKZR_Crashlanded_NoResearch</defName>
+    <label>Crashlanded (no research)</label>
+    <description>Crashlanded, but with no research finished. Build a primitive research bench, then research Food Prep (butchering, simple meals) and Basic knowledge of craft (stone blocks, burning) first.</description>
+    <scenario>
+      <playerFaction>
+        <factionDef>HSKZR_PlayerColony_NoResearch</factionDef>
+      </playerFaction>
+      <summary>Three crashlanded survivors, no research.</summary>
+    </scenario>
+  </ScenarioDef>
+
+</Defs>

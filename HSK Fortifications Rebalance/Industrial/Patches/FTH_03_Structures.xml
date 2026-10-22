@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+
+  <!-- Sandbag wall: full-height, impassable sandbag wall. HSK sandbags = 300 HP low cover, 5 fabric + 3 sand, Fortification_B1 -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_WallSandbag"]/label</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_WallSandbag"]/label</xpath><value><label>sandbag wall</label></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_WallSandbag"]</xpath><value><label>sandbag wall</label></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_WallSandbag"]/description</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_WallSandbag"]/description</xpath><value><description>Sandbags stacked shoulder-high and held by steel rods into a full wall. Blocks movement and line of fire, does not hold a roof. Cheap, quick and ugly; it soaks up small-arms fire well but crumbles under explosives.</description></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_WallSandbag"]</xpath><value><description>Sandbags stacked shoulder-high and held by steel rods into a full wall. Blocks movement and line of fire, does not hold a roof. Cheap, quick and ugly; it soaks up small-arms fire well but crumbles under explosives.</description></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[@Name="FT_SandBag_Base"]/stuffCategories</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[@Name="FT_SandBag_Base"]/stuffCategories</xpath><value><stuffCategories><li>Fabric</li><li>Leathery</li></stuffCategories></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[@Name="FT_SandBag_Base"]</xpath><value><stuffCategories><li>Fabric</li><li>Leathery</li></stuffCategories></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_WallSandbag"]/costStuffCount</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_WallSandbag"]/costStuffCount</xpath><value><costStuffCount>8</costStuffCount></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_WallSandbag"]</xpath><value><costStuffCount>8</costStuffCount></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_WallSandbag"]/costList</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_WallSandbag"]/costList</xpath><value><costList><SandResource>6</SandResource></costList></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_WallSandbag"]</xpath><value><costList><SandResource>6</SandResource></costList></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_WallSandbag"]/statBases/MaxHitPoints</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_WallSandbag"]/statBases/MaxHitPoints</xpath><value><MaxHitPoints>400</MaxHitPoints></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_WallSandbag"]/statBases</xpath><value><MaxHitPoints>400</MaxHitPoints></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_WallSandbag"]/statBases/Beauty</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_WallSandbag"]/statBases/Beauty</xpath><value><Beauty>-3</Beauty></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_WallSandbag"]/statBases</xpath><value><Beauty>-3</Beauty></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_WallSandbag"]/statBases/WorkToBuild</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_WallSandbag"]/statBases/WorkToBuild</xpath><value><WorkToBuild>750</WorkToBuild></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_WallSandbag"]/statBases</xpath><value><WorkToBuild>750</WorkToBuild></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_WallSandbag"]/researchPrerequisites</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_WallSandbag"]/researchPrerequisites</xpath><value><researchPrerequisites><li>Fortification_B2</li></researchPrerequisites></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_WallSandbag"]</xpath><value><researchPrerequisites><li>Fortification_B2</li></researchPrerequisites></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_WallSandbag"]/constructionSkillPrerequisite</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_WallSandbag"]/constructionSkillPrerequisite</xpath><value><constructionSkillPrerequisite>3</constructionSkillPrerequisite></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_WallSandbag"]</xpath><value><constructionSkillPrerequisite>3</constructionSkillPrerequisite></value></nomatch>
+  </Operation>
+
+  <!-- Concrete obstacles: HSK concrete / reinforced concrete, Concrete I + Fortification IV -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TankTrap"]/costList</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TankTrap"]/costList</xpath><value><costList><ConcreteResource>8</ConcreteResource><Steel>6</Steel></costList></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TankTrap"]</xpath><value><costList><ConcreteResource>8</ConcreteResource><Steel>6</Steel></costList></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TankTrap"]/statBases/MaxHitPoints</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TankTrap"]/statBases/MaxHitPoints</xpath><value><MaxHitPoints>600</MaxHitPoints></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TankTrap"]/statBases</xpath><value><MaxHitPoints>600</MaxHitPoints></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TankTrap"]/statBases/WorkToBuild</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TankTrap"]/statBases/WorkToBuild</xpath><value><WorkToBuild>900</WorkToBuild></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TankTrap"]/statBases</xpath><value><WorkToBuild>900</WorkToBuild></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TankTrap"]/researchPrerequisites</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TankTrap"]/researchPrerequisites</xpath><value><researchPrerequisites><li>Concrete_C1</li><li>IEDs</li></researchPrerequisites></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TankTrap"]</xpath><value><researchPrerequisites><li>Concrete_C1</li><li>IEDs</li></researchPrerequisites></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TankTrap"]/constructionSkillPrerequisite</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TankTrap"]/constructionSkillPrerequisite</xpath><value><constructionSkillPrerequisite>4</constructionSkillPrerequisite></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TankTrap"]</xpath><value><constructionSkillPrerequisite>4</constructionSkillPrerequisite></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Tetrapods"]/costList</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Tetrapods"]/costList</xpath><value><costList><ConcreteResource>14</ConcreteResource></costList></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Tetrapods"]</xpath><value><costList><ConcreteResource>14</ConcreteResource></costList></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Tetrapods"]/statBases/MaxHitPoints</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Tetrapods"]/statBases/MaxHitPoints</xpath><value><MaxHitPoints>550</MaxHitPoints></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Tetrapods"]/statBases</xpath><value><MaxHitPoints>550</MaxHitPoints></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Tetrapods"]/statBases/Mass</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Tetrapods"]/statBases/Mass</xpath><value><Mass>300</Mass></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Tetrapods"]/statBases</xpath><value><Mass>300</Mass></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Tetrapods"]/statBases/WorkToBuild</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Tetrapods"]/statBases/WorkToBuild</xpath><value><WorkToBuild>1200</WorkToBuild></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Tetrapods"]/statBases</xpath><value><WorkToBuild>1200</WorkToBuild></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Tetrapods"]/researchPrerequisites</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Tetrapods"]/researchPrerequisites</xpath><value><researchPrerequisites><li>Concrete_C1</li></researchPrerequisites></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Tetrapods"]</xpath><value><researchPrerequisites><li>Concrete_C1</li></researchPrerequisites></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Tetrapods"]/constructionSkillPrerequisite</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Tetrapods"]/constructionSkillPrerequisite</xpath><value><constructionSkillPrerequisite>4</constructionSkillPrerequisite></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Tetrapods"]</xpath><value><constructionSkillPrerequisite>4</constructionSkillPrerequisite></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Barrier"]/costList</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Barrier"]/costList</xpath><value><costList><ReinforcedConcrete>10</ReinforcedConcrete></costList></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Barrier"]</xpath><value><costList><ReinforcedConcrete>10</ReinforcedConcrete></costList></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Barrier"]/statBases/MaxHitPoints</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Barrier"]/statBases/MaxHitPoints</xpath><value><MaxHitPoints>650</MaxHitPoints></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Barrier"]/statBases</xpath><value><MaxHitPoints>650</MaxHitPoints></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Barrier"]/statBases/Mass</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Barrier"]/statBases/Mass</xpath><value><Mass>120</Mass></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Barrier"]/statBases</xpath><value><Mass>120</Mass></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Barrier"]/statBases/WorkToBuild</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Barrier"]/statBases/WorkToBuild</xpath><value><WorkToBuild>1000</WorkToBuild></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Barrier"]/statBases</xpath><value><WorkToBuild>1000</WorkToBuild></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Barrier"]/researchPrerequisites</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Barrier"]/researchPrerequisites</xpath><value><researchPrerequisites><li>Concrete_C1</li><li>IEDs</li></researchPrerequisites></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Barrier"]</xpath><value><researchPrerequisites><li>Concrete_C1</li><li>IEDs</li></researchPrerequisites></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Barrier"]/constructionSkillPrerequisite</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Barrier"]/constructionSkillPrerequisite</xpath><value><constructionSkillPrerequisite>5</constructionSkillPrerequisite></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Barrier"]</xpath><value><constructionSkillPrerequisite>5</constructionSkillPrerequisite></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_BarrierDiagonal"]/costList</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_BarrierDiagonal"]/costList</xpath><value><costList><ReinforcedConcrete>12</ReinforcedConcrete></costList></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_BarrierDiagonal"]</xpath><value><costList><ReinforcedConcrete>12</ReinforcedConcrete></costList></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_BarrierDiagonal"]/statBases/MaxHitPoints</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_BarrierDiagonal"]/statBases/MaxHitPoints</xpath><value><MaxHitPoints>700</MaxHitPoints></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_BarrierDiagonal"]/statBases</xpath><value><MaxHitPoints>700</MaxHitPoints></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_BarrierDiagonal"]/statBases/Mass</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_BarrierDiagonal"]/statBases/Mass</xpath><value><Mass>140</Mass></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_BarrierDiagonal"]/statBases</xpath><value><Mass>140</Mass></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_BarrierDiagonal"]/statBases/WorkToBuild</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_BarrierDiagonal"]/statBases/WorkToBuild</xpath><value><WorkToBuild>1200</WorkToBuild></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_BarrierDiagonal"]/statBases</xpath><value><WorkToBuild>1200</WorkToBuild></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_BarrierDiagonal"]/researchPrerequisites</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_BarrierDiagonal"]/researchPrerequisites</xpath><value><researchPrerequisites><li>Concrete_C1</li><li>IEDs</li></researchPrerequisites></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_BarrierDiagonal"]</xpath><value><researchPrerequisites><li>Concrete_C1</li><li>IEDs</li></researchPrerequisites></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_BarrierDiagonal"]/constructionSkillPrerequisite</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_BarrierDiagonal"]/constructionSkillPrerequisite</xpath><value><constructionSkillPrerequisite>5</constructionSkillPrerequisite></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_BarrierDiagonal"]</xpath><value><constructionSkillPrerequisite>5</constructionSkillPrerequisite></value></nomatch>
+  </Operation>
+</Patch>

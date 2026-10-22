@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <name>HSK Fortifications Rebalance</name>
+  <author>Sonsalt</author>
+  <packageId>sonsalt.hsk.fortifications</packageId>
+  <modVersion>1.0.0</modVersion>
+  <url>https://github.com/MikeMyMan/Sonsalt-HSK-Mods</url>
+  <supportedVersions>
+    <li>1.7</li>
+  </supportedVersions>
+  <modDependencies>
+    <li>
+      <packageId>skyarkhangel.HSK</packageId>
+      <displayName>Hardcore SK</displayName>
+      <downloadUrl>https://github.com/HardcoreSK/Hardcore-SK</downloadUrl>
+    </li>
+  </modDependencies>
+  <loadAfter>
+    <li>skyarkhangel.HSK</li>
+    <li>CETeam.CombatExtended</li>
+    <li>ViTech.MedievalOverhaul</li>
+    <li>Aoba.Fortress.Neolithic</li>
+    <li>Aoba.Fortress.Medieval</li>
+    <li>Aoba.Fortress.Industrial</li>
+  </loadAfter>
+  <description>Rebalances Aoba's "Fortifications - Medieval" and "Fortifications - Industrial" for Hardcore SK + Combat Extended.
+
+- Removes everything that duplicates HSK (concrete economy, mixer, lathe, chemistry table, generator, radio, antenna, hydrant, ENIAC, floors, own research tree, duplicate turrets, Medieval's swivel gun).
+- Remaining structures and turrets use HSK materials, HSK research, HSK crate-built turrets (heavy arms lathe) and HSK/CE ammunition.
+- Restores the HSK research tree and floor costs that Fortifications - Industrial overrides.
+- Works without AOBA.Framework (strips its purely visual comps).
+
+Load after both Fortifications mods. Each part only loads if its mod is active.</description>
+</ModMetaData>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+
+  <!-- Swivel gun: duplicate of Vile's Pre-Industrial "38mm Swivel Gun" (Turret_Culverin); removed -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Turret_SwivelGun" or defName="FT_Gun_SwivelGun" or defName="FT_Proj_Cannon"]</xpath>
+    <match Class="PatchOperationRemove"><xpath>Defs/ThingDef[defName="FT_Turret_SwivelGun" or defName="FT_Gun_SwivelGun" or defName="FT_Proj_Cannon"]</xpath></match>
+  </Operation>
+
+  <!-- Reinforced ditch: stone-lined upgrade of the Neolithic ditch (750 HP, 2600 work, Fortification_A1) -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_ReinforcedDitch"]/stuffCategories</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_ReinforcedDitch"]/stuffCategories</xpath><value><stuffCategories><li>Stony</li><li>Bricks</li></stuffCategories></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_ReinforcedDitch"]</xpath><value><stuffCategories><li>Stony</li><li>Bricks</li></stuffCategories></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_ReinforcedDitch"]/costStuffCount</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_ReinforcedDitch"]/costStuffCount</xpath><value><costStuffCount>6</costStuffCount></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_ReinforcedDitch"]</xpath><value><costStuffCount>6</costStuffCount></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_ReinforcedDitch"]/statBases/MaxHitPoints</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_ReinforcedDitch"]/statBases/MaxHitPoints</xpath><value><MaxHitPoints>650</MaxHitPoints></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_ReinforcedDitch"]/statBases</xpath><value><MaxHitPoints>650</MaxHitPoints></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_ReinforcedDitch"]/statBases/WorkToBuild</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_ReinforcedDitch"]/statBases/WorkToBuild</xpath><value><WorkToBuild>3200</WorkToBuild></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_ReinforcedDitch"]/statBases</xpath><value><WorkToBuild>3200</WorkToBuild></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_ReinforcedDitch"]/researchPrerequisites</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_ReinforcedDitch"]/researchPrerequisites</xpath><value><researchPrerequisites><li>Fortification_B1</li></researchPrerequisites></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_ReinforcedDitch"]</xpath><value><researchPrerequisites><li>Fortification_B1</li></researchPrerequisites></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_ReinforcedDitch"]/constructionSkillPrerequisite</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_ReinforcedDitch"]/constructionSkillPrerequisite</xpath><value><constructionSkillPrerequisite>4</constructionSkillPrerequisite></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_ReinforcedDitch"]</xpath><value><constructionSkillPrerequisite>4</constructionSkillPrerequisite></value></nomatch>
+  </Operation>
+
+  <!-- Castle wall: thick curtain wall. HSK wall = 380 HP base, 6 stuff, 270 work. Castle wall ~1.8x HP for 2.3x stuff, 5x work -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_CastleWall"]/stuffCategories</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_CastleWall"]/stuffCategories</xpath><value><stuffCategories><li>Stony</li><li>Bricks</li></stuffCategories></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_CastleWall"]</xpath><value><stuffCategories><li>Stony</li><li>Bricks</li></stuffCategories></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_CastleWall"]/costStuffCount</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_CastleWall"]/costStuffCount</xpath><value><costStuffCount>14</costStuffCount></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_CastleWall"]</xpath><value><costStuffCount>14</costStuffCount></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_CastleWall"]/statBases/MaxHitPoints</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_CastleWall"]/statBases/MaxHitPoints</xpath><value><MaxHitPoints>700</MaxHitPoints></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_CastleWall"]/statBases</xpath><value><MaxHitPoints>700</MaxHitPoints></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_CastleWall"]/statBases/WorkToBuild</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_CastleWall"]/statBases/WorkToBuild</xpath><value><WorkToBuild>1400</WorkToBuild></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_CastleWall"]/statBases</xpath><value><WorkToBuild>1400</WorkToBuild></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_CastleWall"]/designationCategory</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_CastleWall"]/designationCategory</xpath><value><designationCategory>Security</designationCategory></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_CastleWall"]</xpath><value><designationCategory>Security</designationCategory></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_CastleWall"]/damageMultipliers</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_CastleWall"]/damageMultipliers</xpath><value><damageMultipliers><li><damageDef>Bomb</damageDef><multiplier>2</multiplier></li></damageMultipliers></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_CastleWall"]</xpath><value><damageMultipliers><li><damageDef>Bomb</damageDef><multiplier>2</multiplier></li></damageMultipliers></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_CastleWall"]/researchPrerequisites</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_CastleWall"]/researchPrerequisites</xpath><value><researchPrerequisites><li>Fortification_B2</li></researchPrerequisites></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_CastleWall"]</xpath><value><researchPrerequisites><li>Fortification_B2</li></researchPrerequisites></value></nomatch>
+  </Operation>
+
+  <!-- Castle embrasure: CE cover 0.85 -> 0.7 (HSK CE_Embrasure 0.7), +1 fasteners like Neolithic HSK embrasures -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_CastleWallEmbrasures"]/label</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_CastleWallEmbrasures"]/label</xpath><value><label>castle embrasure</label></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_CastleWallEmbrasures"]</xpath><value><label>castle embrasure</label></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_CastleWallEmbrasures"]/costStuffCount</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_CastleWallEmbrasures"]/costStuffCount</xpath><value><costStuffCount>12</costStuffCount></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_CastleWallEmbrasures"]</xpath><value><costStuffCount>12</costStuffCount></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_CastleWallEmbrasures"]/costList</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_CastleWallEmbrasures"]/costList</xpath><value><costList><ComponentMedieval>1</ComponentMedieval></costList></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_CastleWallEmbrasures"]</xpath><value><costList><ComponentMedieval>1</ComponentMedieval></costList></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_CastleWallEmbrasures"]/statBases/MaxHitPoints</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_CastleWallEmbrasures"]/statBases/MaxHitPoints</xpath><value><MaxHitPoints>560</MaxHitPoints></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_CastleWallEmbrasures"]/statBases</xpath><value><MaxHitPoints>560</MaxHitPoints></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_CastleWallEmbrasures"]/statBases/WorkToBuild</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_CastleWallEmbrasures"]/statBases/WorkToBuild</xpath><value><WorkToBuild>1400</WorkToBuild></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_CastleWallEmbrasures"]/statBases</xpath><value><WorkToBuild>1400</WorkToBuild></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_CastleWallEmbrasures"]/fillPercent</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_CastleWallEmbrasures"]/fillPercent</xpath><value><fillPercent>0.7</fillPercent></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_CastleWallEmbrasures"]</xpath><value><fillPercent>0.7</fillPercent></value></nomatch>
+  </Operation>
+
+  <!-- Rock box: colonist-triggered stone launcher. Medieval materials instead of industrial steel; siege engines research -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Turret_RockBox"]/label</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Turret_RockBox"]/label</xpath><value><label>rock box</label></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Turret_RockBox"]</xpath><value><label>rock box</label></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Turret_RockBox"]/stuffCategories</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Turret_RockBox"]/stuffCategories</xpath><value><stuffCategories><li>Woody</li><li>Stony</li></stuffCategories></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Turret_RockBox"]</xpath><value><stuffCategories><li>Woody</li><li>Stony</li></stuffCategories></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Turret_RockBox"]/costStuffCount</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Turret_RockBox"]/costStuffCount</xpath><value><costStuffCount>60</costStuffCount></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Turret_RockBox"]</xpath><value><costStuffCount>60</costStuffCount></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Turret_RockBox"]/costList</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Turret_RockBox"]/costList</xpath><value><costList><ComponentMedieval>8</ComponentMedieval><WoodLog>20</WoodLog></costList></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Turret_RockBox"]</xpath><value><costList><ComponentMedieval>8</ComponentMedieval><WoodLog>20</WoodLog></costList></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Turret_RockBox"]/statBases/MaxHitPoints</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Turret_RockBox"]/statBases/MaxHitPoints</xpath><value><MaxHitPoints>220</MaxHitPoints></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Turret_RockBox"]/statBases</xpath><value><MaxHitPoints>220</MaxHitPoints></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Turret_RockBox"]/statBases/WorkToBuild</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Turret_RockBox"]/statBases/WorkToBuild</xpath><value><WorkToBuild>4500</WorkToBuild></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Turret_RockBox"]/statBases</xpath><value><WorkToBuild>4500</WorkToBuild></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Turret_RockBox"]/researchPrerequisites</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Turret_RockBox"]/researchPrerequisites</xpath><value><researchPrerequisites><li>Ballista_B1</li></researchPrerequisites></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Turret_RockBox"]</xpath><value><researchPrerequisites><li>Ballista_B1</li></researchPrerequisites></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/ArchitectSense.DesignationSubCategoryDef[defName="SubCategory_MedievalTurrets"]/defNames</xpath>
+    <value><li>FT_Turret_RockBox</li></value>
+  </Operation>
+</Patch>

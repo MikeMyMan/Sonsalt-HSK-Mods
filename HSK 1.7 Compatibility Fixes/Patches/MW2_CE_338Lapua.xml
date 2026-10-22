@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!--
+    ModularWeapons2 - Combat Extended Patch (Alpha 0.3.2), Common/Patches/Parts/HuntingRifle.xml,
+    sets ammoSetOverride = AmmoSet_338Lapua on the hunting rifle part Mag_MHR_Lapua.
+    HSK's Combat Extended has no .338 Lapua ammo set, so the reference fails to resolve.
+    Use HSK's 7.62x51mm NATO set instead. Does nothing if the node is not there.
+  -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ModularWeapons2.ModularPartsDef[defName="Mag_MHR_Lapua"]/modExtensions/li[@Class="MW2Patch_CombatExtended.MW2PartsExtension_CEAmmoUser"]/ammoSetOverride[text()="AmmoSet_338Lapua"]</xpath>
+    <match Class="PatchOperationReplace">
+      <xpath>Defs/ModularWeapons2.ModularPartsDef[defName="Mag_MHR_Lapua"]/modExtensions/li[@Class="MW2Patch_CombatExtended.MW2PartsExtension_CEAmmoUser"]/ammoSetOverride[text()="AmmoSet_338Lapua"]</xpath>
+      <value>
+        <ammoSetOverride>AmmoSet_762x51mmNATO</ammoSetOverride>
+      </value>
+    </match>
+  </Operation>
+</Patch>

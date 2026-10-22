@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <name>HSK Outposts</name>
+  <author>Sonsalt</author>
+  <packageId>sonsalt.hsk.outposts</packageId>
+  <modVersion>1.0.0</modVersion>
+  <url>https://github.com/MikeMyMan/Sonsalt-HSK-Mods</url>
+  <supportedVersions>
+    <li>1.7</li>
+  </supportedVersions>
+  <modDependencies>
+    <li>
+      <packageId>skyarkhangel.HSK</packageId>
+      <displayName>Hardcore SK</displayName>
+      <downloadUrl>https://github.com/HardcoreSK/Hardcore-SK</downloadUrl>
+    </li>
+    <li>
+      <packageId>OskarPotocki.VanillaFactionsExpanded.Core</packageId>
+      <displayName>Vanilla Expanded Framework</displayName>
+      <steamWorkshopUrl>steam://url/CommunityFilePage/2023507013</steamWorkshopUrl>
+    </li>
+    <li>
+      <packageId>vanillaexpanded.outposts</packageId>
+      <displayName>Vanilla Outposts Expanded</displayName>
+      <steamWorkshopUrl>steam://url/CommunityFilePage/2688941031</steamWorkshopUrl>
+    </li>
+  </modDependencies>
+  <loadAfter>
+    <li>skyarkhangel.HSK</li>
+    <li>OskarPotocki.VanillaFactionsExpanded.Core</li>
+    <li>vanillaexpanded.outposts</li>
+    <li>MrHydralisk.VOEAdditionalOutposts</li>
+    <li>ViTech.HCSKamusebouche</li>
+    <li>ViTech.HCSKWood</li>
+  </loadAfter>
+  <description>Balances Vanilla Outposts Expanded (and VOE: Additional Outposts, if active) for Hardcore SK on RimWorld 1.7.
+
+Outposts are built from "outpost construction materials" (planks, stone blocks, metal, fasteners), plus kits for the artillery and science outposts, and need minimum skills.
+- Food: HSK and Vile's meals (HSK removes the Ideology meals VOE uses).
+- Mining yields HSK ores by total mining skill, not finished steel or plasteel. Logging yields Vile's wood species.
+- The production outpost (free components) is removed. Drilling, trading and scavenging pay less, and artillery outposts fire shells close to HSK's 81 mm HE.
+- Additional Outposts: build costs, silver, drug and meal output roughly halved for HSK's scarcer economy; their outpost maps use HSK/Vile's materials.
+- Settings/Mod_2023507013_OutpostsMod.xml: optional HSK values for the mod-settings sliders (pack-animal delivery, smaller fines, church/prison/embassy/bank income). Copy it into your RimWorld Config folder if you have no outposts settings yet.
+
+Based on the HSK patch in TheLoneTec's "Tec's Assorted Patches" (1.3-1.5), ported to 1.7 and extended. Credits: TheLoneTec (original design), Oskar Potocki and the Vanilla Expanded team (VOE), MrHydralisk (Additional Outposts).</description>
+</ModMetaData>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ArchitectSense.DesignationSubCategoryDef>
+    <defName>SubCategory_FortressIndustrial</defName>
+    <label>industrial fortifications</label>
+    <description>Sandbag walls, concrete barriers and anti-vehicle obstacles.</description>
+    <defNames>
+      <li>FT_WallSandbag</li>
+      <li>FT_Barrier</li>
+      <li>FT_BarrierDiagonal</li>
+      <li>FT_TankTrap</li>
+      <li>FT_Tetrapods</li>
+    </defNames>
+    <designationCategory>Security</designationCategory>
+    <debug>false</debug>
+    <order>12</order>
+    <types>
+      <li>Fortifications</li>
+    </types>
+  </ArchitectSense.DesignationSubCategoryDef>
+</Defs>

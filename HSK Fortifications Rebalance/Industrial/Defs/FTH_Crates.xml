@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="ItemCrateBase">
+    <defName>FTH_QuadMG_Crate</defName>
+    <label>quad machine gun crate</label>
+    <description>Use this to build a quad-mounted machine gun (Fortifications - Industrial, HSK conversion).</description>
+    <graphicData>
+      <texPath>Things/Item/Resource/WeaponCrate</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <soundInteract>Standard_Drop</soundInteract>
+    <soundDrop>Standard_Drop</soundDrop>
+    <tickerType>Normal</tickerType>
+    <stackLimit>1</stackLimit>
+    <techLevel>Industrial</techLevel>
+    <statBases>
+      <MarketValue>3300</MarketValue>
+      <MaxHitPoints>100</MaxHitPoints>
+      <Flammability>1</Flammability>
+      <DeteriorationRate>0</DeteriorationRate>
+      <Mass>40</Mass>
+      <Bulk>58</Bulk>
+    </statBases>
+    <thingCategories><li>WeaponCrate</li></thingCategories>
+    <tradeTags><li>SimpleCrate</li></tradeTags>
+  </ThingDef>
+  <RecipeDef ParentName="cratecraftbase">
+    <defName>BuildFTH_QuadMG_Crate</defName>
+    <label>build quad machine gun crate</label>
+    <description>Use this to build a quad-mounted machine gun.</description>
+    <jobString>Building quad machine gun crate.</jobString>
+    <workAmount>12500</workAmount>
+    <skillRequirements><Crafting>8</Crafting></skillRequirements>
+    <ingredients>
+      <li><filter><thingDefs><li>Weapon_Parts</li></thingDefs></filter><count>16</count></li>
+      <li><filter><thingDefs><li>Heavy_Component</li></thingDefs></filter><count>1</count></li>
+      <li><filter><categories><li>Metallic</li></categories></filter><count>50</count></li>
+
+    </ingredients>
+    <products><FTH_QuadMG_Crate>1</FTH_QuadMG_Crate></products>
+    <fixedIngredientFilter>
+      <thingDefs>
+        <li>Weapon_Parts</li>
+        <li>Heavy_Component</li>
+
+      </thingDefs>
+      <categories><li>SLDBar</li><li>USLDBar</li></categories>
+    </fixedIngredientFilter>
+    <researchPrerequisite>Heavy_turrets_C2</researchPrerequisite>
+  </RecipeDef>
+  <ThingDef ParentName="ItemCrateBase">
+    <defName>FTH_QuadAA_Crate</defName>
+    <label>quad 20mm flak crate</label>
+    <description>Use this to build a quad 20mm flak emplacement (Fortifications - Industrial, HSK conversion).</description>
+    <graphicData>
+      <texPath>Things/Item/Resource/WeaponCrate</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <soundInteract>Standard_Drop</soundInteract>
+    <soundDrop>Standard_Drop</soundDrop>
+    <tickerType>Normal</tickerType>
+    <stackLimit>1</stackLimit>
+    <techLevel>Industrial</techLevel>
+    <statBases>
+      <MarketValue>5600</MarketValue>
+      <MaxHitPoints>100</MaxHitPoints>
+      <Flammability>1</Flammability>
+      <DeteriorationRate>0</DeteriorationRate>
+      <Mass>320</Mass>
+      <Bulk>394</Bulk>
+    </statBases>
+    <thingCategories><li>WeaponCrate</li></thingCategories>
+    <tradeTags><li>SimpleCrate</li></tradeTags>
+  </ThingDef>
+  <RecipeDef ParentName="cratecraftbase">
+    <defName>BuildFTH_QuadAA_Crate</defName>
+    <label>build quad 20mm flak crate</label>
+    <description>Use this to build a quad 20mm flak emplacement.</description>
+    <jobString>Building quad 20mm flak crate.</jobString>
+    <workAmount>18500</workAmount>
+    <skillRequirements><Crafting>14</Crafting></skillRequirements>
+    <ingredients>
+      <li><filter><thingDefs><li>Weapon_Parts</li></thingDefs></filter><count>24</count></li>
+      <li><filter><thingDefs><li>Cannon_Component</li></thingDefs></filter><count>2</count></li>
+      <li><filter><categories><li>Metallic</li></categories></filter><count>70</count></li>
+      <li><filter><thingDefs><li>Rubber</li></thingDefs></filter><count>30</count></li>
+    </ingredients>
+    <products><FTH_QuadAA_Crate>1</FTH_QuadAA_Crate></products>
+    <fixedIngredientFilter>
+      <thingDefs>
+        <li>Weapon_Parts</li>
+        <li>Cannon_Component</li>
+        <li>Rubber</li>
+      </thingDefs>
+      <categories><li>SLDBar</li><li>USLDBar</li></categories>
+    </fixedIngredientFilter>
+    <researchPrerequisite>Heavy_turrets_C3</researchPrerequisite>
+  </RecipeDef>
+  <ThingDef ParentName="ItemCrateBase">
+    <defName>FTH_ATGun_Crate</defName>
+    <label>90mm anti-tank gun crate</label>
+    <description>Use this to build a 90mm anti-tank gun (Fortifications - Industrial, HSK conversion).</description>
+    <graphicData>
+      <texPath>Things/Item/Resource/WeaponCrate</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <soundInteract>Standard_Drop</soundInteract>
+    <soundDrop>Standard_Drop</soundDrop>
+    <tickerType>Normal</tickerType>
+    <stackLimit>1</stackLimit>
+    <techLevel>Industrial</techLevel>
+    <statBases>
+      <MarketValue>4600</MarketValue>
+      <MaxHitPoints>100</MaxHitPoints>
+      <Flammability>1</Flammability>
+      <DeteriorationRate>0</DeteriorationRate>
+      <Mass>600</Mass>
+      <Bulk>730</Bulk>
+    </statBases>
+    <thingCategories><li>WeaponCrate</li></thingCategories>
+    <tradeTags><li>SimpleCrate</li></tradeTags>
+  </ThingDef>
+  <RecipeDef ParentName="cratecraftbase">
+    <defName>BuildFTH_ATGun_Crate</defName>
+    <label>build 90mm anti-tank gun crate</label>
+    <description>Use this to build a 90mm anti-tank gun.</description>
+    <jobString>Building 90mm anti-tank gun crate.</jobString>
+    <workAmount>16500</workAmount>
+    <skillRequirements><Crafting>13</Crafting></skillRequirements>
+    <ingredients>
+      <li><filter><thingDefs><li>Weapon_Parts</li></thingDefs></filter><count>16</count></li>
+      <li><filter><thingDefs><li>Cannon_Component</li></thingDefs></filter><count>2</count></li>
+      <li><filter><categories><li>Metallic</li></categories></filter><count>60</count></li>
+      <li><filter><thingDefs><li>Rubber</li></thingDefs></filter><count>25</count></li>
+    </ingredients>
+    <products><FTH_ATGun_Crate>1</FTH_ATGun_Crate></products>
+    <fixedIngredientFilter>
+      <thingDefs>
+        <li>Weapon_Parts</li>
+        <li>Cannon_Component</li>
+        <li>Rubber</li>
+      </thingDefs>
+      <categories><li>SLDBar</li><li>USLDBar</li></categories>
+    </fixedIngredientFilter>
+    <researchPrerequisite>Artillery_C2</researchPrerequisite>
+  </RecipeDef>
+  <ThingDef ParentName="ItemCrateBase">
+    <defName>FTH_MGNest_Crate</defName>
+    <label>MG nest crate</label>
+    <description>Use this to build a automated MG nest (Fortifications - Industrial, HSK conversion).</description>
+    <graphicData>
+      <texPath>Things/Item/Resource/WeaponCrate</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <soundInteract>Standard_Drop</soundInteract>
+    <soundDrop>Standard_Drop</soundDrop>
+    <tickerType>Normal</tickerType>
+    <stackLimit>1</stackLimit>
+    <techLevel>Industrial</techLevel>
+    <statBases>
+      <MarketValue>3600</MarketValue>
+      <MaxHitPoints>100</MaxHitPoints>
+      <Flammability>1</Flammability>
+      <DeteriorationRate>0</DeteriorationRate>
+      <Mass>35</Mass>
+      <Bulk>52</Bulk>
+    </statBases>
+    <thingCategories><li>WeaponCrate</li></thingCategories>
+    <tradeTags><li>SimpleCrate</li></tradeTags>
+  </ThingDef>
+  <RecipeDef ParentName="cratecraftbase">
+    <defName>BuildFTH_MGNest_Crate</defName>
+    <label>build MG nest crate</label>
+    <description>Use this to build a automated MG nest.</description>
+    <jobString>Building MG nest crate.</jobString>
+    <workAmount>12500</workAmount>
+    <skillRequirements><Crafting>11</Crafting></skillRequirements>
+    <ingredients>
+      <li><filter><thingDefs><li>Weapon_Parts</li></thingDefs></filter><count>10</count></li>
+      <li><filter><thingDefs><li>Heavy_Component</li></thingDefs></filter><count>1</count></li>
+      <li><filter><thingDefs><li>Electronics</li></thingDefs></filter><count>5</count></li>
+      <li><filter><categories><li>Metallic</li></categories></filter><count>30</count></li>
+
+    </ingredients>
+    <products><FTH_MGNest_Crate>1</FTH_MGNest_Crate></products>
+    <fixedIngredientFilter>
+      <thingDefs>
+        <li>Weapon_Parts</li>
+        <li>Heavy_Component</li>
+        <li>Electronics</li>
+
+      </thingDefs>
+      <categories><li>SLDBar</li><li>USLDBar</li></categories>
+    </fixedIngredientFilter>
+    <researchPrerequisite>GunTurrets</researchPrerequisite>
+  </RecipeDef>
+</Defs>

@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!-- HSK balance for VOE: Additional Outposts (MrHydralisk). Loaded only when that mod is active. Food is remapped in Patches/VOE_HSK.xml.
+       Rule of thumb: every outpost costs outpost materials; silver, drug, pemmican and mercenary output roughly halved for HSK. -->
+  <!-- ===== Build costs + extra skill minimums ===== -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Construction_Site"]/modExtensions/li[1]</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/WorldObjectDef[defName="Outpost_Construction_Site"]/modExtensions/li[1]</xpath>
+      <value>
+      <CostToMake>
+        <OutpostMaterials>100</OutpostMaterials>
+      </CostToMake>
+      </value>
+    </match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Construction_Site"]/modExtensions/li[1]/RequiredSkills</xpath>
+    <match Class="PatchOperationAdd"><xpath>Defs/WorldObjectDef[defName="Outpost_Construction_Site"]/modExtensions/li[1]/RequiredSkills</xpath><value><Cooking>3</Cooking></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/WorldObjectDef[defName="Outpost_Construction_Site"]/modExtensions/li[1]</xpath><value><RequiredSkills><Cooking>3</Cooking></RequiredSkills></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Field_Hospital"]/modExtensions/li[1]</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/WorldObjectDef[defName="Outpost_Field_Hospital"]/modExtensions/li[1]</xpath>
+      <value>
+      <CostToMake>
+        <OutpostMaterials>150</OutpostMaterials>
+        <MedicineIndustrial>10</MedicineIndustrial>
+      </CostToMake>
+      </value>
+    </match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Field_Hospital"]/modExtensions/li[1]/RequiredSkills</xpath>
+    <match Class="PatchOperationAdd"><xpath>Defs/WorldObjectDef[defName="Outpost_Field_Hospital"]/modExtensions/li[1]/RequiredSkills</xpath><value><Construction>5</Construction><Cooking>3</Cooking></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/WorldObjectDef[defName="Outpost_Field_Hospital"]/modExtensions/li[1]</xpath><value><RequiredSkills><Construction>5</Construction><Cooking>3</Cooking></RequiredSkills></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Restaurant"]/modExtensions/li[1]</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/WorldObjectDef[defName="Outpost_Restaurant"]/modExtensions/li[1]</xpath>
+      <value>
+      <CostToMake>
+        <OutpostMaterials>120</OutpostMaterials>
+      </CostToMake>
+      </value>
+    </match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Restaurant"]/modExtensions/li[1]/RequiredSkills</xpath>
+    <match Class="PatchOperationAdd"><xpath>Defs/WorldObjectDef[defName="Outpost_Restaurant"]/modExtensions/li[1]/RequiredSkills</xpath><value><Construction>5</Construction></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/WorldObjectDef[defName="Outpost_Restaurant"]/modExtensions/li[1]</xpath><value><RequiredSkills><Construction>5</Construction></RequiredSkills></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Circus"]/modExtensions/li[1]</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/WorldObjectDef[defName="Outpost_Circus"]/modExtensions/li[1]</xpath>
+      <value>
+      <CostToMake>
+        <OutpostMaterials>100</OutpostMaterials>
+      </CostToMake>
+      </value>
+    </match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Circus"]/modExtensions/li[1]/RequiredSkills</xpath>
+    <match Class="PatchOperationAdd"><xpath>Defs/WorldObjectDef[defName="Outpost_Circus"]/modExtensions/li[1]/RequiredSkills</xpath><value><Construction>5</Construction><Cooking>3</Cooking></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/WorldObjectDef[defName="Outpost_Circus"]/modExtensions/li[1]</xpath><value><RequiredSkills><Construction>5</Construction><Cooking>3</Cooking></RequiredSkills></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Embassy"]/modExtensions/li[1]</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/WorldObjectDef[defName="Outpost_Embassy"]/modExtensions/li[1]</xpath>
+      <value>
+      <CostToMake>
+        <Silver>300</Silver>
+        <OutpostMaterials>150</OutpostMaterials>
+      </CostToMake>
+      </value>
+    </match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Embassy"]/modExtensions/li[1]/RequiredSkills</xpath>
+    <match Class="PatchOperationAdd"><xpath>Defs/WorldObjectDef[defName="Outpost_Embassy"]/modExtensions/li[1]/RequiredSkills</xpath><value><Construction>5</Construction><Cooking>3</Cooking></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/WorldObjectDef[defName="Outpost_Embassy"]/modExtensions/li[1]</xpath><value><RequiredSkills><Construction>5</Construction><Cooking>3</Cooking></RequiredSkills></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Border_Post"]/modExtensions/li[1]</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/WorldObjectDef[defName="Outpost_Border_Post"]/modExtensions/li[1]</xpath>
+      <value>
+      <CostToMake>
+        <OutpostMaterials>120</OutpostMaterials>
+      </CostToMake>
+      </value>
+    </match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Border_Post"]/modExtensions/li[1]/RequiredSkills</xpath>
+    <match Class="PatchOperationAdd"><xpath>Defs/WorldObjectDef[defName="Outpost_Border_Post"]/modExtensions/li[1]/RequiredSkills</xpath><value><Construction>10</Construction><Cooking>3</Cooking></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/WorldObjectDef[defName="Outpost_Border_Post"]/modExtensions/li[1]</xpath><value><RequiredSkills><Construction>10</Construction><Cooking>3</Cooking></RequiredSkills></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Mercenary_Camp"]/modExtensions/li[1]</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/WorldObjectDef[defName="Outpost_Mercenary_Camp"]/modExtensions/li[1]</xpath>
+      <value>
+      <CostToMake>
+        <OutpostMaterials>150</OutpostMaterials>
+      </CostToMake>
+      </value>
+    </match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Mercenary_Camp"]/modExtensions/li[1]/RequiredSkills</xpath>
+    <match Class="PatchOperationAdd"><xpath>Defs/WorldObjectDef[defName="Outpost_Mercenary_Camp"]/modExtensions/li[1]/RequiredSkills</xpath><value><Construction>5</Construction><Cooking>3</Cooking></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/WorldObjectDef[defName="Outpost_Mercenary_Camp"]/modExtensions/li[1]</xpath><value><RequiredSkills><Construction>5</Construction><Cooking>3</Cooking></RequiredSkills></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Prison"]/modExtensions/li[1]</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/WorldObjectDef[defName="Outpost_Prison"]/modExtensions/li[1]</xpath>
+      <value>
+      <CostToMake>
+        <OutpostMaterials>200</OutpostMaterials>
+      </CostToMake>
+      </value>
+    </match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Prison"]/modExtensions/li[1]/RequiredSkills</xpath>
+    <match Class="PatchOperationAdd"><xpath>Defs/WorldObjectDef[defName="Outpost_Prison"]/modExtensions/li[1]/RequiredSkills</xpath><value><Construction>10</Construction><Cooking>3</Cooking></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/WorldObjectDef[defName="Outpost_Prison"]/modExtensions/li[1]</xpath><value><RequiredSkills><Construction>10</Construction><Cooking>3</Cooking></RequiredSkills></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Ranch"]/modExtensions/li[1]</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/WorldObjectDef[defName="Outpost_Ranch"]/modExtensions/li[1]</xpath>
+      <value>
+      <CostToMake>
+        <OutpostMaterials>150</OutpostMaterials>
+      </CostToMake>
+      </value>
+    </match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Ranch"]/modExtensions/li[1]/RequiredSkills</xpath>
+    <match Class="PatchOperationAdd"><xpath>Defs/WorldObjectDef[defName="Outpost_Ranch"]/modExtensions/li[1]/RequiredSkills</xpath><value><Construction>5</Construction><Cooking>3</Cooking></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/WorldObjectDef[defName="Outpost_Ranch"]/modExtensions/li[1]</xpath><value><RequiredSkills><Construction>5</Construction><Cooking>3</Cooking></RequiredSkills></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Church"]/modExtensions/li[1]</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/WorldObjectDef[defName="Outpost_Church"]/modExtensions/li[1]</xpath>
+      <value>
+      <CostToMake>
+        <OutpostMaterials>120</OutpostMaterials>
+      </CostToMake>
+      </value>
+    </match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Church"]/modExtensions/li[1]/RequiredSkills</xpath>
+    <match Class="PatchOperationAdd"><xpath>Defs/WorldObjectDef[defName="Outpost_Church"]/modExtensions/li[1]/RequiredSkills</xpath><value><Construction>5</Construction><Cooking>3</Cooking></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/WorldObjectDef[defName="Outpost_Church"]/modExtensions/li[1]</xpath><value><RequiredSkills><Construction>5</Construction><Cooking>3</Cooking></RequiredSkills></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Educational_Center"]/modExtensions/li[1]</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/WorldObjectDef[defName="Outpost_Educational_Center"]/modExtensions/li[1]</xpath>
+      <value>
+      <CostToMake>
+        <OutpostMaterials>150</OutpostMaterials>
+      </CostToMake>
+      </value>
+    </match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Educational_Center"]/modExtensions/li[1]/RequiredSkills</xpath>
+    <match Class="PatchOperationAdd"><xpath>Defs/WorldObjectDef[defName="Outpost_Educational_Center"]/modExtensions/li[1]/RequiredSkills</xpath><value><Construction>5</Construction><Cooking>3</Cooking></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/WorldObjectDef[defName="Outpost_Educational_Center"]/modExtensions/li[1]</xpath><value><RequiredSkills><Construction>5</Construction><Cooking>3</Cooking></RequiredSkills></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="OutpostAO_Fishing"]/modExtensions/li[1]</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/WorldObjectDef[defName="OutpostAO_Fishing"]/modExtensions/li[1]</xpath>
+      <value>
+      <CostToMake>
+        <OutpostMaterials>80</OutpostMaterials>
+      </CostToMake>
+      </value>
+    </match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="OutpostAO_Fishing"]/modExtensions/li[1]/RequiredSkills</xpath>
+    <match Class="PatchOperationAdd"><xpath>Defs/WorldObjectDef[defName="OutpostAO_Fishing"]/modExtensions/li[1]/RequiredSkills</xpath><value><Construction>3</Construction><Cooking>3</Cooking></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/WorldObjectDef[defName="OutpostAO_Fishing"]/modExtensions/li[1]</xpath><value><RequiredSkills><Construction>3</Construction><Cooking>3</Cooking></RequiredSkills></value></nomatch>
+  </Operation>
+  <!-- ===== Silver output (~halved) ===== -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Construction_Site"]/modExtensions/li/ResultOptions/li[Thing="Silver"]/AmountsPerSkills/Construction</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Construction_Site"]/modExtensions/li/ResultOptions/li[Thing="Silver"]/AmountsPerSkills/Construction</xpath><value><Construction>20</Construction></value></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Construction_Site"]/modExtensions/li/ResultOptions/li[Thing="Silver"]/AmountPerPawn</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Construction_Site"]/modExtensions/li/ResultOptions/li[Thing="Silver"]/AmountPerPawn</xpath><value><AmountPerPawn>25</AmountPerPawn></value></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Circus"]/modExtensions/li/ResultOptions/li[Thing="Silver"]/AmountsPerSkills/Artistic</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Circus"]/modExtensions/li/ResultOptions/li[Thing="Silver"]/AmountsPerSkills/Artistic</xpath><value><Artistic>25</Artistic></value></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Circus"]/modExtensions/li/ResultOptions/li[Thing="Silver"]/AmountsPerSkills/Social</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Circus"]/modExtensions/li/ResultOptions/li[Thing="Silver"]/AmountsPerSkills/Social</xpath><value><Social>8</Social></value></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Circus"]/modExtensions/li/ResultOptions/li[Thing="Silver"]/AmountPerPawn</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Circus"]/modExtensions/li/ResultOptions/li[Thing="Silver"]/AmountPerPawn</xpath><value><AmountPerPawn>20</AmountPerPawn></value></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Field_Hospital"]/modExtensions/li/ResultOptions/li[Thing="Silver"]/AmountsPerSkills/Medicine</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Field_Hospital"]/modExtensions/li/ResultOptions/li[Thing="Silver"]/AmountsPerSkills/Medicine</xpath><value><Medicine>20</Medicine></value></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Field_Hospital"]/modExtensions/li/ResultOptions/li[Thing="Silver"]/AmountsPerSkills/Social</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Field_Hospital"]/modExtensions/li/ResultOptions/li[Thing="Silver"]/AmountsPerSkills/Social</xpath><value><Social>3</Social></value></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Restaurant"]/modExtensions/li/ResultOptions/li[Thing="Silver"]/AmountsPerSkills/Cooking</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Restaurant"]/modExtensions/li/ResultOptions/li[Thing="Silver"]/AmountsPerSkills/Cooking</xpath><value><Cooking>20</Cooking></value></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Restaurant"]/modExtensions/li/ResultOptions/li[Thing="Silver"]/AmountsPerSkills/Social</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Restaurant"]/modExtensions/li/ResultOptions/li[Thing="Silver"]/AmountsPerSkills/Social</xpath><value><Social>3</Social></value></match>
+  </Operation>
+  <!-- ===== Field hospital: medicine and drugs halved; industrial medicine needs more skill ===== -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Field_Hospital"]/modExtensions/li/ResultOptions/li[Thing="MedicineHerbal"]/AmountsPerSkills/Medicine</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Field_Hospital"]/modExtensions/li/ResultOptions/li[Thing="MedicineHerbal"]/AmountsPerSkills/Medicine</xpath><value><Medicine>3</Medicine></value></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Field_Hospital"]/modExtensions/li/ResultOptions/li[Thing="MedicineIndustrial"]/AmountsPerSkills/Medicine</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Field_Hospital"]/modExtensions/li/ResultOptions/li[Thing="MedicineIndustrial"]/AmountsPerSkills/Medicine</xpath><value><Medicine>1.5</Medicine></value></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Field_Hospital"]/modExtensions/li/ResultOptions/li[Thing="GoJuice"]/AmountsPerSkills/Medicine</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Field_Hospital"]/modExtensions/li/ResultOptions/li[Thing="GoJuice"]/AmountsPerSkills/Medicine</xpath><value><Medicine>0.5</Medicine></value></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Field_Hospital"]/modExtensions/li/ResultOptions/li[Thing="Penoxycyline"]/AmountsPerSkills/Medicine</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Field_Hospital"]/modExtensions/li/ResultOptions/li[Thing="Penoxycyline"]/AmountsPerSkills/Medicine</xpath><value><Medicine>1.5</Medicine></value></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Field_Hospital"]/modExtensions/li/ResultOptions/li[Thing="Flake"]/AmountsPerSkills/Medicine</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Field_Hospital"]/modExtensions/li/ResultOptions/li[Thing="Flake"]/AmountsPerSkills/Medicine</xpath><value><Medicine>3.5</Medicine></value></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Field_Hospital"]/modExtensions/li/ResultOptions/li[Thing="Yayo"]/AmountsPerSkills/Medicine</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Field_Hospital"]/modExtensions/li/ResultOptions/li[Thing="Yayo"]/AmountsPerSkills/Medicine</xpath><value><Medicine>1.75</Medicine></value></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Field_Hospital"]/modExtensions/li/ResultOptions/li[Thing="SmokeleafJoint"]/AmountsPerSkills/Medicine</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Field_Hospital"]/modExtensions/li/ResultOptions/li[Thing="SmokeleafJoint"]/AmountsPerSkills/Medicine</xpath><value><Medicine>4.5</Medicine></value></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Field_Hospital"]/modExtensions/li/ResultOptions/li[Thing="WakeUp"]/AmountsPerSkills/Medicine</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Field_Hospital"]/modExtensions/li/ResultOptions/li[Thing="WakeUp"]/AmountsPerSkills/Medicine</xpath><value><Medicine>0.75</Medicine></value></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Field_Hospital"]/modExtensions/li/ResultOptions/li[Thing="MedicineIndustrial"]/MinSkills/Medicine</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Field_Hospital"]/modExtensions/li/ResultOptions/li[Thing="MedicineIndustrial"]/MinSkills/Medicine</xpath><value><Medicine>24</Medicine></value></match>
+  </Operation>
+  <!-- ===== Restaurant: pemmican halved (meals unchanged) ===== -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Restaurant"]/modExtensions/li/ResultOptions/li[Thing="Pemmican"]/AmountsPerSkills/Cooking</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Restaurant"]/modExtensions/li/ResultOptions/li[Thing="Pemmican"]/AmountsPerSkills/Cooking</xpath><value><Cooking>50</Cooking></value></match>
+  </Operation>
+  <!-- ===== Mercenary camp: pay per combined combat skill halved ===== -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Mercenary_Camp"]/modExtensions/li/ResultMissionOptions/li[RiskLvl="0"]/AmountsPerCombinedSkills</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Mercenary_Camp"]/modExtensions/li/ResultMissionOptions/li[RiskLvl="0"]/AmountsPerCombinedSkills</xpath><value><AmountsPerCombinedSkills>8</AmountsPerCombinedSkills></value></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Mercenary_Camp"]/modExtensions/li/ResultMissionOptions/li[RiskLvl="1"]/AmountsPerCombinedSkills</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Mercenary_Camp"]/modExtensions/li/ResultMissionOptions/li[RiskLvl="1"]/AmountsPerCombinedSkills</xpath><value><AmountsPerCombinedSkills>10</AmountsPerCombinedSkills></value></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Mercenary_Camp"]/modExtensions/li/ResultMissionOptions/li[RiskLvl="2"]/AmountsPerCombinedSkills</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Mercenary_Camp"]/modExtensions/li/ResultMissionOptions/li[RiskLvl="2"]/AmountsPerCombinedSkills</xpath><value><AmountsPerCombinedSkills>15</AmountsPerCombinedSkills></value></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Mercenary_Camp"]/modExtensions/li/ResultMissionOptions/li[RiskLvl="3"]/AmountsPerCombinedSkills</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Mercenary_Camp"]/modExtensions/li/ResultMissionOptions/li[RiskLvl="3"]/AmountsPerCombinedSkills</xpath><value><AmountsPerCombinedSkills>20</AmountsPerCombinedSkills></value></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Mercenary_Camp"]/modExtensions/li/ResultMissionOptions/li[RiskLvl="4"]/AmountsPerCombinedSkills</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Mercenary_Camp"]/modExtensions/li/ResultMissionOptions/li[RiskLvl="4"]/AmountsPerCombinedSkills</xpath><value><AmountsPerCombinedSkills>30</AmountsPerCombinedSkills></value></match>
+  </Operation>
+  <!-- ===== Bank (from Additional Outposts 1.4 patches): build cost, deposit interest halved ===== -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Bank"]/modExtensions/li[1]</xpath>
+    <match Class="PatchOperationSequence">
+      <operations>
+        <li Class="PatchOperationAdd">
+          <xpath>Defs/WorldObjectDef[defName="Outpost_Bank"]/modExtensions/li[1]</xpath>
+          <value><CostToMake><OutpostMaterials>200</OutpostMaterials><Silver>500</Silver></CostToMake></value>
+        </li>
+        <li Class="PatchOperationAdd">
+          <xpath>Defs/WorldObjectDef[defName="Outpost_Bank"]/modExtensions/li[1]/RequiredSkills</xpath>
+          <value><Construction>10</Construction><Cooking>3</Cooking></value>
+        </li>
+      </operations>
+    </match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Bank"]/modExtensions/li/ResultSilverDepositOptions/li[DurationInSeasons="1"]/InterestPerSeason</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Bank"]/modExtensions/li/ResultSilverDepositOptions/li[DurationInSeasons="1"]/InterestPerSeason</xpath><value><InterestPerSeason>0.025</InterestPerSeason></value></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Bank"]/modExtensions/li/ResultSilverDepositOptions/li[DurationInSeasons="2"]/InterestPerSeason</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Bank"]/modExtensions/li/ResultSilverDepositOptions/li[DurationInSeasons="2"]/InterestPerSeason</xpath><value><InterestPerSeason>0.05</InterestPerSeason></value></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Bank"]/modExtensions/li/ResultSilverDepositOptions/li[DurationInSeasons="4"]/InterestPerSeason</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Bank"]/modExtensions/li/ResultSilverDepositOptions/li[DurationInSeasons="4"]/InterestPerSeason</xpath><value><InterestPerSeason>0.075</InterestPerSeason></value></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Bank"]/modExtensions/li/ResultSilverDepositOptions/li[DurationInSeasons="8"]/InterestPerSeason</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Bank"]/modExtensions/li/ResultSilverDepositOptions/li[DurationInSeasons="8"]/InterestPerSeason</xpath><value><InterestPerSeason>0.1</InterestPerSeason></value></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Bank"]/modExtensions/li/ResultGoldDepositOptions/li[DurationInSeasons="1"]/InterestPerSeason</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Bank"]/modExtensions/li/ResultGoldDepositOptions/li[DurationInSeasons="1"]/InterestPerSeason</xpath><value><InterestPerSeason>0.025</InterestPerSeason></value></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Bank"]/modExtensions/li/ResultGoldDepositOptions/li[DurationInSeasons="2"]/InterestPerSeason</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Bank"]/modExtensions/li/ResultGoldDepositOptions/li[DurationInSeasons="2"]/InterestPerSeason</xpath><value><InterestPerSeason>0.075</InterestPerSeason></value></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Bank"]/modExtensions/li/ResultGoldDepositOptions/li[DurationInSeasons="4"]/InterestPerSeason</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Bank"]/modExtensions/li/ResultGoldDepositOptions/li[DurationInSeasons="4"]/InterestPerSeason</xpath><value><InterestPerSeason>0.125</InterestPerSeason></value></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorldObjectDef[defName="Outpost_Bank"]/modExtensions/li/ResultGoldDepositOptions/li[DurationInSeasons="8"]/InterestPerSeason</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/WorldObjectDef[defName="Outpost_Bank"]/modExtensions/li/ResultGoldDepositOptions/li[DurationInSeasons="8"]/InterestPerSeason</xpath><value><InterestPerSeason>0.175</InterestPerSeason></value></match>
+  </Operation>
+</Patch>

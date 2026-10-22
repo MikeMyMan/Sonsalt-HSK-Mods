@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+
+  <!-- Stand-ins from Industrial\Defs\FTH_Placeholders.xml (Industrial's own 37 mm patches have run by now) -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/CombatExtended.AmmoSetDef[defName="AmmoSet_37x223mmR"]</xpath>
+    <match Class="PatchOperationRemove"><xpath>Defs/CombatExtended.AmmoSetDef[defName="AmmoSet_37x223mmR"]</xpath></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="Ammo_37x223mmR_AP" or defName="Ammo_37x223mmR_HE"]</xpath>
+    <match Class="PatchOperationRemove"><xpath>Defs/ThingDef[defName="Ammo_37x223mmR_AP" or defName="Ammo_37x223mmR_HE"]</xpath></match>
+  </Operation>
+
+  <!-- Things: concrete economy, benches, utility buildings, duplicate/unsupported turrets, their ammo and projectiles -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="Ammo_128x958mmR_AP" or defName="Ammo_128x958mmR_APHE" or defName="Ammo_128x958mmR_EMP" or defName="Ammo_128x958mmR_HE" or defName="Ammo_15cmNebelwerfer_EMP" or defName="Ammo_15cmNebelwerfer_Smoke" or defName="Ammo_15cmNebelwerfer_Toxic" or defName="Ammo_37x223mmR_APDS" or defName="Ammo_37x223mmR_AP-HE" or defName="Ammo_37x223mmR_Canister" or defName="Ammo_37x223mmR_EMP" or defName="Ammo_37x223mmR_Incendiary" or defName="Ammo_37x223mmR_Shrapnel" or defName="Bullet_128x958mmR_AP" or defName="Bullet_128x958mmR_AP_HV" or defName="Bullet_128x958mmR_APHE" or defName="Bullet_128x958mmR_APHE_HV" or defName="Bullet_128x958mmR_EMP" or defName="Bullet_128x958mmR_HE" or defName="Bullet_FT_105mmHowitzerShell_Airburst" or defName="Bullet_FT_105mmHowitzerShell_Airburst_directfire" or defName="Bullet_FT_105mmHowitzerShell_EMP" or defName="Bullet_FT_105mmHowitzerShell_EMP_directfire" or defName="Bullet_FT_105mmHowitzerShell_HE" or defName="Bullet_FT_105mmHowitzerShell_HE_directfire" or defName="Bullet_FT_105mmHowitzerShell_Incendiary" or defName="Bullet_FT_105mmHowitzerShell_Incendiary_directfire" or defName="Bullet_FT_105mmHowitzerShell_Smoke" or defName="Bullet_FT_105mmHowitzerShell_Smoke_directfire" or defName="Bullet_FT_155mmHowitzerShell_Airburst" or defName="Bullet_FT_155mmHowitzerShell_Airburst_directfire" or defName="Bullet_FT_155mmHowitzerShell_Anti" or defName="Bullet_FT_155mmHowitzerShell_Anti_directfire" or defName="Bullet_FT_155mmHowitzerShell_EMP" or defName="Bullet_FT_155mmHowitzerShell_EMP_directfire" or defName="Bullet_FT_155mmHowitzerShell_HE" or defName="Bullet_FT_155mmHowitzerShell_HE_directfire" or defName="Bullet_FT_155mmHowitzerShell_Incendiary" or defName="Bullet_FT_155mmHowitzerShell_Incendiary_directfire" or defName="Bullet_FT_155mmHowitzerShell_Smoke" or defName="Bullet_FT_155mmHowitzerShell_Smoke_directfire" or defName="Bullet_FT_15cmNebelwerfer_EMP" or defName="Bullet_FT_15cmNebelwerfer_EMP_directfire" or defName="Bullet_FT_15cmNebelwerfer_HE" or defName="Bullet_FT_15cmNebelwerfer_HE_directfire" or defName="Bullet_FT_15cmNebelwerfer_Smoke" or defName="Bullet_FT_15cmNebelwerfer_Smoke_directfire" or defName="Bullet_FT_15cmNebelwerfer_Toxic" or defName="Bullet_FT_15cmNebelwerfer_Toxic_directfire" or defName="Bullet_FT_37x223mmR_AP" or defName="Bullet_FT_37x223mmR_APDS" or defName="Bullet_FT_37x223mmR_AP-HE" or defName="Bullet_FT_37x223mmR_Canister" or defName="Bullet_FT_37x223mmR_EMP" or defName="Bullet_FT_37x223mmR_HE" or defName="Bullet_FT_37x223mmR_Incendiary" or defName="Bullet_FT_37x223mmR_Shrapnel" or defName="Fragment_FT_ShrapnelPellet" or defName="Fragment_FT_Spark" or defName="FT_AntennaTower" or defName="FT_Artillery_Mortar" or defName="FT_AutoCannon" or defName="FT_BlocksConcrete" or defName="FT_Bullet_NuclearWarhead_CE_directfire_II" or defName="FT_Bullet_NuclearWarhead_CE_II" or defName="FT_ConcreteCompressed" or defName="FT_ENIAC" or defName="FT_FirefoamPopper" or defName="FT_FuelGenerator" or defName="FT_Gun_Autocannon" or defName="FT_Gun_Autocannon_Twin" or defName="FT_Gun_Recoilless" or defName="FT_Gun_TurretAA" or defName="FT_Gun_TurretAT" or defName="FT_Gun_TurretEmpero" or defName="FT_Gun_TurretHeavyFlak" or defName="FT_Gun_TurretHexMortar" or defName="FT_Gun_TurretPrince" or defName="FT_Gun_TurretUltraHeavyAT" or defName="FT_MinifiedTurret" or defName="FT_PowerPole" or defName="FT_PowerPole_Lamp" or defName="FT_Radio" or defName="FT_RecoillessGun" or defName="FT_ReinforcedConcreteBag" or defName="FT_Sandbag" or defName="FT_Schematic" or defName="FT_TableChemistry" or defName="FT_TableConcreteMixer" or defName="FT_TableLathe" or defName="FT_Turret_BunkerL" or defName="FT_Turret_BunkerM" or defName="FT_Turret_Mortar" or defName="FT_TurretAA" or defName="FT_TurretAT" or defName="FT_TurretAutoCannon_Twin" or defName="FT_TurretEmpero" or defName="FT_TurretHeavyFlak" or defName="FT_TurretHexMortar" or defName="FT_TurretPrince" or defName="FT_TurretUltraHeavyAT" or defName="FT_WoodConcrete" or defName="FTC_SpotterLight_Gun" or defName="FTC_SpotterLight_Turret" or defName="Shell_15cmNbW_Toxic_Releasing" or defName="Shell_15cmNbW_Toxic_Releasing_Water" or defName="AmmoSet_37x223mmR_placeholder_unused"]</xpath>
+    <match Class="PatchOperationRemove"><xpath>Defs/ThingDef[defName="Ammo_128x958mmR_AP" or defName="Ammo_128x958mmR_APHE" or defName="Ammo_128x958mmR_EMP" or defName="Ammo_128x958mmR_HE" or defName="Ammo_15cmNebelwerfer_EMP" or defName="Ammo_15cmNebelwerfer_Smoke" or defName="Ammo_15cmNebelwerfer_Toxic" or defName="Ammo_37x223mmR_APDS" or defName="Ammo_37x223mmR_AP-HE" or defName="Ammo_37x223mmR_Canister" or defName="Ammo_37x223mmR_EMP" or defName="Ammo_37x223mmR_Incendiary" or defName="Ammo_37x223mmR_Shrapnel" or defName="Bullet_128x958mmR_AP" or defName="Bullet_128x958mmR_AP_HV" or defName="Bullet_128x958mmR_APHE" or defName="Bullet_128x958mmR_APHE_HV" or defName="Bullet_128x958mmR_EMP" or defName="Bullet_128x958mmR_HE" or defName="Bullet_FT_105mmHowitzerShell_Airburst" or defName="Bullet_FT_105mmHowitzerShell_Airburst_directfire" or defName="Bullet_FT_105mmHowitzerShell_EMP" or defName="Bullet_FT_105mmHowitzerShell_EMP_directfire" or defName="Bullet_FT_105mmHowitzerShell_HE" or defName="Bullet_FT_105mmHowitzerShell_HE_directfire" or defName="Bullet_FT_105mmHowitzerShell_Incendiary" or defName="Bullet_FT_105mmHowitzerShell_Incendiary_directfire" or defName="Bullet_FT_105mmHowitzerShell_Smoke" or defName="Bullet_FT_105mmHowitzerShell_Smoke_directfire" or defName="Bullet_FT_155mmHowitzerShell_Airburst" or defName="Bullet_FT_155mmHowitzerShell_Airburst_directfire" or defName="Bullet_FT_155mmHowitzerShell_Anti" or defName="Bullet_FT_155mmHowitzerShell_Anti_directfire" or defName="Bullet_FT_155mmHowitzerShell_EMP" or defName="Bullet_FT_155mmHowitzerShell_EMP_directfire" or defName="Bullet_FT_155mmHowitzerShell_HE" or defName="Bullet_FT_155mmHowitzerShell_HE_directfire" or defName="Bullet_FT_155mmHowitzerShell_Incendiary" or defName="Bullet_FT_155mmHowitzerShell_Incendiary_directfire" or defName="Bullet_FT_155mmHowitzerShell_Smoke" or defName="Bullet_FT_155mmHowitzerShell_Smoke_directfire" or defName="Bullet_FT_15cmNebelwerfer_EMP" or defName="Bullet_FT_15cmNebelwerfer_EMP_directfire" or defName="Bullet_FT_15cmNebelwerfer_HE" or defName="Bullet_FT_15cmNebelwerfer_HE_directfire" or defName="Bullet_FT_15cmNebelwerfer_Smoke" or defName="Bullet_FT_15cmNebelwerfer_Smoke_directfire" or defName="Bullet_FT_15cmNebelwerfer_Toxic" or defName="Bullet_FT_15cmNebelwerfer_Toxic_directfire" or defName="Bullet_FT_37x223mmR_AP" or defName="Bullet_FT_37x223mmR_APDS" or defName="Bullet_FT_37x223mmR_AP-HE" or defName="Bullet_FT_37x223mmR_Canister" or defName="Bullet_FT_37x223mmR_EMP" or defName="Bullet_FT_37x223mmR_HE" or defName="Bullet_FT_37x223mmR_Incendiary" or defName="Bullet_FT_37x223mmR_Shrapnel" or defName="Fragment_FT_ShrapnelPellet" or defName="Fragment_FT_Spark" or defName="FT_AntennaTower" or defName="FT_Artillery_Mortar" or defName="FT_AutoCannon" or defName="FT_BlocksConcrete" or defName="FT_Bullet_NuclearWarhead_CE_directfire_II" or defName="FT_Bullet_NuclearWarhead_CE_II" or defName="FT_ConcreteCompressed" or defName="FT_ENIAC" or defName="FT_FirefoamPopper" or defName="FT_FuelGenerator" or defName="FT_Gun_Autocannon" or defName="FT_Gun_Autocannon_Twin" or defName="FT_Gun_Recoilless" or defName="FT_Gun_TurretAA" or defName="FT_Gun_TurretAT" or defName="FT_Gun_TurretEmpero" or defName="FT_Gun_TurretHeavyFlak" or defName="FT_Gun_TurretHexMortar" or defName="FT_Gun_TurretPrince" or defName="FT_Gun_TurretUltraHeavyAT" or defName="FT_MinifiedTurret" or defName="FT_PowerPole" or defName="FT_PowerPole_Lamp" or defName="FT_Radio" or defName="FT_RecoillessGun" or defName="FT_ReinforcedConcreteBag" or defName="FT_Sandbag" or defName="FT_Schematic" or defName="FT_TableChemistry" or defName="FT_TableConcreteMixer" or defName="FT_TableLathe" or defName="FT_Turret_BunkerL" or defName="FT_Turret_BunkerM" or defName="FT_Turret_Mortar" or defName="FT_TurretAA" or defName="FT_TurretAT" or defName="FT_TurretAutoCannon_Twin" or defName="FT_TurretEmpero" or defName="FT_TurretHeavyFlak" or defName="FT_TurretHexMortar" or defName="FT_TurretPrince" or defName="FT_TurretUltraHeavyAT" or defName="FT_WoodConcrete" or defName="FTC_SpotterLight_Gun" or defName="FTC_SpotterLight_Turret" or defName="Shell_15cmNbW_Toxic_Releasing" or defName="Shell_15cmNbW_Toxic_Releasing_Water" or defName="AmmoSet_37x223mmR_placeholder_unused"]</xpath></match>
+  </Operation>
+
+  <!-- Abstract parents of removed things -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[@Name="128x958mmRShellBase" or @Name="15cmNbW_Shell_Toxic_Releasing_Base" or @Name="Base128x958mmRBullet" or @Name="BaseFT105mmHowitzerShell" or @Name="BaseFT155mmHowitzerShell" or @Name="FT_BaseCannonBuilding_Deployable" or @Name="FT_MinifiedTurret" or @Name="FT_MinifiedTurretEquippable"]</xpath>
+    <match Class="PatchOperationRemove"><xpath>Defs/ThingDef[@Name="128x958mmRShellBase" or @Name="15cmNbW_Shell_Toxic_Releasing_Base" or @Name="Base128x958mmRBullet" or @Name="BaseFT105mmHowitzerShell" or @Name="BaseFT155mmHowitzerShell" or @Name="FT_BaseCannonBuilding_Deployable" or @Name="FT_MinifiedTurret" or @Name="FT_MinifiedTurretEquippable"]</xpath></match>
+  </Operation>
+
+  <!-- RecipeDef added by Industrial -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/RecipeDef[defName="FT_Make_ComponentIndustrial" or defName="FT_Make_ComponentIndustrial_Bulk" or defName="FT_Make_ConcreteByBlock" or defName="FT_Make_ConcreteByChunk" or defName="FT_Make_ConcreteByStonyJunks" or defName="FT_Make_ConcreteCompressed" or defName="FT_Make_ConcreteWood" or defName="FT_Make_Dye" or defName="FT_Make_Neutroamine" or defName="FT_Make_ReinforcedBarrel" or defName="FT_Make_ReinforcedConcrete" or defName="FT_Unpack_ConcreteCompressed" or defName="MakeAmmo_128x958mmR_AP" or defName="MakeAmmo_128x958mmR_APHE" or defName="MakeAmmo_128x958mmR_EMP" or defName="MakeAmmo_128x958mmR_HE" or defName="MakeAmmo_15cmNebelwerfer_EMP" or defName="MakeAmmo_15cmNebelwerfer_Smoke" or defName="MakeAmmo_15cmNebelwerfer_Toxic" or defName="MakeAmmo_37x223mmR_APDS" or defName="MakeAmmo_37x223mmR_AP-HE" or defName="MakeAmmo_37x223mmR_Canister" or defName="MakeAmmo_37x223mmR_EMP" or defName="MakeAmmo_37x223mmR_Incendiary" or defName="MakeAmmo_37x223mmR_Shrapnel"]</xpath>
+    <match Class="PatchOperationRemove"><xpath>Defs/RecipeDef[defName="FT_Make_ComponentIndustrial" or defName="FT_Make_ComponentIndustrial_Bulk" or defName="FT_Make_ConcreteByBlock" or defName="FT_Make_ConcreteByChunk" or defName="FT_Make_ConcreteByStonyJunks" or defName="FT_Make_ConcreteCompressed" or defName="FT_Make_ConcreteWood" or defName="FT_Make_Dye" or defName="FT_Make_Neutroamine" or defName="FT_Make_ReinforcedBarrel" or defName="FT_Make_ReinforcedConcrete" or defName="FT_Unpack_ConcreteCompressed" or defName="MakeAmmo_128x958mmR_AP" or defName="MakeAmmo_128x958mmR_APHE" or defName="MakeAmmo_128x958mmR_EMP" or defName="MakeAmmo_128x958mmR_HE" or defName="MakeAmmo_15cmNebelwerfer_EMP" or defName="MakeAmmo_15cmNebelwerfer_Smoke" or defName="MakeAmmo_15cmNebelwerfer_Toxic" or defName="MakeAmmo_37x223mmR_APDS" or defName="MakeAmmo_37x223mmR_AP-HE" or defName="MakeAmmo_37x223mmR_Canister" or defName="MakeAmmo_37x223mmR_EMP" or defName="MakeAmmo_37x223mmR_Incendiary" or defName="MakeAmmo_37x223mmR_Shrapnel"]</xpath></match>
+  </Operation>
+
+  <!-- ResearchProjectDef added by Industrial -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ResearchProjectDef[defName="FT_Chemistry" or defName="FT_Concrete" or defName="FT_ENIAC" or defName="FT_HeavyArtillery" or defName="FT_IndustrialCannon" or defName="FT_Lathe"]</xpath>
+    <match Class="PatchOperationRemove"><xpath>Defs/ResearchProjectDef[defName="FT_Chemistry" or defName="FT_Concrete" or defName="FT_ENIAC" or defName="FT_HeavyArtillery" or defName="FT_IndustrialCannon" or defName="FT_Lathe"]</xpath></match>
+  </Operation>
+
+  <!-- TerrainDef added by Industrial -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/TerrainDef[defName="FT_Concrete" or defName="FT_ConcreteTile" or defName="FT_FineConcreteTile" or defName="FT_FlagstoneConcrete" or defName="FT_PlankFloor" or defName="FT_TileStoneConcrete" or defName="VFEArch_BridgeConcrete" or defName="VFEArch_BridgeSteelConcrete" or defName="VFEArch_CobblestoneFloorConcrete" or defName="VFEArch_PolishedStoneFloorConcrete" or defName="VFEArch_SlabsConcrete" or defName="VFEArch_WoodenParquetConcrete" or defName="VFEArch_WoodPlankFloorConcrete"]</xpath>
+    <match Class="PatchOperationRemove"><xpath>Defs/TerrainDef[defName="FT_Concrete" or defName="FT_ConcreteTile" or defName="FT_FineConcreteTile" or defName="FT_FlagstoneConcrete" or defName="FT_PlankFloor" or defName="FT_TileStoneConcrete" or defName="VFEArch_BridgeConcrete" or defName="VFEArch_BridgeSteelConcrete" or defName="VFEArch_CobblestoneFloorConcrete" or defName="VFEArch_PolishedStoneFloorConcrete" or defName="VFEArch_SlabsConcrete" or defName="VFEArch_WoodenParquetConcrete" or defName="VFEArch_WoodPlankFloorConcrete"]</xpath></match>
+  </Operation>
+
+  <!-- CombatExtended.AmmoSetDef added by Industrial -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/CombatExtended.AmmoSetDef[defName="AmmoSet_128x958mmR" or defName="AmmoSet_128x958mmR_HV" or defName="AmmoSet_FT_105mmHowitzerShell" or defName="AmmoSet_FT_105mmHowitzerShell_directfire" or defName="AmmoSet_FT_155mmHowitzerShell" or defName="AmmoSet_FT_155mmHowitzerShell_directfire" or defName="AmmoSet_FT_15cmNebelwerfer" or defName="AmmoSet_FT_15cmNebelwerfer_directfire" or defName="AmmoSet_FT_37x223mmR"]</xpath>
+    <match Class="PatchOperationRemove"><xpath>Defs/CombatExtended.AmmoSetDef[defName="AmmoSet_128x958mmR" or defName="AmmoSet_128x958mmR_HV" or defName="AmmoSet_FT_105mmHowitzerShell" or defName="AmmoSet_FT_105mmHowitzerShell_directfire" or defName="AmmoSet_FT_155mmHowitzerShell" or defName="AmmoSet_FT_155mmHowitzerShell_directfire" or defName="AmmoSet_FT_15cmNebelwerfer" or defName="AmmoSet_FT_15cmNebelwerfer_directfire" or defName="AmmoSet_FT_37x223mmR"]</xpath></match>
+  </Operation>
+
+  <!-- WorkGiverDef added by Industrial -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WorkGiverDef[defName="FT_Operate" or defName="FT_Synthesizing" or defName="RadioScan"]</xpath>
+    <match Class="PatchOperationRemove"><xpath>Defs/WorkGiverDef[defName="FT_Operate" or defName="FT_Synthesizing" or defName="RadioScan"]</xpath></match>
+  </Operation>
+
+  <!-- JobDef added by Industrial -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/JobDef[defName="FT_EnterBunkerFacility" or defName="FT_UseRadio"]</xpath>
+    <match Class="PatchOperationRemove"><xpath>Defs/JobDef[defName="FT_EnterBunkerFacility" or defName="FT_UseRadio"]</xpath></match>
+  </Operation>
+
+  <!-- JoyGiverDef added by Industrial -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/JoyGiverDef[defName="ListenRadio"]</xpath>
+    <match Class="PatchOperationRemove"><xpath>Defs/JoyGiverDef[defName="ListenRadio"]</xpath></match>
+  </Operation>
+
+  <!-- JoyKindDef added by Industrial -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/JoyKindDef[defName="FT_RadioTuning"]</xpath>
+    <match Class="PatchOperationRemove"><xpath>Defs/JoyKindDef[defName="FT_RadioTuning"]</xpath></match>
+  </Operation>
+
+  <!-- ThingCategoryDef added by Industrial -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingCategoryDef[defName="Ammo128x958mmR"]</xpath>
+    <match Class="PatchOperationRemove"><xpath>Defs/ThingCategoryDef[defName="Ammo128x958mmR"]</xpath></match>
+  </Operation>
+
+  <!-- ResearchTabDef added by Industrial -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ResearchTabDef[defName="HeavyIndustry"]</xpath>
+    <match Class="PatchOperationRemove"><xpath>Defs/ResearchTabDef[defName="HeavyIndustry"]</xpath></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/RecipeDef[@Name="MakeConcreteBase"]</xpath>
+    <match Class="PatchOperationRemove"><xpath>Defs/RecipeDef[@Name="MakeConcreteBase"]</xpath></match>
+  </Operation>
+
+  <!-- Research-bench facility links to the removed ENIAC -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef/comps/li[@Class="CompProperties_AffectedByFacilities"]/linkableFacilities/li[text()="FT_ENIAC"]</xpath>
+    <match Class="PatchOperationRemove"><xpath>Defs/ThingDef/comps/li[@Class="CompProperties_AffectedByFacilities"]/linkableFacilities/li[text()="FT_ENIAC"]</xpath></match>
+  </Operation>
+
+  <!-- Framework (AOBA.Framework) visual comps on the kept guns -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef/comps/li[@Class="Fortified.CompProperties_CastFlecker" or @Class="Fortified.CompProperties_CastPushHeat"]</xpath>
+    <match Class="PatchOperationRemove"><xpath>Defs/ThingDef/comps/li[@Class="Fortified.CompProperties_CastFlecker" or @Class="Fortified.CompProperties_CastPushHeat"]</xpath></match>
+  </Operation>
+
+  <!-- Difficulty cost variants that need the removed reinforced barrel -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TurretQuadAA" or defName="FT_TurretAT_Plus"]/costListForDifficulty</xpath>
+    <match Class="PatchOperationRemove"><xpath>Defs/ThingDef[defName="FT_TurretQuadAA" or defName="FT_TurretAT_Plus"]/costListForDifficulty</xpath></match>
+  </Operation>
+
+  <!-- Concrete barrier dropdown (ArchitectSense sub-category is used instead) -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TankTrap" or defName="FT_Tetrapods" or defName="FT_Barrier" or defName="FT_BarrierDiagonal"]/designatorDropdown</xpath>
+    <match Class="PatchOperationRemove"><xpath>Defs/ThingDef[defName="FT_TankTrap" or defName="FT_Tetrapods" or defName="FT_Barrier" or defName="FT_BarrierDiagonal"]/designatorDropdown</xpath></match>
+  </Operation>
+</Patch>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+
+  <!-- Machining ("Guns I"): Industrial sets FT_Lathe. HSK = Bow_B2 + Metals_C1; Vile's Pre-Industrial = Muskets_B3 + Metals_C1 -->
+  <Operation Class="PatchOperationFindMod">
+    <mods><li>HMC Vile's Pre-Industrial Overhaul</li></mods>
+    <match Class="PatchOperationReplace">
+      <xpath>Defs/ResearchProjectDef[defName="Machining"]/prerequisites</xpath>
+      <value><prerequisites><li>Muskets_B3</li><li>Metals_C1</li></prerequisites></value>
+    </match>
+    <nomatch Class="PatchOperationReplace">
+      <xpath>Defs/ResearchProjectDef[defName="Machining"]/prerequisites</xpath>
+      <value><prerequisites><li>Bow_B2</li><li>Metals_C1</li></prerequisites></value>
+    </nomatch>
+  </Operation>
+
+  <!-- MicroelectronicsBasics ("Electronics I"): Industrial sets FT_ENIAC. HSK keeps vanilla Electricity -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ResearchProjectDef[defName="MicroelectronicsBasics"]/prerequisites</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ResearchProjectDef[defName="MicroelectronicsBasics"]/prerequisites</xpath><value><prerequisites><li>Electricity</li></prerequisites></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ResearchProjectDef[defName="MicroelectronicsBasics"]</xpath><value><prerequisites><li>Electricity</li></prerequisites></value></nomatch>
+  </Operation>
+
+  <!-- Research view positions moved by Industrial (HSK values) -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ResearchProjectDef[defName="Electricity"]/researchViewX</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ResearchProjectDef[defName="Electricity"]/researchViewX</xpath><value><researchViewX>7.00</researchViewX></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ResearchProjectDef[defName="Electricity"]</xpath><value><researchViewX>7.00</researchViewX></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ResearchProjectDef[defName="Electricity"]/researchViewY</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ResearchProjectDef[defName="Electricity"]/researchViewY</xpath><value><researchViewY>15.00</researchViewY></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ResearchProjectDef[defName="Electricity"]</xpath><value><researchViewY>15.00</researchViewY></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ResearchProjectDef[defName="HeavyTurrets"]/researchViewX</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ResearchProjectDef[defName="HeavyTurrets"]/researchViewX</xpath><value><researchViewX>13.00</researchViewX></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ResearchProjectDef[defName="HeavyTurrets"]</xpath><value><researchViewX>13.00</researchViewX></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ResearchProjectDef[defName="HeavyTurrets"]/researchViewY</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ResearchProjectDef[defName="HeavyTurrets"]/researchViewY</xpath><value><researchViewY>33.00</researchViewY></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ResearchProjectDef[defName="HeavyTurrets"]</xpath><value><researchViewY>33.00</researchViewY></value></nomatch>
+  </Operation>
+
+  <!-- Floor costs replaced by Industrial with its own concrete (HSK values) -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/TerrainDef[defName="Concrete"]/costList</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/TerrainDef[defName="Concrete"]/costList</xpath><value><costList><ConcreteResource>3</ConcreteResource></costList></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/TerrainDef[defName="Concrete"]</xpath><value><costList><ConcreteResource>3</ConcreteResource></costList></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/TerrainDef[defName="PavedTile"]/costList</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/TerrainDef[defName="PavedTile"]/costList</xpath><value><costList><ConcreteResource>2</ConcreteResource><ComponentIndustrial>1</ComponentIndustrial></costList></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/TerrainDef[defName="PavedTile"]</xpath><value><costList><ConcreteResource>2</ConcreteResource><ComponentIndustrial>1</ComponentIndustrial></costList></value></nomatch>
+  </Operation>
+</Patch>

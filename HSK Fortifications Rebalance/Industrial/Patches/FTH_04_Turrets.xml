@@ -1,0 +1,624 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+
+  <!-- Gun-shield / cement-base emplacement: one damage table (Inherit=False) so it does not clash with HSK BuildingBase -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[@Name="FT_BaseCannonBuilding_WithShieldOrCementBase"]/damageMultipliers</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[@Name="FT_BaseCannonBuilding_WithShieldOrCementBase"]/damageMultipliers</xpath><value><damageMultipliers Inherit="False">
+  <li><damageDef>Bullet</damageDef><multiplier>0.35</multiplier></li>
+  <li><damageDef>Arrow</damageDef><multiplier>0.1</multiplier></li>
+  <li><damageDef>Beanbag</damageDef><multiplier>0.1</multiplier></li>
+  <li><damageDef>Optic</damageDef><multiplier>0.6</multiplier></li>
+  <li><damageDef>Microwave</damageDef><multiplier>0.8</multiplier></li>
+  <li><damageDef>Blunt</damageDef><multiplier>1.0</multiplier></li>
+  <li><damageDef>Cut</damageDef><multiplier>0.5</multiplier></li>
+  <li><damageDef>Stab</damageDef><multiplier>0.5</multiplier></li>
+  <li><damageDef>Bite</damageDef><multiplier>0.4</multiplier></li>
+  <li><damageDef>Scratch</damageDef><multiplier>0</multiplier></li>
+  <li><damageDef>KineticPulse</damageDef><multiplier>1.2</multiplier></li>
+  <li><damageDef>Bomb</damageDef><multiplier>0.75</multiplier></li>
+  <li><damageDef>EMP</damageDef><multiplier>0</multiplier></li>
+  <li><damageDef>Stun</damageDef><multiplier>0</multiplier></li>
+  <li><damageDef>Electrical</damageDef><multiplier>0</multiplier></li>
+  <li MayRequire="Ludeon.RimWorld.Biotech"><damageDef>MechBandShockwave</damageDef><multiplier>0</multiplier></li>
+</damageMultipliers></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[@Name="FT_BaseCannonBuilding_WithShieldOrCementBase"]</xpath><value><damageMultipliers Inherit="False">
+  <li><damageDef>Bullet</damageDef><multiplier>0.35</multiplier></li>
+  <li><damageDef>Arrow</damageDef><multiplier>0.1</multiplier></li>
+  <li><damageDef>Beanbag</damageDef><multiplier>0.1</multiplier></li>
+  <li><damageDef>Optic</damageDef><multiplier>0.6</multiplier></li>
+  <li><damageDef>Microwave</damageDef><multiplier>0.8</multiplier></li>
+  <li><damageDef>Blunt</damageDef><multiplier>1.0</multiplier></li>
+  <li><damageDef>Cut</damageDef><multiplier>0.5</multiplier></li>
+  <li><damageDef>Stab</damageDef><multiplier>0.5</multiplier></li>
+  <li><damageDef>Bite</damageDef><multiplier>0.4</multiplier></li>
+  <li><damageDef>Scratch</damageDef><multiplier>0</multiplier></li>
+  <li><damageDef>KineticPulse</damageDef><multiplier>1.2</multiplier></li>
+  <li><damageDef>Bomb</damageDef><multiplier>0.75</multiplier></li>
+  <li><damageDef>EMP</damageDef><multiplier>0</multiplier></li>
+  <li><damageDef>Stun</damageDef><multiplier>0</multiplier></li>
+  <li><damageDef>Electrical</damageDef><multiplier>0</multiplier></li>
+  <li MayRequire="Ludeon.RimWorld.Biotech"><damageDef>MechBandShockwave</damageDef><multiplier>0</multiplier></li>
+</damageMultipliers></value></nomatch>
+  </Operation>
+
+  <!-- Quad-mounted machine gun: manned, 4x 7.62x51mm. More volume than the HSK M240B, less accuracy, huge ammo draw -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Maxim4M"]/description</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Maxim4M"]/description</xpath><value><description>Four belt-fed 7.62x51mm machine guns on one tripod mount. Throws out far more lead than a single M240B, but the shared mount sways and the spread is wide. Eats ammunition at an alarming rate. Built from a crate made at the heavy arms lathe.</description></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Maxim4M"]</xpath><value><description>Four belt-fed 7.62x51mm machine guns on one tripod mount. Throws out far more lead than a single M240B, but the shared mount sways and the spread is wide. Eats ammunition at an alarming rate. Built from a crate made at the heavy arms lathe.</description></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Maxim4M"]/stuffCategories</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Maxim4M"]/stuffCategories</xpath><value><stuffCategories><li>RuggedMetallic</li></stuffCategories></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Maxim4M"]</xpath><value><stuffCategories><li>RuggedMetallic</li></stuffCategories></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Maxim4M"]/costStuffCount</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Maxim4M"]/costStuffCount</xpath><value><costStuffCount>70</costStuffCount></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Maxim4M"]</xpath><value><costStuffCount>70</costStuffCount></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Maxim4M"]/costList</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Maxim4M"]/costList</xpath><value><costList><FTH_QuadMG_Crate>1</FTH_QuadMG_Crate></costList></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Maxim4M"]</xpath><value><costList><FTH_QuadMG_Crate>1</FTH_QuadMG_Crate></costList></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Maxim4M"]/statBases/MaxHitPoints</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Maxim4M"]/statBases/MaxHitPoints</xpath><value><MaxHitPoints>160</MaxHitPoints></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Maxim4M"]/statBases</xpath><value><MaxHitPoints>160</MaxHitPoints></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Maxim4M"]/statBases/Mass</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Maxim4M"]/statBases/Mass</xpath><value><Mass>80</Mass></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Maxim4M"]/statBases</xpath><value><Mass>80</Mass></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Maxim4M"]/statBases/Flammability</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Maxim4M"]/statBases/Flammability</xpath><value><Flammability>0.5</Flammability></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Maxim4M"]/statBases</xpath><value><Flammability>0.5</Flammability></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Maxim4M"]/statBases/WorkToBuild</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Maxim4M"]/statBases/WorkToBuild</xpath><value><WorkToBuild>1500</WorkToBuild></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Maxim4M"]/statBases</xpath><value><WorkToBuild>1500</WorkToBuild></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Maxim4M"]/researchPrerequisites</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Maxim4M"]/researchPrerequisites</xpath><value><researchPrerequisites><li>Heavy_turrets_C2</li></researchPrerequisites></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Maxim4M"]</xpath><value><researchPrerequisites><li>Heavy_turrets_C2</li></researchPrerequisites></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Maxim4M"]/constructionSkillPrerequisite</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Maxim4M"]/constructionSkillPrerequisite</xpath><value><constructionSkillPrerequisite>10</constructionSkillPrerequisite></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Maxim4M"]</xpath><value><constructionSkillPrerequisite>10</constructionSkillPrerequisite></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Maxim4M"]/building/turretBurstWarmupTime</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Maxim4M"]/building/turretBurstWarmupTime</xpath><value><turretBurstWarmupTime>1.0</turretBurstWarmupTime></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Maxim4M"]/building</xpath><value><turretBurstWarmupTime>1.0</turretBurstWarmupTime></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Maxim4M"]/building/turretBurstCooldownTime</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Maxim4M"]/building/turretBurstCooldownTime</xpath><value><turretBurstCooldownTime>1.2</turretBurstCooldownTime></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Maxim4M"]/building</xpath><value><turretBurstCooldownTime>1.2</turretBurstCooldownTime></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/verbs/li/defaultProjectile</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/verbs/li/defaultProjectile</xpath><value><defaultProjectile>Bullet_762x51mmNATO_FMJ</defaultProjectile></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/verbs/li</xpath><value><defaultProjectile>Bullet_762x51mmNATO_FMJ</defaultProjectile></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/verbs/li/range</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/verbs/li/range</xpath><value><range>55</range></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/verbs/li</xpath><value><range>55</range></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/verbs/li/warmupTime</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/verbs/li/warmupTime</xpath><value><warmupTime>1</warmupTime></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/verbs/li</xpath><value><warmupTime>1</warmupTime></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/verbs/li/burstShotCount</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/verbs/li/burstShotCount</xpath><value><burstShotCount>16</burstShotCount></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/verbs/li</xpath><value><burstShotCount>16</burstShotCount></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/verbs/li/ticksBetweenBurstShots</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/verbs/li/ticksBetweenBurstShots</xpath><value><ticksBetweenBurstShots>3</ticksBetweenBurstShots></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/verbs/li</xpath><value><ticksBetweenBurstShots>3</ticksBetweenBurstShots></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]/ammoSet</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]/ammoSet</xpath><value><ammoSet>AmmoSet_762x51mmNATO</ammoSet></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]</xpath><value><ammoSet>AmmoSet_762x51mmNATO</ammoSet></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]/magazineSize</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]/magazineSize</xpath><value><magazineSize>400</magazineSize></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]</xpath><value><magazineSize>400</magazineSize></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]/reloadTime</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]/reloadTime</xpath><value><reloadTime>9.5</reloadTime></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]</xpath><value><reloadTime>9.5</reloadTime></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/comps/li[@Class="CombatExtended.CompProperties_FireModes"]/aimedBurstShotCount</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/comps/li[@Class="CombatExtended.CompProperties_FireModes"]/aimedBurstShotCount</xpath><value><aimedBurstShotCount>8</aimedBurstShotCount></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/comps/li[@Class="CombatExtended.CompProperties_FireModes"]</xpath><value><aimedBurstShotCount>8</aimedBurstShotCount></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/statBases/SightsEfficiency</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/statBases/SightsEfficiency</xpath><value><SightsEfficiency>1.1</SightsEfficiency></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/statBases</xpath><value><SightsEfficiency>1.1</SightsEfficiency></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/statBases/ShotSpread</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/statBases/ShotSpread</xpath><value><ShotSpread>0.12</ShotSpread></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/statBases</xpath><value><ShotSpread>0.12</ShotSpread></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/statBases/RangedWeapon_Cooldown</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/statBases/RangedWeapon_Cooldown</xpath><value><RangedWeapon_Cooldown>1.2</RangedWeapon_Cooldown></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/statBases</xpath><value><RangedWeapon_Cooldown>1.2</RangedWeapon_Cooldown></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/statBases/SwayFactor</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/statBases/SwayFactor</xpath><value><SwayFactor>1.4</SwayFactor></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/statBases</xpath><value><SwayFactor>1.4</SwayFactor></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/description</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]/description</xpath><value><description>Four 7.62x51mm machine guns linked on one mount.</description></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_QuadMG"]</xpath><value><description>Four 7.62x51mm machine guns linked on one mount.</description></value></nomatch>
+  </Operation>
+
+  <!-- Quad 20mm flak emplacement: shielded 3x3 position, HSK 20x102mm. Heavier and tougher than the Oerlikon, slower to traverse -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/label</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/label</xpath><value><label>quad 20mm flak emplacement</label></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]</xpath><value><label>quad 20mm flak emplacement</label></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/description</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/description</xpath><value><description>Four 20mm autocannons on a shielded, sandbagged mount. Shreds light vehicles, mechanoids and massed infantry at long range. The gun shield shrugs off most small-arms fire. Fires 20x102mm. Built from a crate made at the heavy arms lathe.</description></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]</xpath><value><description>Four 20mm autocannons on a shielded, sandbagged mount. Shreds light vehicles, mechanoids and massed infantry at long range. The gun shield shrugs off most small-arms fire. Fires 20x102mm. Built from a crate made at the heavy arms lathe.</description></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/stuffCategories</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/stuffCategories</xpath><value><stuffCategories><li>RuggedMetallic</li></stuffCategories></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]</xpath><value><stuffCategories><li>RuggedMetallic</li></stuffCategories></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/costStuffCount</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/costStuffCount</xpath><value><costStuffCount>160</costStuffCount></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]</xpath><value><costStuffCount>160</costStuffCount></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/costList</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/costList</xpath><value><costList><FTH_QuadAA_Crate>1</FTH_QuadAA_Crate></costList></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]</xpath><value><costList><FTH_QuadAA_Crate>1</FTH_QuadAA_Crate></costList></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/statBases/MaxHitPoints</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/statBases/MaxHitPoints</xpath><value><MaxHitPoints>320</MaxHitPoints></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/statBases</xpath><value><MaxHitPoints>320</MaxHitPoints></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/statBases/Mass</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/statBases/Mass</xpath><value><Mass>900</Mass></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/statBases</xpath><value><Mass>900</Mass></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/statBases/Flammability</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/statBases/Flammability</xpath><value><Flammability>0.5</Flammability></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/statBases</xpath><value><Flammability>0.5</Flammability></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/statBases/WorkToBuild</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/statBases/WorkToBuild</xpath><value><WorkToBuild>2600</WorkToBuild></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/statBases</xpath><value><WorkToBuild>2600</WorkToBuild></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/researchPrerequisites</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/researchPrerequisites</xpath><value><researchPrerequisites><li>Heavy_turrets_C3</li></researchPrerequisites></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]</xpath><value><researchPrerequisites><li>Heavy_turrets_C3</li></researchPrerequisites></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/constructionSkillPrerequisite</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/constructionSkillPrerequisite</xpath><value><constructionSkillPrerequisite>13</constructionSkillPrerequisite></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]</xpath><value><constructionSkillPrerequisite>13</constructionSkillPrerequisite></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/building/turretBurstCooldownTime</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/building/turretBurstCooldownTime</xpath><value><turretBurstCooldownTime>1.8</turretBurstCooldownTime></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TurretQuadAA"]/building</xpath><value><turretBurstCooldownTime>1.8</turretBurstCooldownTime></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/verbs/li/defaultProjectile</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/verbs/li/defaultProjectile</xpath><value><defaultProjectile>Bullet_20x102mm_FMJ</defaultProjectile></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/verbs/li</xpath><value><defaultProjectile>Bullet_20x102mm_FMJ</defaultProjectile></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/verbs/li/range</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/verbs/li/range</xpath><value><range>75</range></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/verbs/li</xpath><value><range>75</range></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/verbs/li/warmupTime</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/verbs/li/warmupTime</xpath><value><warmupTime>1.2</warmupTime></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/verbs/li</xpath><value><warmupTime>1.2</warmupTime></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/verbs/li/burstShotCount</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/verbs/li/burstShotCount</xpath><value><burstShotCount>12</burstShotCount></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/verbs/li</xpath><value><burstShotCount>12</burstShotCount></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/verbs/li/ticksBetweenBurstShots</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/verbs/li/ticksBetweenBurstShots</xpath><value><ticksBetweenBurstShots>3</ticksBetweenBurstShots></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/verbs/li</xpath><value><ticksBetweenBurstShots>3</ticksBetweenBurstShots></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]/ammoSet</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]/ammoSet</xpath><value><ammoSet>AmmoSet_20x102mm</ammoSet></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]</xpath><value><ammoSet>AmmoSet_20x102mm</ammoSet></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]/magazineSize</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]/magazineSize</xpath><value><magazineSize>120</magazineSize></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]</xpath><value><magazineSize>120</magazineSize></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]/reloadTime</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]/reloadTime</xpath><value><reloadTime>10</reloadTime></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]</xpath><value><reloadTime>10</reloadTime></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/comps/li[@Class="CombatExtended.CompProperties_FireModes"]/aimedBurstShotCount</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/comps/li[@Class="CombatExtended.CompProperties_FireModes"]/aimedBurstShotCount</xpath><value><aimedBurstShotCount>6</aimedBurstShotCount></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/comps/li[@Class="CombatExtended.CompProperties_FireModes"]</xpath><value><aimedBurstShotCount>6</aimedBurstShotCount></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/statBases/SightsEfficiency</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/statBases/SightsEfficiency</xpath><value><SightsEfficiency>1.8</SightsEfficiency></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/statBases</xpath><value><SightsEfficiency>1.8</SightsEfficiency></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/statBases/ShotSpread</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/statBases/ShotSpread</xpath><value><ShotSpread>0.1</ShotSpread></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/statBases</xpath><value><ShotSpread>0.1</ShotSpread></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/statBases/RangedWeapon_Cooldown</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/statBases/RangedWeapon_Cooldown</xpath><value><RangedWeapon_Cooldown>1.8</RangedWeapon_Cooldown></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/statBases</xpath><value><RangedWeapon_Cooldown>1.8</RangedWeapon_Cooldown></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/statBases/SwayFactor</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/statBases/SwayFactor</xpath><value><SwayFactor>1</SwayFactor></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/statBases</xpath><value><SwayFactor>1</SwayFactor></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/label</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/label</xpath><value><label>quad 20mm autocannons</label></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]</xpath><value><label>quad 20mm autocannons</label></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/verbs/li/recoilAmount</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/verbs/li/recoilAmount</xpath><value><recoilAmount>0.9</recoilAmount></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_TurretQuadAA"]/verbs/li</xpath><value><recoilAmount>0.9</recoilAmount></value></nomatch>
+  </Operation>
+
+  <!-- 90mm anti-tank gun (was 76mm): shielded direct-fire gun using HSK/CE 90mm cannon shells -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/label</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/label</xpath><value><label>90mm anti-tank gun</label></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]</xpath><value><label>90mm anti-tank gun</label></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/description</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/description</xpath><value><description>A long-barrelled 90mm anti-tank gun behind a thick gun shield. Slow to traverse, but accurate and hard-hitting at long range against vehicles, mechanoids and fortifications. Fires 90mm cannon shells. Built from a crate made at the heavy arms lathe.</description></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]</xpath><value><description>A long-barrelled 90mm anti-tank gun behind a thick gun shield. Slow to traverse, but accurate and hard-hitting at long range against vehicles, mechanoids and fortifications. Fires 90mm cannon shells. Built from a crate made at the heavy arms lathe.</description></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/stuffCategories</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/stuffCategories</xpath><value><stuffCategories><li>RuggedMetallic</li></stuffCategories></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]</xpath><value><stuffCategories><li>RuggedMetallic</li></stuffCategories></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/costStuffCount</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/costStuffCount</xpath><value><costStuffCount>180</costStuffCount></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]</xpath><value><costStuffCount>180</costStuffCount></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/costList</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/costList</xpath><value><costList><FTH_ATGun_Crate>1</FTH_ATGun_Crate></costList></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]</xpath><value><costList><FTH_ATGun_Crate>1</FTH_ATGun_Crate></costList></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/statBases/MaxHitPoints</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/statBases/MaxHitPoints</xpath><value><MaxHitPoints>340</MaxHitPoints></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/statBases</xpath><value><MaxHitPoints>340</MaxHitPoints></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/statBases/Mass</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/statBases/Mass</xpath><value><Mass>1100</Mass></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/statBases</xpath><value><Mass>1100</Mass></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/statBases/Flammability</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/statBases/Flammability</xpath><value><Flammability>0.5</Flammability></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/statBases</xpath><value><Flammability>0.5</Flammability></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/statBases/WorkToBuild</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/statBases/WorkToBuild</xpath><value><WorkToBuild>2400</WorkToBuild></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/statBases</xpath><value><WorkToBuild>2400</WorkToBuild></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/researchPrerequisites</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/researchPrerequisites</xpath><value><researchPrerequisites><li>Artillery_C2</li></researchPrerequisites></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]</xpath><value><researchPrerequisites><li>Artillery_C2</li></researchPrerequisites></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/constructionSkillPrerequisite</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/constructionSkillPrerequisite</xpath><value><constructionSkillPrerequisite>14</constructionSkillPrerequisite></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]</xpath><value><constructionSkillPrerequisite>14</constructionSkillPrerequisite></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/statBases/AimingAccuracy</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/statBases/AimingAccuracy</xpath><value><AimingAccuracy>1</AimingAccuracy></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/statBases</xpath><value><AimingAccuracy>1</AimingAccuracy></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/statBases/ShootingAccuracyTurret</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/statBases/ShootingAccuracyTurret</xpath><value><ShootingAccuracyTurret>1</ShootingAccuracyTurret></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/statBases</xpath><value><ShootingAccuracyTurret>1</ShootingAccuracyTurret></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/building/turretBurstWarmupTime</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/building/turretBurstWarmupTime</xpath><value><turretBurstWarmupTime>2.0</turretBurstWarmupTime></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/building</xpath><value><turretBurstWarmupTime>2.0</turretBurstWarmupTime></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/building/turretBurstCooldownTime</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/building/turretBurstCooldownTime</xpath><value><turretBurstCooldownTime>2.0</turretBurstCooldownTime></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_TurretAT_Plus"]/building</xpath><value><turretBurstCooldownTime>2.0</turretBurstCooldownTime></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/verbs/li/defaultProjectile</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/verbs/li/defaultProjectile</xpath><value><defaultProjectile>Bullet_90mmCannonShell_HEAT</defaultProjectile></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/verbs/li</xpath><value><defaultProjectile>Bullet_90mmCannonShell_HEAT</defaultProjectile></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/verbs/li/range</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/verbs/li/range</xpath><value><range>110</range></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/verbs/li</xpath><value><range>110</range></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/verbs/li/warmupTime</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/verbs/li/warmupTime</xpath><value><warmupTime>2</warmupTime></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/verbs/li</xpath><value><warmupTime>2</warmupTime></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]/ammoSet</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]/ammoSet</xpath><value><ammoSet>AmmoSet_90mmCannonShell</ammoSet></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]</xpath><value><ammoSet>AmmoSet_90mmCannonShell</ammoSet></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]/magazineSize</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]/magazineSize</xpath><value><magazineSize>1</magazineSize></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]</xpath><value><magazineSize>1</magazineSize></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]/reloadTime</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]/reloadTime</xpath><value><reloadTime>6.5</reloadTime></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]</xpath><value><reloadTime>6.5</reloadTime></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/statBases/SightsEfficiency</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/statBases/SightsEfficiency</xpath><value><SightsEfficiency>2.2</SightsEfficiency></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/statBases</xpath><value><SightsEfficiency>2.2</SightsEfficiency></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/statBases/ShotSpread</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/statBases/ShotSpread</xpath><value><ShotSpread>0.1</ShotSpread></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/statBases</xpath><value><ShotSpread>0.1</ShotSpread></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/statBases/RangedWeapon_Cooldown</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/statBases/RangedWeapon_Cooldown</xpath><value><RangedWeapon_Cooldown>2</RangedWeapon_Cooldown></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/statBases</xpath><value><RangedWeapon_Cooldown>2</RangedWeapon_Cooldown></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/statBases/SwayFactor</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/statBases/SwayFactor</xpath><value><SwayFactor>1.1</SwayFactor></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/statBases</xpath><value><SwayFactor>1.1</SwayFactor></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/label</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/label</xpath><value><label>90mm anti-tank gun</label></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]</xpath><value><label>90mm anti-tank gun</label></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/description</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]/description</xpath><value><description>A 90mm anti-tank cannon on a stationary, shielded emplacement.</description></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_TurretAT_Plus"]</xpath><value><description>A 90mm anti-tank cannon on a stationary, shielded emplacement.</description></value></nomatch>
+  </Operation>
+
+  <!-- Automated MG nests (sandbag and concrete): HSK auto-turret rules: crate, power, Autoturrets I -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[@Name="FT_MGNest"]/costList</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[@Name="FT_MGNest"]/costList</xpath><value><costList><FTH_MGNest_Crate>1</FTH_MGNest_Crate></costList></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[@Name="FT_MGNest"]</xpath><value><costList><FTH_MGNest_Crate>1</FTH_MGNest_Crate></costList></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[@Name="FT_MGNest"]/researchPrerequisites</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[@Name="FT_MGNest"]/researchPrerequisites</xpath><value><researchPrerequisites><li>GunTurrets</li></researchPrerequisites></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[@Name="FT_MGNest"]</xpath><value><researchPrerequisites><li>GunTurrets</li></researchPrerequisites></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[@Name="FT_MGNest"]/constructionSkillPrerequisite</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[@Name="FT_MGNest"]/constructionSkillPrerequisite</xpath><value><constructionSkillPrerequisite>12</constructionSkillPrerequisite></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[@Name="FT_MGNest"]</xpath><value><constructionSkillPrerequisite>12</constructionSkillPrerequisite></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[@Name="FT_MGNest"]/comps/li[@Class="CompProperties_Power"]</xpath>
+    <match Class="PatchOperationRemove"><xpath>Defs/ThingDef[@Name="FT_MGNest"]/comps/li[@Class="CompProperties_Power"]</xpath></match>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/ThingDef[@Name="FT_MGNest"]/comps</xpath>
+    <value>
+      <li Class="SK.CompProperties_IdlePower">
+        <compClass>CompPowerTrader</compClass>
+        <basePowerConsumption>900</basePowerConsumption>
+      </li>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Turret_BunkerF"]/label</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerF"]/label</xpath><value><label>sandbag MG nest</label></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerF"]</xpath><value><label>sandbag MG nest</label></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Turret_BunkerF"]/description</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerF"]/description</xpath><value><description>An automated 7.62x51mm machine gun dug into a ring of sandbags. Its simple targeting brain cannot be controlled, so beware of friendly fire. Needs power. Built from a crate made at the heavy arms lathe.</description></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerF"]</xpath><value><description>An automated 7.62x51mm machine gun dug into a ring of sandbags. Its simple targeting brain cannot be controlled, so beware of friendly fire. Needs power. Built from a crate made at the heavy arms lathe.</description></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Turret_BunkerF"]/stuffCategories</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerF"]/stuffCategories</xpath><value><stuffCategories><li>Fabric</li><li>Leathery</li></stuffCategories></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerF"]</xpath><value><stuffCategories><li>Fabric</li><li>Leathery</li></stuffCategories></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Turret_BunkerF"]/costStuffCount</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerF"]/costStuffCount</xpath><value><costStuffCount>60</costStuffCount></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerF"]</xpath><value><costStuffCount>60</costStuffCount></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Turret_BunkerF"]/costList</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerF"]/costList</xpath><value><costList><FTH_MGNest_Crate>1</FTH_MGNest_Crate><SandResource>25</SandResource></costList></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerF"]</xpath><value><costList><FTH_MGNest_Crate>1</FTH_MGNest_Crate><SandResource>25</SandResource></costList></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Turret_BunkerF"]/statBases/MaxHitPoints</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerF"]/statBases/MaxHitPoints</xpath><value><MaxHitPoints>320</MaxHitPoints></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerF"]/statBases</xpath><value><MaxHitPoints>320</MaxHitPoints></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Turret_BunkerF"]/statBases/WorkToBuild</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerF"]/statBases/WorkToBuild</xpath><value><WorkToBuild>2200</WorkToBuild></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerF"]/statBases</xpath><value><WorkToBuild>2200</WorkToBuild></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Turret_BunkerC"]/label</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerC"]/label</xpath><value><label>concrete MG bunker</label></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerC"]</xpath><value><label>concrete MG bunker</label></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Turret_BunkerC"]/description</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerC"]/description</xpath><value><description>An automated 7.62x51mm machine gun inside a cast reinforced-concrete bunker. Much tougher than a sandbag nest. Its simple targeting brain cannot be controlled, so beware of friendly fire. Needs power. Built from a crate made at the heavy arms lathe.</description></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerC"]</xpath><value><description>An automated 7.62x51mm machine gun inside a cast reinforced-concrete bunker. Much tougher than a sandbag nest. Its simple targeting brain cannot be controlled, so beware of friendly fire. Needs power. Built from a crate made at the heavy arms lathe.</description></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Turret_BunkerC"]/stuffCategories</xpath>
+    <match Class="PatchOperationRemove"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerC"]/stuffCategories</xpath></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Turret_BunkerC"]/costStuffCount</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerC"]/costStuffCount</xpath><value><costStuffCount>0</costStuffCount></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerC"]</xpath><value><costStuffCount>0</costStuffCount></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Turret_BunkerC"]/costList</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerC"]/costList</xpath><value><costList><FTH_MGNest_Crate>1</FTH_MGNest_Crate><ReinforcedConcrete>40</ReinforcedConcrete><ConcreteResource>20</ConcreteResource></costList></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerC"]</xpath><value><costList><FTH_MGNest_Crate>1</FTH_MGNest_Crate><ReinforcedConcrete>40</ReinforcedConcrete><ConcreteResource>20</ConcreteResource></costList></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Turret_BunkerC"]/statBases/MaxHitPoints</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerC"]/statBases/MaxHitPoints</xpath><value><MaxHitPoints>520</MaxHitPoints></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerC"]/statBases</xpath><value><MaxHitPoints>520</MaxHitPoints></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Turret_BunkerC"]/statBases/WorkToBuild</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerC"]/statBases/WorkToBuild</xpath><value><WorkToBuild>3200</WorkToBuild></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerC"]/statBases</xpath><value><WorkToBuild>3200</WorkToBuild></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Turret_BunkerC"]/researchPrerequisites</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerC"]/researchPrerequisites</xpath><value><researchPrerequisites Inherit="False"><li>GunTurrets</li><li>Concrete_C1</li></researchPrerequisites></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Turret_BunkerC"]</xpath><value><researchPrerequisites Inherit="False"><li>GunTurrets</li><li>Concrete_C1</li></researchPrerequisites></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_MG"]/verbs/li/defaultProjectile</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_MG"]/verbs/li/defaultProjectile</xpath><value><defaultProjectile>Bullet_762x51mmNATO_FMJ</defaultProjectile></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_MG"]/verbs/li</xpath><value><defaultProjectile>Bullet_762x51mmNATO_FMJ</defaultProjectile></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_MG"]/verbs/li/range</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_MG"]/verbs/li/range</xpath><value><range>55</range></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_MG"]/verbs/li</xpath><value><range>55</range></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_MG"]/verbs/li/warmupTime</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_MG"]/verbs/li/warmupTime</xpath><value><warmupTime>1.6</warmupTime></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_MG"]/verbs/li</xpath><value><warmupTime>1.6</warmupTime></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_MG"]/verbs/li/burstShotCount</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_MG"]/verbs/li/burstShotCount</xpath><value><burstShotCount>10</burstShotCount></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_MG"]/verbs/li</xpath><value><burstShotCount>10</burstShotCount></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_MG"]/verbs/li/ticksBetweenBurstShots</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_MG"]/verbs/li/ticksBetweenBurstShots</xpath><value><ticksBetweenBurstShots>6</ticksBetweenBurstShots></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_MG"]/verbs/li</xpath><value><ticksBetweenBurstShots>6</ticksBetweenBurstShots></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_MG"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]/ammoSet</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_MG"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]/ammoSet</xpath><value><ammoSet>AmmoSet_762x51mmNATO</ammoSet></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_MG"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]</xpath><value><ammoSet>AmmoSet_762x51mmNATO</ammoSet></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_MG"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]/magazineSize</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_MG"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]/magazineSize</xpath><value><magazineSize>200</magazineSize></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_MG"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]</xpath><value><magazineSize>200</magazineSize></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_MG"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]/reloadTime</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_MG"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]/reloadTime</xpath><value><reloadTime>6</reloadTime></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_MG"]/comps/li[@Class="CombatExtended.CompProperties_AmmoUser"]</xpath><value><reloadTime>6</reloadTime></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_MG"]/comps/li[@Class="CombatExtended.CompProperties_FireModes"]/aimedBurstShotCount</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_MG"]/comps/li[@Class="CombatExtended.CompProperties_FireModes"]/aimedBurstShotCount</xpath><value><aimedBurstShotCount>4</aimedBurstShotCount></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_MG"]/comps/li[@Class="CombatExtended.CompProperties_FireModes"]</xpath><value><aimedBurstShotCount>4</aimedBurstShotCount></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_MG"]/statBases/SightsEfficiency</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_MG"]/statBases/SightsEfficiency</xpath><value><SightsEfficiency>1</SightsEfficiency></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_MG"]/statBases</xpath><value><SightsEfficiency>1</SightsEfficiency></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_MG"]/statBases/ShotSpread</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_MG"]/statBases/ShotSpread</xpath><value><ShotSpread>0.07</ShotSpread></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_MG"]/statBases</xpath><value><ShotSpread>0.07</ShotSpread></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_MG"]/statBases/RangedWeapon_Cooldown</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_MG"]/statBases/RangedWeapon_Cooldown</xpath><value><RangedWeapon_Cooldown>1</RangedWeapon_Cooldown></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_MG"]/statBases</xpath><value><RangedWeapon_Cooldown>1</RangedWeapon_Cooldown></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_MG"]/statBases/SwayFactor</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_MG"]/statBases/SwayFactor</xpath><value><SwayFactor>1</SwayFactor></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_MG"]/statBases</xpath><value><SwayFactor>1</SwayFactor></value></nomatch>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="FT_Gun_MG"]/label</xpath>
+    <match Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="FT_Gun_MG"]/label</xpath><value><label>nest machine gun</label></value></match>
+    <nomatch Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="FT_Gun_MG"]</xpath><value><label>nest machine gun</label></value></nomatch>
+  </Operation>
+</Patch>
