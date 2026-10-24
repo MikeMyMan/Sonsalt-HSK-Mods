@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!-- Mining blast: like Odyssey's mining charge (x30 vs impassable = rock), without needing the DLC.
+       120 x 30 = 3600 per rock cell (granite 1700-2300): one blast clears the cells in its radius. -->
+  <DamageDef ParentName="Bomb">
+    <defName>HSKTAI_MiningBlast</defName>
+    <label>mining blast</label>
+    <defaultDamage>120</defaultDamage>
+    <buildingDamageFactorImpassable>30</buildingDamageFactorImpassable>
+    <buildingDamageFactorPassable>2</buildingDamageFactorPassable>
+  </DamageDef>
+
+  <!-- Carried by raider sappers (Industrial tech and up) to tunnel into mountain bases. One-use. -->
+  <ThingDef ParentName="ResourceBase">
+    <defName>HSKTAI_MiningCharge</defName>
+    <label>mining charge</label>
+    <description>A drilled demolition charge for blasting through rock. Raider sappers plant it at the rock face; it detonates a few seconds later and clears the rock around it.</description>
+    <graphicData>
+      <texPath>Things/Building/Traps/IED_HE</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(0.7,0.7)</drawSize>
+      <color>(0.75,0.65,0.45)</color>
+    </graphicData>
+    <soundInteract>Standard_Drop</soundInteract>
+    <soundDrop>Standard_Drop</soundDrop>
+    <stackLimit>6</stackLimit>
+    <techLevel>Industrial</techLevel>
+    <statBases>
+      <MaxHitPoints>40</MaxHitPoints>
+      <MarketValue>50</MarketValue>
+      <Mass>2</Mass>
+      <Flammability>0.5</Flammability>
+      <DeteriorationRate>1</DeteriorationRate>
+    </statBases>
+    <thingCategories>
+      <li>Manufactured</li>
+    </thingCategories>
+    <tradeability>Sellable</tradeability>
+  </ThingDef>
+
+  <!-- The armed mining charge. Shooting it destroys it without an explosion. -->
+  <ThingDef ParentName="BuildingBase">
+    <defName>HSKTAI_PlantedMiningCharge</defName>
+    <label>planted mining charge</label>
+    <description>An armed mining charge. It blasts the rock around it when the fuse burns down; destroy it first to stop it.</description>
+    <thingClass>Building</thingClass>
+    <graphicData>
+      <texPath>Things/Building/Traps/IED_HE</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(0.8,0.8)</drawSize>
+      <color>(0.75,0.65,0.45)</color>
+    </graphicData>
+    <altitudeLayer>BuildingOnTop</altitudeLayer>
+    <passability>Standable</passability>
+    <fillPercent>0.1</fillPercent>
+    <rotatable>false</rotatable>
+    <selectable>true</selectable>
+    <useHitPoints>true</useHitPoints>
+    <tickerType>Normal</tickerType>
+    <statBases>
+      <MaxHitPoints>30</MaxHitPoints>
+      <Flammability>0</Flammability>
+    </statBases>
+    <building>
+      <isEdifice>false</isEdifice>
+      <claimable>false</claimable>
+      <deconstructible>false</deconstructible>
+      <ai_chillDestination>false</ai_chillDestination>
+    </building>
+    <comps>
+      <li Class="CompProperties_Explosive">
+        <explosiveRadius>2.4</explosiveRadius>
+        <explosiveDamageType>HSKTAI_MiningBlast</explosiveDamageType>
+        <damageAmountBase>120</damageAmountBase>
+        <wickTicks>300~300</wickTicks>
+        <explodeOnKilled>false</explodeOnKilled>
+        <startWickHitPointsPercent>-1</startWickHitPointsPercent>
+        <chanceToStartFire>0</chanceToStartFire>
+        <applyDamageToExplosionCellsNeighbors>true</applyDamageToExplosionCellsNeighbors>
+      </li>
+    </comps>
+  </ThingDef>
+
+</Defs>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <name>HSK Tactical AI</name>
+  <author>Sonsalt</author>
+  <packageId>sonsalt.hsk.tacticalai</packageId>
+  <modVersion>0.1.0</modVersion>
+  <url>https://github.com/MikeMyMan/Sonsalt-HSK-Mods</url>
+  <supportedVersions>
+    <li>1.7</li>
+  </supportedVersions>
+  <modDependencies>
+    <li>
+      <packageId>brrainz.harmony</packageId>
+      <displayName>Harmony</displayName>
+      <steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
+      <downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
+    </li>
+    <li>
+      <packageId>skyarkhangel.HSK</packageId>
+      <displayName>Hardcore SK</displayName>
+      <downloadUrl>https://github.com/HardcoreSK/Hardcore-SK</downloadUrl>
+    </li>
+  </modDependencies>
+  <loadAfter>
+    <li>brrainz.harmony</li>
+    <li>skyarkhangel.HSK</li>
+    <li>CETeam.CombatExtended</li>
+    <li>pogo.ai</li>
+    <li>Mlie.EnemySelfPreservation</li>
+  </loadAfter>
+  <incompatibleWith>
+    <li>Krkr.rule56</li>
+  </incompatibleWith>
+  <description>A custom raid AI for Hardcore SK (0.1, test release).
+
+Raiders plan their attack instead of walking into your guns:
+- Threat map: they know where your colonists and turrets can shoot (toggle the overlay with the crosshair button, bottom-right bar).
+- Killboxes and funnels: they avoid them and make their own way in, breaching several walls at once with charges, launchers, breach tools, fire, grenades on doors, or tunnels through rock.
+- Open ground: they take a covered route, rush only with 3:1 odds or behind smoke, flank, or snipe from out of range and leave when an attack is bound to fail.
+- Combined arms: base of fire (machine guns, snipers) pins your defenders while the assault moves; overwatch on the breach; shield bearers lead and throw grenades; medics pull the wounded out; fire and movement inside each group; groups arrive together from several sides.
+- Fire discipline: aimed or snap shots, single, short bursts or full auto by range and role; realistic suppression (machine guns and explosives pin, armour does not stop the flinch).
+- Gas and fire against bunkers, arson, plunder (loot, livestock, wrecking) instead of chasing you into your corridors, planned withdrawals carrying the wounded, going prone under fire.
+
+Every behaviour can be switched off in the mod settings.
+
+Works with Smarter Raid AI, Combat Extended and Enemy Self Preservation. Not with CAI 5000 (both change the same AI systems).</description>
+</ModMetaData>

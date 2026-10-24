@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!-- Combat Extended inventory bulk for the breach charge. -->
+  <Operation Class="PatchOperationFindMod">
+    <mods>
+      <li>Combat Extended</li>
+    </mods>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/ThingDef[defName="HSKTAI_BreachCharge"]/statBases</xpath>
+      <value>
+        <Bulk>2</Bulk>
+      </value>
+    </match>
+  </Operation>
+</Patch>

@@ -1,10 +1,11 @@
 # Sonsalt's HSK mods
 
-Four small mods for [Hardcore SK](https://github.com/HardcoreSK/Hardcore-SK) on RimWorld 1.7 (`1.7-super-unstable` branch).
+Five mods for [Hardcore SK](https://github.com/HardcoreSK/Hardcore-SK) on RimWorld 1.7 (`1.7-super-unstable` branch).
 Each mod is one folder; copy the folders you want into your `RimWorld\Mods` folder.
 
 | Mod | packageId | Needs |
 |---|---|---|
+| [HSK Tactical AI](#hsk-tactical-ai) (0.1, test release) | `sonsalt.hsk.tacticalai` | HSK, Harmony (Combat Extended recommended) |
 | [HSK Fortifications Rebalance](#hsk-fortifications-rebalance) | `sonsalt.hsk.fortifications` | HSK + Aoba's Fortifications - Medieval and/or - Industrial |
 | [HSK Outposts](#hsk-outposts) | `sonsalt.hsk.outposts` | HSK, Vanilla Expanded Framework, Vanilla Outposts Expanded (VOE: Additional Outposts optional) |
 | [HSK Zero Research Start](#hsk-zero-research-start) | `sonsalt.hsk.zeroresearch` | HSK |
@@ -17,6 +18,21 @@ with zero errors. Gameplay testing is still light. HSK 1.7 itself is a dev sandb
 the game's auto-sort). Put the compatibility fixes near the end.
 
 ---
+
+## HSK Tactical AI
+
+A custom raid AI for HSK (0.1 is a test release for the dev team; see the [changelog](CHANGELOG.md) for the full list).
+Raiders plan their attack instead of walking into your guns:
+- they read where your guns can shoot (threat map) and avoid killboxes and funnels;
+- they breach several walls at once with the tools of their tech level;
+- they cross open ground only in cover, behind smoke, with 3:1 odds or by fire and movement;
+- they fight as combined arms: base of fire, overwatch, shield bearers, medics, flanking, fire discipline by range;
+- under realistic suppression they go prone (drawn lying down, labelled "prone");
+- they plunder instead of chasing you through your corridors, and withdraw when the attack fails.
+
+Every behaviour has a switch in the mod settings; the threat map overlay is the crosshair button in the bottom-right
+bar. Works with Combat Extended, Smarter Raid AI and Enemy Self Preservation; not with CAI 5000. Load after HSK and
+Combat Extended.
 
 ## HSK Fortifications Rebalance
 
@@ -122,7 +138,7 @@ Some XML is generated. Edit the generator, not the XML:
 | `tools/Build-FortifPatch.ps1` | everything in `HSK Fortifications Rebalance` (uses `tools/data/fortifications_deflist.tsv`) |
 | `tools/Build-AOLayouts.ps1` | `HSK Outposts/AdditionalOutposts/Patches/AO_Layouts_HSK.xml` (reads the installed Additional Outposts; `-AdditionalOutposts <folder>`) |
 | `tools/Build-ResearchGates.ps1` | `HSK Zero Research Start/Patches/HSK_ResearchGates.xml` (one line per building) |
-| `tools/Sync-ToGame.ps1` | mirrors the four mod folders into your RimWorld `Mods` folder (`-ModsFolder <path>`) |
+| `tools/Sync-ToGame.ps1` | mirrors the five mod folders into your RimWorld `Mods` folder (`-ModsFolder <path>`) |
 
 ## Credits
 

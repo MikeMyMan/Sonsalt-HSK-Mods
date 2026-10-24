@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Prone (HSK Tactical AI): a suppressed raider without cover drops flat. Combat Extended's hit profile is lowered
+       by a patch (height x proneHeightFactor); it crawls. Removed once the suppression wears off. -->
+  <HediffDef>
+    <defName>HSKTAI_Prone</defName>
+    <label>prone</label>
+    <description>Lying flat under fire: a much smaller target, but crawling.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>false</isBad>
+    <defaultLabelColor>(0.8, 0.8, 0.5)</defaultLabelColor>
+    <everCurableByItem>false</everCurableByItem>
+    <!-- the crawl speed is applied in Pawn.TicksPerMove (Patch_ProneMove, setting proneMoveFactor), not as a MoveSpeed
+         factor here: stat caches (Performance Optimizer) kept the old speed for longer than a prone spell lasts -->
+    <stages>
+      <li />
+    </stages>
+  </HediffDef>
+</Defs>

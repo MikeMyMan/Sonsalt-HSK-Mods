@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!-- Damage: a Bomb blast that is much stronger against buildings (shaped charge against walls and doors). -->
+  <DamageDef ParentName="Bomb">
+    <defName>HSKTAI_BreachBlast</defName>
+    <label>breach blast</label>
+    <defaultDamage>120</defaultDamage>
+    <buildingDamageFactor>1.67</buildingDamageFactor>   <!-- x Bomb 4 vs walls (inherited) = 800 per wall cell: stone/steel 1 charge, RC/plasteel 2, hyperalloy 2-3 -->
+  </DamageDef>
+
+  <!-- Carried by raider breach specialists (Industrial tech and up). One-use. -->
+  <ThingDef ParentName="ResourceBase">
+    <defName>HSKTAI_BreachCharge</defName>
+    <label>breach charge</label>
+    <description>A shaped demolition charge used to blow holes in walls and doors. Raiders plant it against a wall; it detonates a few seconds later.</description>
+    <graphicData>
+      <texPath>Things/Building/Traps/IED_HE</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(0.7,0.7)</drawSize>
+    </graphicData>
+    <soundInteract>Standard_Drop</soundInteract>
+    <soundDrop>Standard_Drop</soundDrop>
+    <stackLimit>5</stackLimit>
+    <techLevel>Industrial</techLevel>
+    <statBases>
+      <MaxHitPoints>40</MaxHitPoints>
+      <MarketValue>60</MarketValue>
+      <Mass>1.5</Mass>
+      <Flammability>0.5</Flammability>
+      <DeteriorationRate>1</DeteriorationRate>
+    </statBases>
+    <thingCategories>
+      <li>Manufactured</li>
+    </thingCategories>
+    <tradeability>Sellable</tradeability>
+  </ThingDef>
+
+  <!-- The armed charge. Shooting or hitting it destroys it without an explosion (defusing it). -->
+  <ThingDef ParentName="BuildingBase">
+    <defName>HSKTAI_PlantedBreachCharge</defName>
+    <label>planted breach charge</label>
+    <description>An armed breach charge. It blows a hole in the wall when the fuse burns down; destroy it first to stop it.</description>
+    <thingClass>Building</thingClass>
+    <graphicData>
+      <texPath>Things/Building/Traps/IED_HE</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(0.8,0.8)</drawSize>
+    </graphicData>
+    <altitudeLayer>BuildingOnTop</altitudeLayer>
+    <passability>Standable</passability>
+    <fillPercent>0.1</fillPercent>
+    <rotatable>false</rotatable>
+    <selectable>true</selectable>
+    <useHitPoints>true</useHitPoints>
+    <tickerType>Normal</tickerType>
+    <statBases>
+      <MaxHitPoints>30</MaxHitPoints>
+      <Flammability>0</Flammability>
+    </statBases>
+    <building>
+      <isEdifice>false</isEdifice>
+      <claimable>false</claimable>
+      <deconstructible>false</deconstructible>
+      <ai_chillDestination>false</ai_chillDestination>
+    </building>
+    <comps>
+      <li Class="CompProperties_Explosive">
+        <explosiveRadius>1.9</explosiveRadius>
+        <explosiveDamageType>HSKTAI_BreachBlast</explosiveDamageType>
+        <damageAmountBase>120</damageAmountBase>
+        <wickTicks>300~300</wickTicks>
+        <explodeOnKilled>false</explodeOnKilled>
+        <startWickHitPointsPercent>-1</startWickHitPointsPercent>
+        <chanceToStartFire>0</chanceToStartFire>
+        <applyDamageToExplosionCellsNeighbors>true</applyDamageToExplosionCellsNeighbors>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <JobDef>
+    <defName>HSKTAI_PlantBreachCharge</defName>
+    <driverClass>HSKTacticalAI.JobDriver_PlantBreachCharge</driverClass>
+    <reportString>planting a breach charge.</reportString>
+    <casualInterruptible>false</casualInterruptible>
+  </JobDef>
+
+</Defs>
