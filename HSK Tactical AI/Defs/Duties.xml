@@ -9,6 +9,7 @@
       <subNodes>
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Evade" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Retreat" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_Unarmed" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_RaidingParty" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Throw" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Medic" />
@@ -85,6 +86,7 @@
       <subNodes>
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Evade" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Retreat" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_Unarmed" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_RaidingParty" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Throw" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Medic" />

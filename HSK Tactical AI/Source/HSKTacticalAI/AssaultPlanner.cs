@@ -602,7 +602,7 @@ namespace HSKTacticalAI
             float LaneTicks(Pawn m, IEnumerable<Building> rock)
             {
                 bool inHand = true;   // gunners sling the gun and dig with the tool (EquipToolForDigging)
-                float tool = inHand ? Math.Max(BreachKit.OwnMiningGain(m), BreachKit.MiningToolFactor(tech)) : 1f;
+                float tool = inHand ? (s.equipRaiders ? Math.Max(BreachKit.OwnMiningGain(m), BreachKit.MiningToolFactor(tech)) : BreachKit.OwnMiningGain(m)) : 1f;   // without extra equipment: their own tools only
                 float speed = Mathf.Max(0.6f, m.GetStatValue(StatDefOf.MiningSpeed) * (inHand ? tool / 0.8f : 1f));
                 int ticksPerHit = Mathf.Max(1, Mathf.RoundToInt(100f / speed));
                 float t = 0f;
@@ -614,7 +614,7 @@ namespace HSKTacticalAI
                 return t;
             }
             // Industrial+: blast through with mining charges (one blast clears about two cells along the line, both lanes)
-            bool blast = tech >= TechLevel.Industrial && s.breachKit && TAI_DefOf.HSKTAI_MiningCharge != null;
+            bool blast = tech >= TechLevel.Industrial && s.breachKit && s.equipRaiders && TAI_DefOf.HSKTAI_MiningCharge != null;   // mining charges only come as extra equipment
             float eta = blast ? Mathf.Ceil(bp.walls.Count / 2f) * 750f
                               : LaneTicks(miners[0], bp.walls);
             if (!blast && miners.Count > 1 && bp.walls2.Count > 0) eta = Mathf.Max(eta, LaneTicks(miners[1], bp.walls2));
@@ -1472,6 +1472,20 @@ namespace HSKTacticalAI
         /// - H-hour: every active breach is open ("breaches open"), or one is and the others are late.
         /// - No progress / only inner walls left: plan the next breach points.
         /// </summary>
+        /// <summary>Can the living team still open this breach point with what it carries (fire, tunnels: always)?</summary>
+        private static bool HasMeans(BreachPoint bp)
+        {
+            var team = bp.team.Where(p => p.Spawned && !p.Downed && !p.Dead).ToList();
+            switch (bp.method)
+            {
+                case BreachMethod.Launcher: return team.Any(p => { var v = DestructiveRangedVerb(p); return v != null && v.Available(); });
+                case BreachMethod.Charge: return team.Any(p => BreachKit.CarriedCharge(p) != null);
+                case BreachMethod.Tool: return team.Any(HasBreachTool);
+                case BreachMethod.Grenade: return team.Any(p => Grenades.CarriedFrag(p) != null || DestructiveRangedVerb(p) != null);
+                default: return true;
+            }
+        }
+
         private static bool TickBreach(Map map, Lord lord, AssaultPlan plan, List<Pawn> alive, int now, TacticalAISettings s, ref string reason)
         {
             bool dutiesChanged = false;
@@ -1482,6 +1496,18 @@ namespace HSKTacticalAI
                 {
                     plan.capability += "; breacher " + gone.LabelShort + " out (" + (gone.Dead ? "dead" : gone.Destroyed ? "destroyed" : "left: lord=" + (gone.GetLord()?.LordJob?.GetType().Name ?? "none") + " mental=" + (gone.MentalStateDef?.defName ?? "-") + " job=" + (gone.CurJobDef?.defName ?? "-") + " spawned=" + gone.Spawned) + ")";
                     bp.team.Remove(gone);
+                }
+                // ff2 (full modlist): a one-shot launcher spent on the first wall left breach #1 with a living team and
+                // nothing to open it with; the raid waited for it until the timeout. Out of means = given up now.
+                bool outOfMeans = bp.TeamAlive && !BreachKit.BreachUnderWay(map, bp) && !HasMeans(bp);
+                if (outOfMeans)
+                {
+                    bp.abandoned = true;
+                    var toM = plan.breaches.Where(b => !b.abandoned).OrderBy(b => b.entry.DistanceToSquared(bp.entry)).FirstOrDefault();
+                    if (toM != null) Regroup(plan, bp, toM);
+                    plan.capability += "; breach #" + bp.index + " out of means";
+                    dutiesChanged = true;
+                    continue;
                 }
                 if (bp.TeamAlive || BreachKit.BreachUnderWay(map, bp)) continue;
                 plan.capability += "; breach #" + bp.index + " team not alive [" + string.Join(",", bp.team.Select(p => p.LabelShort + (p.Spawned ? "" : ":unspawned") + (p.Downed ? ":downed" : ""))) + "]";
@@ -1809,6 +1835,7 @@ namespace HSKTacticalAI
     public class JobGiver_HSKTAI_Breach : ThinkNode_JobGiver
     {
         private static readonly JobGiver_AIFightEnemies fight = new JobGiver_AIFightEnemies();
+        private static readonly Dictionary<Pawn, int> lastLauncherOrder = new Dictionary<Pawn, int>();
 
         protected override Job TryGiveJob(Pawn pawn)
         {
@@ -1906,7 +1933,7 @@ namespace HSKTacticalAI
                 }
             }
             Verb launcher = AssaultPlanner.DestructiveRangedVerb(pawn);
-            if (launcher != null)
+            if (launcher != null && launcher.Available())   // out of ammo: the other ways below
             {
                 // fire from a covered position: in range, line of sight to the wall, out of the defenders' fire, clear
                 // of our own blast - not from wherever the cast-position finder would walk to
@@ -1918,6 +1945,13 @@ namespace HSKTacticalAI
                     go.expiryInterval = 600;
                     return go;
                 }
+                // final test (full modlist): "started 10 jobs in one tick" - a shot that can't go off now (no ammo, cooling
+                // down) ends at once and was ordered again in the same tick. No ammo: other ways in; and wait a
+                // moment instead of reordering the same shot within 30 ticks.
+                int nowT = Find.TickManager.TicksGame;
+                if ((lastLauncherOrder.TryGetValue(pawn, out int lastT) && nowT - lastT < 30 && pawn.CurJobDef != JobDefOf.UseVerbOnThing))
+                    return JobMaker.MakeJob(JobDefOf.Wait_Combat, 30, true);
+                lastLauncherOrder[pawn] = nowT;
                 Job shoot = JobMaker.MakeJob(JobDefOf.UseVerbOnThing, wall);
                 shoot.verbToUse = launcher;
                 shoot.preventFriendlyFire = true;

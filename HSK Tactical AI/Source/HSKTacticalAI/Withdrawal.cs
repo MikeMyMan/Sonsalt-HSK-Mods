@@ -26,6 +26,15 @@ namespace HSKTacticalAI
         /// </summary>
         public static int AmmoWithdrawals;
 
+        /// <summary>In the defenders' fire (threat map) and not covered by smoke: no place to go back for a comrade.</summary>
+        public static bool InOpenFire(Map map, IntVec3 c)
+        {
+            var tm = MapComponent_TacticalAI.For(map)?.Threat;
+            if (tm == null || tm.CompletedCycles == 0 || tm.FireAt(c) <= TacticalAIMod.Settings.safeFire) return false;
+            try { if (map.gasGrid.DensityAt(c, GasType.BlindSmoke) > 0) return false; } catch { }
+            return true;
+        }
+
         public static bool ShouldWithdraw(Lord lord, AssaultPlan plan, out string why)
         {
             var s = TacticalAIMod.Settings;
@@ -153,6 +162,7 @@ namespace HSKTacticalAI
             {
                 Pawn downed = map.mapPawns.SpawnedPawnsInFaction(pawn.Faction)
                     .Where(d => d.Downed && !d.Dead && d.Position.DistanceTo(pawn.Position) <= 12f
+                                && !Withdrawal.InOpenFire(map, d.Position)   // ff2: carriers walked back into the breach and went down
                                 && !map.reservationManager.IsReservedByAnyoneOf(d, pawn.Faction)
                                 && pawn.CanReserveAndReach(d, PathEndMode.OnCell, Danger.Deadly))
                     .OrderBy(d => d.Position.DistanceToSquared(pawn.Position)).FirstOrDefault();

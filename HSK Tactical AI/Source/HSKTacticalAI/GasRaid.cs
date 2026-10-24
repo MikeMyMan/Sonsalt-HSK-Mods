@@ -72,7 +72,7 @@ namespace HSKTacticalAI
             plan.gasRoom = r;
             plan.gasFlammable = !r.PsychologicallyOutdoors && Flammable(r, map);
             plan.capability += "; gas raid (enclosed space" + (plan.gasFlammable ? ", flammable" : "") + ")";
-            if (!kitted.Add(lord.loadID)) return;
+            if (!s.equipRaiders || !kitted.Add(lord.loadID)) return;   // masks and grenades only as extra equipment; else what they carry
             ThingDef tox = DefDatabase<ThingDef>.GetNamedSilentFail("Weapon_GrenadeTox");
             ThingDef fire = DefDatabase<ThingDef>.GetNamedSilentFail("Weapon_GrenadeMolotov") ?? DefDatabase<ThingDef>.GetNamedSilentFail("Weapon_GrenadeFlame");
             ThingDef mask = DefDatabase<ThingDef>.GetNamedSilentFail("Hat_GasMask");

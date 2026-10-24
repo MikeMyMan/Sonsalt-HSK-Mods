@@ -1352,6 +1352,8 @@ namespace HSKTacticalAI
                 ["crossAttrition"] = Crossing.Attrition,
                 ["crossAttritionGo"] = Crossing.AttritionGo,
                 ["crossBound"] = Crossing.Bounds,
+                ["unarmedRearmed"] = JobGiver_HSKTAI_Unarmed.Rearmed,
+                ["unarmedKept"] = JobGiver_HSKTAI_Unarmed.Kept,
                 ["satisfiedHeldTicks"] = SatisfiedHold.HeldTicks,
                 ["satisfiedReleases"] = SatisfiedHold.Releases,
                 ["satisfiedRelease"] = SatisfiedHold.LastRelease,

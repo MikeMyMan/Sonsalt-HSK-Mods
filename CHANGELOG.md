@@ -23,16 +23,27 @@ settings. Tested on RimWorld 1.7 with HSK `1.7-super-unstable` and the full HSK 
   - withdraw only when the attack is bound to fail.
 
 **Breaching**
-- Several breach points at once, opened together. Method by tech level and wall:
+- **Raiders keep their loadout.** They breach with what they spawned with: launchers, thrown explosives, breach tools
+  and grenades, fire against wooden walls (anyone can set it alight), tunnels through rock with their own tools. A raid
+  with nothing that can open the wall besieges (if its faction can) or stands off, snipes and plunders.
+- Several breach points at once, opened together; the method per wall is the best the raid's tech level and loadout
+  allow.
+- Optional **extra equipment** (setting, off by default) gives raiders breach gear for their tech level:
   - breach charges (industrial and up);
-  - grenade or rocket launchers, stick bombs (medieval);
-  - breach axes (tribal; the bow goes in the pack);
-  - fire against wooden walls, grenades on doors, tunnels through rock.
-- Breach teams stack beside the wall under overwatch; smoke on the breach; shield bearers escort the breacher.
-- **Gas and burn-out:** defenders in a small enclosed room or bunker get tox grenades (masks for the throwers) and
-  fire through the breach (industrial and up).
+  - stick bombs (medieval);
+  - breach axes (tribal, the bow goes in the pack);
+  - mining charges and tools for tunnels;
+  - some frag and smoke grenades;
+  - masks and tox grenades for gas raids.
+- Breach teams stack beside the wall under overwatch; shield bearers escort the breacher; carried smoke grenades go
+  onto the opening.
+- **Gas and burn-out:** defenders in a small enclosed room or bunker get the raid's tox grenades and fire through the
+  breach (industrial and up).
 - Grenades are lobbed over a single wall when there is no line of sight. Gas and fire grenades never count as
   breaching tools.
+- A breach whose team has nothing left to open it with (a one-shot launcher spent) is given up at once, and the team
+  joins an open breach. Raiders left without a weapon pick up a gun lying out of the defenders' fire, or plunder or
+  hold back; they never assault with their fists.
 
 **Combined arms**
 - **Roles:** base of fire (machine guns, snipers) pins the defenders while the assault moves. The rest have roles too:
@@ -40,7 +51,7 @@ settings. Tested on RimWorld 1.7 with HSK `1.7-super-unstable` and the full HSK 
   - overwatch covers the breach;
   - combat medics smoke, carry the wounded out of fire and tend them;
   - a raiding party plunders on large raids.
-- **Shield wall:** ballistic-shield bearers lead, crouch between bounds and throw grenades once in range; gunners
+- **Shield wall:** ballistic-shield bearers lead, crouch between bounds and throw the grenades they carry once in range; gunners
   follow in their shadow. Shields last in a withdrawal.
 - **Fire discipline** (CE aim and fire modes) by range and situation:
   - aimed single shots at long range;
@@ -75,7 +86,8 @@ settings. Tested on RimWorld 1.7 with HSK `1.7-super-unstable` and the full HSK 
   making progress. It fires once the assault stalls, has run a while, or the defenders are down. Damage from the
   raiders' own breach never counts.
 - **Planned withdrawal** when the attack fails or ammunition runs low: shields form the rearguard and the wounded are
-  carried out.
+  carried out - except those lying in the defenders' fire without smoke over them (medics too: no rescues into the
+  gun line).
 
 **Performance:** the AI's own code costs about 0.02-0.09 ms per game tick (under 1 % of the tick time), measured up to a
 10,000-point raid with 44 raiders. Under heavy load, its periodic checks run half as often.

@@ -76,7 +76,7 @@ namespace HSKTacticalAI
         public static void EquipOnce(Lord lord, AssaultPlan plan, List<Pawn> pawns)
         {
             var s = TacticalAIMod.Settings;
-            if (s == null || !s.grenadeKit || lord?.faction == null || !equippedLords.Add(lord.loadID)) return;
+            if (s == null || !s.grenadeKit || !s.equipRaiders || lord?.faction == null || !equippedLords.Add(lord.loadID)) return;
             TechLevel tech = lord.faction.def.techLevel;
             ThingDef frag = tech >= TechLevel.Industrial
                 ? DefDatabase<ThingDef>.GetNamedSilentFail("Weapon_GrenadeFrag") ?? DefDatabase<ThingDef>.GetNamedSilentFail("Weapon_GrenadeHighExplosive")
@@ -121,7 +121,7 @@ namespace HSKTacticalAI
         public static void EquipShieldBearers(AssaultPlan plan)
         {
             var s = TacticalAIMod.Settings;
-            if (s == null || !s.grenadeKit || s.shieldFrags <= 0) return;
+            if (s == null || !s.grenadeKit || !s.equipRaiders || s.shieldFrags <= 0) return;
             foreach (Pawn b in plan.followersOf.Keys)
             {
                 if (b.inventory == null || b.Faction == null || !shieldKitted.Add(b)) continue;

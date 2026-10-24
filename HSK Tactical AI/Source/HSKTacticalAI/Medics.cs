@@ -47,6 +47,8 @@ namespace HSKTacticalAI
 
             Pawn patient = plan.members
                 .Where(m => m != pawn && m.Spawned && m.Downed && !m.Dead && m.Map == map && m.Position.DistanceTo(pawn.Position) <= s.medicReach
+                            // in open fire only with smoke to cover him (ff2: rescuers went down in the breach)
+                            && (!Withdrawal.InOpenFire(map, m.Position) || Grenades.CarriedSmoke(pawn) != null)
                             && !map.physicalInteractionReservationManager.IsReserved(m) && pawn.CanReserveAndReach(m, PathEndMode.Touch, Danger.Deadly))
                 .OrderBy(m => (InFire(m.Position) ? 0 : 1000) + m.Position.DistanceToSquared(pawn.Position)).FirstOrDefault();
             if (patient == null) return null;

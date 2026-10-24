@@ -24,7 +24,7 @@ the game's auto-sort). Put the compatibility fixes near the end.
 A custom raid AI for HSK (0.1 is a test release for the dev team; see the [changelog](CHANGELOG.md) for the full list).
 Raiders plan their attack instead of walking into your guns:
 - they read where your guns can shoot (threat map) and avoid killboxes and funnels;
-- they breach several walls at once with the tools of their tech level;
+- they breach several walls at once with what they carry (launchers, explosives, tools, fire, tunnels);
 - they cross open ground only in cover, behind smoke, with 3:1 odds or by fire and movement;
 - they fight as combined arms: base of fire, overwatch, shield bearers, medics, flanking, fire discipline by range;
 - under realistic suppression they go prone (drawn lying down, labelled "prone");

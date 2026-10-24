@@ -38,7 +38,9 @@ namespace HSKTacticalAI
         public static void EquipOnce(Lord lord, bool force = false)
         {
             var s = TacticalAIMod.Settings;
-            if (s == null || !s.breachKit || lord?.faction == null || lord.ownedPawns.Count == 0) return;
+            // raiders keep the loadout they spawned with unless extra equipment is switched on (playtest: early-game raiders
+            // turned up with grenades and explosives - breach methods follow tech level and the loadout instead)
+            if (s == null || !s.breachKit || !s.equipRaiders || lord?.faction == null || lord.ownedPawns.Count == 0) return;
             if (lord.faction == Faction.OfPlayer) return;
             // a raid that can walk around (assault plan "walk") doesn't need breaching gear
             if (!force && AssaultPlanner.Plans.TryGetValue(lord.loadID, out var plan) && plan.mode != PlanMode.Breach) return;
@@ -166,7 +168,7 @@ namespace HSKTacticalAI
         public static void GiveMiningTool(Pawn p, TechLevel tech)
         {
             var s = TacticalAIMod.Settings;
-            if (s == null || !s.breachKit || p.inventory == null) return;
+            if (s == null || !s.breachKit || !s.equipRaiders || p.inventory == null) return;
             ThingDef def = MiningToolDef(tech);
             if (def == null || OwnMiningGain(p) >= MiningToolFactor(tech)) return;   // already has as good a tool
             Thing tool = ThingMaker.MakeThing(def, def.MadeFromStuff ? GenStuff.DefaultStuffFor(def) : null);
@@ -221,6 +223,7 @@ namespace HSKTacticalAI
             if (s == null || !s.breachKit || !s.smokeOnBreach || !bp.entry.IsValid) return;
             if (lord.faction == null || lord.faction.def.techLevel < TechLevel.Industrial) return;
             if (lord.ownedPawns.Any(p => plan.BreachFor(p) == bp && Grenades.CarriedSmoke(p) != null)) return;   // real smoke grenades are thrown instead
+            if (!s.equipRaiders) return;   // no smoke out of nothing: only grenades the raiders carry
             Pawn thrower = lord.ownedPawns.FirstOrDefault(p => p.Spawned && !p.Downed && !p.Dead && p.Position.DistanceTo(bp.entry) <= 18f
                                                                && (bp.team.Contains(p) || plan.BreachFor(p) == bp));
             if (thrower == null) return;
@@ -258,7 +261,7 @@ namespace HSKTacticalAI
         public static bool GiveMiningCharges(Pawn p, int rockCells)
         {
             var s = TacticalAIMod.Settings;
-            if (s == null || !s.breachKit || p.inventory == null || TAI_DefOf.HSKTAI_MiningCharge == null) return false;
+            if (s == null || !s.breachKit || !s.equipRaiders || p.inventory == null || TAI_DefOf.HSKTAI_MiningCharge == null) return false;
             Thing c = ThingMaker.MakeThing(TAI_DefOf.HSKTAI_MiningCharge);
             c.stackCount = UnityEngine.Mathf.Clamp(UnityEngine.Mathf.CeilToInt(rockCells / 2f) + 1, 1, 6);
             if (!p.inventory.innerContainer.TryAdd(c)) return false;

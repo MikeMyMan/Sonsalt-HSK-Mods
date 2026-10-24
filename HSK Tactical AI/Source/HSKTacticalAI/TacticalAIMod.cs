@@ -121,6 +121,7 @@ namespace HSKTacticalAI
         public int shieldThrowTicks = 240;           // a shield bearer throws at most this often
         public bool shieldRearguard = true;          // in a withdrawal, shield bearers cover the rear and leave last
         public bool shieldEscort = true;             // breach work: a shield bearer covers the breacher on its way to and at the wall
+        public bool equipRaiders = false;            // extra equipment (breach charges, tools, grenades, masks, smoke) on top of the raiders' own loadout
         public bool proneVisual = true;              // prone raiders drawn in the crawl pose (render only)
         public float proneMoveFactor = 0.25f;        // prone raiders crawl at this share of their speed
         public bool proneLabel = true;               // "prone" shown above a prone raider while he is prone
@@ -291,6 +292,7 @@ namespace HSKTacticalAI
             Scribe_Values.Look(ref attritionTicks, "attritionTicks", 2700);
             Scribe_Values.Look(ref boundOdds, "boundOdds", 1.5f);
             Scribe_Values.Look(ref proneVisual, "proneVisual", true);
+            Scribe_Values.Look(ref equipRaiders, "equipRaiders", false);
             Scribe_Values.Look(ref proneMoveFactor, "proneMoveFactor", 0.25f);
             Scribe_Values.Look(ref proneLabel, "proneLabel", true);
             Scribe_Values.Look(ref satisfiedHold, "satisfiedHold", true);
@@ -384,9 +386,10 @@ namespace HSKTacticalAI
             l.Label("Extra cost to tunnel through rock: " + naturalWallExtraCost + " (vanilla 20)");
             naturalWallExtraCost = (int)l.Slider(naturalWallExtraCost, 20, 5000);
             l.GapLine();
+            l.CheckboxLabeled("Give raiders extra equipment", ref equipRaiders, "Off (default): raiders keep the loadout they spawned with, and pick their breach method from it and their tech level. On: breach specialists get charges, tools or stick bombs, some raiders get grenades and smoke, gas raids get masks and tox grenades.");
             l.CheckboxLabeled("Breaching equipment", ref breachKit,
-                "Breaching raids bring tools for their tech level: Industrial and up carry breach charges they plant against walls " +
-                "(shoot the charge to defuse it); tribal and medieval breachers get breach axes or warhammers.");
+                "With extra equipment on: breaching raids bring tools for their tech level - Industrial and up carry breach charges they plant against walls " +
+                "(shoot the charge to defuse it); tribal and medieval breachers get breach axes or stick bombs.");
             l.Label("Breach charges per specialist: " + chargesPerSpecialist);
             chargesPerSpecialist = (int)l.Slider(chargesPerSpecialist, 1, 5);
             l.GapLine();

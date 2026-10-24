@@ -56,6 +56,44 @@ namespace HSKTacticalAI
         }
     }
 
+    /// <summary>
+    /// A raider without a weapon (a one-shot launcher spent on the wall, a gun lost) does not join the assault with his
+    /// fists (ff2, full modlist: unarmed breachers walked into the breach and went down). He picks up a weapon lying
+    /// nearby out of the defenders' fire; else he plunders out of fire; else he stays out of their fire.
+    /// </summary>
+    public class JobGiver_HSKTAI_Unarmed : ThinkNode_JobGiver
+    {
+        public static int Rearmed, Kept;
+
+        protected override Job TryGiveJob(Pawn pawn)
+        {
+            AssaultPlan plan = AssaultPlanner.PlanOf(pawn);
+            if (plan == null || (plan.phase != PlanPhase.Assault && plan.phase != PlanPhase.Approach)) return null;
+            if (!pawn.RaceProps.Humanlike || pawn.equipment == null || pawn.equipment.Primary != null || pawn.WorkTagIsDisabled(WorkTags.Violent)) return null;
+            if (plan.breachTeam.Contains(pawn) && plan.BreachFor(pawn) is BreachPoint bp && !bp.abandoned && !bp.WallsGone
+                && (bp.method == BreachMethod.Tunnel || bp.method == BreachMethod.Fire)) return null;   // digging / lighting needs no weapon
+            Map map = pawn.Map;
+            Thing gun = GenClosest.ClosestThingReachable(pawn.Position, map, ThingRequest.ForGroup(ThingRequestGroup.Weapon), PathEndMode.OnCell,
+                TraverseParms.For(pawn, Danger.Deadly), 20f,
+                t => t.def.IsRangedWeapon && t.def.equipmentType == EquipmentType.Primary && !t.def.destroyOnDrop && t.Spawned
+                     && !Withdrawal.InOpenFire(map, t.Position) && pawn.CanReserve(t) && EquipmentUtility.CanEquip(t, pawn));
+            if (gun != null)
+            {
+                Rearmed++;
+                return JobMaker.MakeJob(JobDefOf.Equip, gun);
+            }
+            Kept++;
+            Job plunder = TacticalAIMod.Settings.plunder ? Plunder.TryPlunder(pawn, plan, plan.objective, 45f, 2) : null;
+            if (plunder != null) return plunder;
+            if (!Withdrawal.InOpenFire(map, pawn.Position)) return JobMaker.MakeJob(JobDefOf.Wait_Combat, 120, true);
+            IntVec3 safe = PositionFinder.Find(pawn, 15f, c => Withdrawal.InOpenFire(map, c.c) ? float.NaN : c.path + c.exposure * 3f, null, 1);
+            if (!safe.IsValid) return null;
+            Job go = JobMaker.MakeJob(JobDefOf.Goto, safe);
+            go.locomotionUrgency = LocomotionUrgency.Sprint;
+            return go;
+        }
+    }
+
     /// <summary>Melee micro (Assault duty, before the vanilla fight node) and kiting for gunners.</summary>
     public class JobGiver_HSKTAI_Melee : ThinkNode_JobGiver
     {
