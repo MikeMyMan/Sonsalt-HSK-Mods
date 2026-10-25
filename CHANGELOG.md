@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.0 (2026-10-25)
+
+- **HSK Tactical AI 0.1.0** joins the release (test release, see below).
+- New preview images and mod icons for all five mods (`About/Preview.png`, `About/ModIcon.png`): in-game scenes with a
+  shared title frame. RimWorld shows the icon in the loading screen's mod summary and in Options > Mod settings.
+
 ## HSK Tactical AI 0.1.0 (2026-10-24)
 
 First test release of **HSK Tactical AI** (`sonsalt.hsk.tacticalai`), a custom raid AI for HSK on RimWorld 1.7 with

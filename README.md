@@ -150,7 +150,9 @@ Some XML is generated. Edit the generator, not the XML:
 - **MrHydralisk**: VOE: Additional Outposts.
 - **Watcher**, **Elldar**, **kaitorisenkou**, **Vile**: the mods the compatibility fixes and gates touch.
 
-No textures or assets from other mods are included; the outpost items use HSK's own weapon-crate texture.
+No textures or assets from other mods are included in the mod files; the outpost items use HSK's own weapon-crate texture.
+The preview images (`About/Preview.png`) are in-game screenshots of RimWorld with HSK; the icons (`About/ModIcon.png`) are
+original artwork over those screenshots.
 
 ## License
 
