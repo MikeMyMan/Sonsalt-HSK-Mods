@@ -166,6 +166,7 @@ namespace HSKTacticalAI
             }
             // sabotage
             plan.ambushTarget = LoneDefender(map, plan, alive);
+            if (plan.ambushTarget != null && !plan.fieldEnemies.Contains(plan.ambushTarget)) { plan.fieldEnemies.Add(plan.ambushTarget); plan.fieldFight = true; plan.fieldLastSeen = now; }
             int cx = 0, cz = 0;
             foreach (var p in alive) { cx += p.Position.x; cz += p.Position.z; }
             var centre = new IntVec3(cx / alive.Count, 0, cz / alive.Count);
@@ -177,7 +178,7 @@ namespace HSKTacticalAI
             if (!arsonBusy && plan.ambushTarget == null && now - plan.lastGoalJobTick > s.sabotageIdleTicks) Leave(map, lord, plan, alive, "nothing left to wreck");
         }
 
-        /// <summary>A colonist alone outside: no other colonist within 15 cells, not under a roof, at most 50 cells from the raid.</summary>
+        /// <summary>A colonist alone outside: no other colonist within 15 cells, not under a roof, at most 80 cells from the raid.</summary>
         private static Pawn LoneDefender(Map map, AssaultPlan plan, List<Pawn> alive)
         {
             var defs = Suppression.Defenders(map, plan.objective, 999f);
@@ -188,8 +189,8 @@ namespace HSKTacticalAI
                 if (d.Position.Roofed(map)) continue;
                 if (defs.Any(o => o != d && o.Position.DistanceTo(d.Position) <= 15f)) continue;
                 float dist = alive.Min(p => p.Position.DistanceTo(d.Position));
-                if (dist > 50f || dist >= bd) continue;
-                int fighters = alive.Count(p => p.Position.DistanceTo(d.Position) <= 50f);
+                if (dist > 80f || dist >= bd) continue;   // saboteurs look for him (ld2: within 50 they only met him on the way out)
+                int fighters = alive.Count(p => p.Position.DistanceTo(d.Position) <= 80f);
                 if (fighters < 2) continue;
                 bd = dist;
                 best = d;
@@ -252,26 +253,10 @@ namespace HSKTacticalAI
             var s = TacticalAIMod.Settings;
             AssaultPlan plan = AssaultPlanner.PlanOf(pawn);
             if (plan == null || plan.mode != PlanMode.Sabotage || plan.phase != PlanPhase.Approach) return null;
-            Job j = null;
-            Pawn t = plan.ambushTarget;
-            if (t != null && t.Spawned && !t.Downed && !t.Dead && pawn.CanReach(t, PathEndMode.Touch, Danger.Deadly))
-            {
-                Verb v = pawn.equipment?.PrimaryEq?.PrimaryVerb;
-                if (v == null || v.IsMeleeAttack) j = JobMaker.MakeJob(JobDefOf.AttackMelee, t);
-                else if (t.Position.DistanceTo(pawn.Position) <= v.verbProps.range * 0.8f && v.CanHitTarget(t))
-                {
-                    j = JobMaker.MakeJob(JobDefOf.AttackStatic, t);
-                    j.endIfCantShootTargetFromCurPos = true;
-                }
-                else
-                {
-                    j = JobMaker.MakeJob(JobDefOf.Goto, t.Position);
-                    j.locomotionUrgency = LocomotionUrgency.Jog;
-                }
-                j.expiryInterval = 180;
-                j.checkOverrideOnExpire = true;
-            }
-            if (j == null) j = Plunder.KillJob(pawn, plan.objective, 100f);
+            // a colonist alone outside is a field fight (FieldFight, before this node in the duty): from cover at the
+            // weapon's range, flankers, melee charging - not a walk into his gun (ld1: range keeping and a straight
+            // approach cancelled out)
+            Job j = Plunder.KillJob(pawn, plan.objective, 100f);
             if (j == null && s.arson) j = Plunder.BurnJob(pawn, plan.objective, 100f);
             if (j == null) return null;
             plan.lastGoalJobTick = Find.TickManager.TicksGame;

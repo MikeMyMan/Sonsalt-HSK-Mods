@@ -1,5 +1,12 @@
 # Changelog
 
+## HSK 1.7 Compatibility Fixes 1.0.1 (unreleased)
+
+- **New 130 mm Rocket Missiles:** its white phosphorus smoke inherits the gas category but is a different kind of
+  thing, so Combat Extended errored every time a turret or mortar checked a line of fire through it. That was up to
+  2,000 errors per siege, and the turret stopped working. The smoke is moved out of the gas category; it still burns,
+  heats and fades as before.
+
 ## HSK Tactical AI 0.2.0 (unreleased)
 
 **Tactical competence:** how smart a raid acts now depends on its leader and its faction's tech level, instead of every
@@ -94,6 +101,63 @@ breaching is not needed"):
 - Neither goal teaches the faction anything about its approach (raid memory).
   Setting: "Scouting and sabotage raids", with the two weights.
 
+**The plan adapts when the situation changes** (playtest: "when the defenders leave the base the attackers do not
+adjust their attack accordingly"; "once the situation changes the plan needs to adapt, that is very important"):
+- **Defenders who come out get fought where they are.** Colonists more than 15 cells from their base and within 40 of
+  the raid turn it into a field fight. Everyone not busy at a wall turns on them:
+  - shooters fire from where they stand if they have a shot at a sensible range, else take a covered spot at their
+    weapon's distance;
+  - melee raiders charge;
+  - a sharp command sends every third rifleman round their side.
+
+  Five seconds after the last one is back inside, the raid returns to its plan. Before this, the raid kept waiting at
+  its breach and assault spots and only fired back when hit.
+- **A defence beaten in the field is stormed at once.** If half the defenders are down after coming out, a walk-in
+  raid stops waiting for its timetable and goes.
+- **The objective follows the defence.** If the defenders still at home move 12 or more cells from where the plan
+  expected them, the objective moves with them, and a walk-in re-plans its axes. A breach keeps its walls (its charges
+  are on them).
+- A doctrine (field fight): a dull raid sticks to the plan it made. Setting: "Fight defenders who come out".
+
+**Grenade launchers fire over walls** (playtest: "M79 and alike weapons are great as indirect fire weapons to fire into
+the base at different places"). CE fires 40 mm rounds on a flat line, so a wall stops them. A grenadier in the base of
+fire or a siege camp, with an explosive round loaded and no direct shot, now lobs it high over the wall:
+- targets: your colonists, then turrets, then workshops and power, all under open sky, between 8 cells and 95 % of the
+  launcher's range;
+- shots spread over the base, never land near his own men, and each shot uses one real round from the magazine, with
+  the round's own damage and blast;
+- scatter is 5-15 % of the distance, depending on his Shooting skill;
+- he needs open sky himself, and a thin roof over the target takes the round.
+
+A doctrine (indirect fire). Setting: "Grenade launchers fire over walls".
+- **Launchers stay out of the breach** (playtest: "the M79 etc after they breach should stay and engage targets of
+  opportunity, also try to engage the walls from a larger distance and if possible from cover"):
+  - once his wall is open (walk-in: from H-hour), a raider with an explosive launcher doesn't follow the assault
+    through the hole; he stays outside as base of fire and shells whatever shows itself, over the walls too;
+  - he shoots at the wall from 55-100 % of his range, from cover from the defence where there is some, out of fire
+    (was: at most 30 cells, from the spot nearest the stack point).
+
+  Setting: "Grenade launchers stay out of the breach".
+- **Cover wherever there is some** (playtest: "in general units should always seek cover if possible and available"):
+  - waiting spots before a walk-in and beside a breach are picked in cover from the defence where the area has any;
+  - in a field fight, a raider with a shot but in the open first steps to cover within 5 cells that keeps the shot;
+  - stepping back from enemies who come too close prefers covered cells.
+
+**Crew-served weapons** (playtest: "smaller static weapons like HMGs can be carried by raiders and placed closer as part
+of a normal raid ... one of the raiders carries the gun and 1-2 the ammo, they stay together and deploy, the team
+attacks when everything is ready"):
+- Industrial and later assault raids of 8 or more bring one light crew-served gun (16 or more: two). It is a manned
+  turret of up to 40 kg at or below the faction's tech level, from whatever the modlist has (HSK: M240B, AGS-17, ...).
+- The gunner carries it packed; one or two bearers carry three magazines of its ammo.
+- The team walks a covered route together, the gunner waiting for his bearers, to a post at 60-75 % of the gun's
+  range: out of your fire, in cover, with a line of fire on your base. They set it up in 4 seconds and the gunner mans
+  it. Only he stays at the gun: the bearers spread out into cover 4 to 8 cells beside and behind it, cover it, reload
+  it from their packs, and take it over if the gunner falls. The gun is set up facing your base with
+  the gunner behind it, and an idle gun turns toward the nearest colonist in range, or toward your base.
+- The assault waits until every team still alive is firing, for at most 50 seconds.
+- If the crew falls or the raid withdraws, the gun stays where it stands, unowned: loot.
+- Part of the base of fire (a doctrine). Setting: "Crew-served weapons".
+
 **Clear the breach by fire, then go in** (playtest: "better to be outside, cover the breach from cover and shoot inside
 until there is no more enemy to shoot at, then slowly approach"): once a wall is open, nobody goes through while a
 defender who isn't pinned (hunkering) still covers the gap. Gunners at the corner posts and on overwatch fire in;
@@ -149,6 +213,8 @@ sight). Nobody stands in the hole itself. Setting: "Corner fire at the breach".
   lying in the defenders' open fire (same rule as our medics and withdrawal carriers).
 - A raid holding back from defenders holed up behind a funnel, with nothing to plunder, waited out the whole raid. It now
   leaves after the plunder idle time (planned withdrawal, or the vanilla way for dull raids).
+- The siege mortar spotter never marked a target. It didn't see CE mortars at all, and once fixed it walked out to its
+  post and back each time the mortar dropped its target between reloads. Now it keeps watching the last target for 15 s.
 
 ## 1.2.0 (2026-10-25)
 

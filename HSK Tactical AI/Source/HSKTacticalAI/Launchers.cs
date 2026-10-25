@@ -102,7 +102,8 @@ namespace HSKTacticalAI
         private static System.Type ammoUserType;
         private static System.Reflection.PropertyInfo pCurrentAmmo, pSelectedAmmo, pProps;
         private static System.Reflection.FieldInfo fAmmoSet, fAmmoTypes, fLinkAmmo, fLinkProj;
-        private static System.Reflection.MethodInfo mUnload, mMakeReload;
+        private static System.Reflection.MethodInfo mUnload, mMakeReload, mReduce;
+        private static System.Reflection.PropertyInfo pCurMag;
         public static int AmmoSwitches;
 
         private static void ResolveAmmo()
@@ -116,6 +117,8 @@ namespace HSKTacticalAI
             pProps = AccessTools.Property(ammoUserType, "Props");
             mUnload = AccessTools.Method(ammoUserType, "TryUnload", new[] { typeof(bool) });
             mMakeReload = AccessTools.Method(ammoUserType, "TryMakeReloadJob");
+            mReduce = AccessTools.Method(ammoUserType, "TryReduceAmmoCount");
+            pCurMag = AccessTools.Property(ammoUserType, "CurMagCount");
             fAmmoSet = AccessTools.Field(AccessTools.TypeByName("CombatExtended.CompProperties_AmmoUser"), "ammoSet");
             fAmmoTypes = AccessTools.Field(AccessTools.TypeByName("CombatExtended.AmmoSetDef"), "ammoTypes");
             var link = AccessTools.TypeByName("CombatExtended.AmmoLink");
@@ -241,6 +244,65 @@ namespace HSKTacticalAI
                     }
                 }
             }
+        }
+
+        /// <summary>A turret gun's CE ammo: the first non-gas round of its set and the magazine size (null without CE).</summary>
+        public static ThingDef TurretAmmo(ThingDef gunDef, out int magSize)
+        {
+            magSize = 0;
+            ResolveAmmo();
+            if (gunDef?.comps == null || fAmmoTypes == null) return null;
+            foreach (var cp in gunDef.comps)
+            {
+                if (cp.GetType().Name != "CompProperties_AmmoUser") continue;
+                try
+                {
+                    var fMag = AccessTools.Field(cp.GetType(), "magazineSize");
+                    if (fMag != null) magSize = (int)fMag.GetValue(cp);
+                    object set = fAmmoSet.GetValue(cp);
+                    if (set == null || !(fAmmoTypes.GetValue(set) is System.Collections.IEnumerable links)) return null;
+                    ThingDef first = null;
+                    foreach (object l in links)
+                    {
+                        var ammo = fLinkAmmo.GetValue(l) as ThingDef;
+                        var proj = fLinkProj.GetValue(l) as ThingDef;
+                        if (ammo == null || IsGasProjectile(proj)) continue;
+                        if (first == null) first = ammo;
+                    }
+                    return first;
+                }
+                catch { return null; }
+            }
+            return null;
+        }
+
+        /// <summary>Rounds in the magazine (CE); -1 without CE ammo.</summary>
+        public static int LoadedRounds(Verb v)
+        {
+            ThingComp comp = AmmoUser(v?.EquipmentSource);
+            if (comp == null || pCurMag == null) return -1;
+            try { return (int)pCurMag.GetValue(comp); } catch { return -1; }
+        }
+
+        /// <summary>Take one round from the magazine (CE); true without CE ammo.</summary>
+        public static bool ConsumeRound(Verb v)
+        {
+            ThingComp comp = AmmoUser(v?.EquipmentSource);
+            if (comp == null) return true;
+            try
+            {
+                if (mReduce != null) { var ps = mReduce.GetParameters(); object r = mReduce.Invoke(comp, ps.Length == 0 ? null : new object[] { 1 }); return !(r is bool b) || b; }
+                if (pCurMag != null && pCurMag.CanWrite) { int n = (int)pCurMag.GetValue(comp); if (n <= 0) return false; pCurMag.SetValue(comp, n - 1); return true; }
+            }
+            catch { }
+            return false;
+        }
+
+        /// <summary>CE's reload job for the gun (null if none).</summary>
+        public static Job ReloadJob(Verb v)
+        {
+            ThingComp comp = AmmoUser(v?.EquipmentSource);
+            try { return comp != null ? mMakeReload?.Invoke(comp, null) as Job : null; } catch { return null; }
         }
 
         /// <summary>Still able to breach: ready with a breaching round, or carrying one to reload.</summary>

@@ -30,6 +30,10 @@ Raiders plan their attack instead of walking into your guns:
 - they read where your guns can shoot (threat map) and avoid killboxes and funnels;
 - they breach several walls at once with what they carry (launchers, explosives, tools, fire, tunnels), and a raid
   out to break in always brings the means of its tech level (breach axe, stick bombs, charges);
+- they adapt when the situation changes: defenders who come out are fought where they are (from cover at each weapon's
+  range, with flankers), a defence beaten in the field is stormed at once, the objective follows the defence;
+- grenadiers lob explosive rounds over your walls, and bigger raids bring a crew-served gun (M240B, AGS ...) that a
+  team carries, sets up at range and mans before the assault;
 - not every raid comes to take the colony: scouts watch from cover and leave, saboteurs set fires, kill livestock,
   pick off a colonist alone outside and leave before your defence turns out;
 - they cross open ground only in cover, behind smoke, with 3:1 odds or by fire and movement;

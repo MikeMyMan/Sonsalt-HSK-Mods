@@ -39,6 +39,9 @@ namespace HSKTacticalAI
         public int leaderIntellectual = -1;   // tactical competence tests: the raid leader's Intellectual skill (-1 = as generated)
         public string leaderTrait = "";       // ... and this trait on the leader (TooSmart, SlowLearner, Dumb, ...), other intelligence traits removed
         public int traps = 0;                 // traps (IEDs and spike traps) on the raid's approach (east); killbox: some in the corridor
+        public string defenderMode = "hold";   // hold | patrol | sally | door | lone | mix (LabDefenders)
+        public float sallyRange = 6f;          // sally: how close the defenders go to the nearest raider
+        public bool stripBreachMeans = false;  // take away the raid's own wall-breaking means before planning (breach kit tests)
     }
 
     /// <summary>
@@ -175,6 +178,7 @@ namespace HSKTacticalAI
                         state = raiders.Count > 0 ? State.Running : State.Done;
                         if (raiders.Count == 0) { outcome = "noRaid"; WriteResults(); }
                         raidStartTick = now;
+                        LabDefenders.Init(map, center, defenders);
                         realTime.Restart(); Perf.On = true;
                         break;
                     case State.Running:
@@ -772,7 +776,7 @@ namespace HSKTacticalAI
         }
 
         /// <summary>Combat Extended guns need ammo in the inventory; found by reflection so CE stays optional.</summary>
-        private static void GiveCEAmmo(Pawn p, ThingWithComps gun, int count)
+        internal static void GiveCEAmmo(Pawn p, ThingWithComps gun, int count)
         {
             foreach (var comp in gun.AllComps)
             {
@@ -1149,6 +1153,7 @@ namespace HSKTacticalAI
         private void RunTick(int now)
         {
             ticksRun++;
+            if (now % 60 == 0) LabDefenders.Tick(map, center, defenders, raiders, now);
             var tm = MapComponent_TacticalAI.For(map)?.Threat;
             if (tm != null)
             {
@@ -1447,6 +1452,37 @@ namespace HSKTacticalAI
                 ["toolsGiven"] = BreachKit.ToolsGiven,
                 ["smokeDeployed"] = BreachKit.SmokeDeployed,
                 ["defenderGearMode"] = cfg.defenderGear,
+                ["defenderMode"] = cfg.defenderMode,
+                ["fieldFightStarts"] = FieldFight.Starts,
+                ["adaptations"] = AssaultPlanner.Adaptations,
+                ["planReentryBlocked"] = AssaultPlanner.ReentryBlocked,
+                ["defenceBroken"] = AssaultPlanner.DefenceBroken,
+                ["fieldFightJobs"] = FieldFight.Jobs,
+                ["fieldFlanks"] = FieldFight.Flanks,
+                ["fieldCharges"] = FieldFight.Charges,
+                ["lobs"] = IndirectFire.Lobs,
+                ["launchersHeldOut"] = AssaultPlanner.LaunchersHeldOut,
+                ["breachShotsFromCover"] = AssaultPlanner.BreachShotsFromCover,
+                ["coverSpots"] = AssaultPlanner.CoverSpots,
+                ["coveredSpots"] = AssaultPlanner.CoveredSpots,
+                ["fieldToCover"] = FieldFight.ToCover,
+                ["cswTeams"] = CrewWeapons.Teams,
+                ["cswFaced"] = CrewWeapons.Faced,
+                ["cswCrewBehind"] = CrewWeapons.CrewBehind,
+                ["cswCoverPosts"] = JobGiver_HSKTAI_CSW.CoverPosts,
+                ["cswDeployed"] = CrewWeapons.Deployed,
+                ["cswAbandoned"] = CrewWeapons.Abandoned,
+                ["cswWaits"] = CrewWeapons.Waits,
+                ["cswGuns"] = CrewWeapons.Seen,
+                ["cswPlan"] = AssaultPlanner.LastPlan != null ? string.Join("; ", AssaultPlanner.LastPlan.csw.Select(t => t.Describe())) : "",
+                ["lobReloads"] = IndirectFire.Reloads,
+                ["lobNoTarget"] = IndirectFire.NoTarget,
+                ["defenderMoves"] = LabDefenders.Moves + LabDefenders.SallyMoves + LabDefenders.DoorMoves + LabDefenders.LoneMoves,
+                ["sallyMoves"] = LabDefenders.SallyMoves,
+                ["doorMoves"] = LabDefenders.DoorMoves,
+                ["loneMoves"] = LabDefenders.LoneMoves,
+                ["gapsManned"] = LabDefenders.GapsManned,
+                ["breachMeansStripped"] = LabDefenders.Stripped,
                 ["defenderSuppressedTicks"] = defenderSuppressedTicks,
                 ["defenderHunkerTicks"] = defenderHunkerTicks,
                 ["supportBursts"] = HSKTAI_Stats.SupportBursts,

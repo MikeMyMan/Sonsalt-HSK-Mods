@@ -195,6 +195,7 @@ namespace HSKTacticalAI
 
         public static int Marks, SpotterMoves;
         private static readonly Dictionary<int, Pawn> spotterOf = new Dictionary<int, Pawn>();
+        private static readonly Dictionary<int, (LocalTargetInfo t, int tick)> lastMortarTarget = new Dictionary<int, (LocalTargetInfo, int)>();
         private static ThingDef markerDef;
         private static bool markerResolved;
         private static System.Reflection.FieldInfo fMarkAim, fMarkSights, fMarkCaster;
@@ -257,7 +258,12 @@ namespace HSKTacticalAI
         private static Job SpotterJob(Pawn pawn, Lord lord, IntVec3 camp)
         {
             if (!ResolveMarker()) return null;
+            // CE mortars drop their target between their long reloads: the spotter keeps watching the last one for 15 s
+            // (ld1 siege s3: 14 trips out to the post and back, no mark)
             LocalTargetInfo target = MortarTarget(lord);
+            int now = Find.TickManager.TicksGame;
+            if (target.IsValid) lastMortarTarget[lord.loadID] = (target, now);
+            else if (lastMortarTarget.TryGetValue(lord.loadID, out var lt) && now - lt.tick < 900 && (!lt.t.HasThing || lt.t.Thing.Spawned)) target = lt.t;
             if (!target.IsValid) return null;
             Map map = pawn.Map;
             IntVec3 tc = target.Cell;

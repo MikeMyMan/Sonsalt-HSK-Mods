@@ -208,6 +208,12 @@ namespace HSKTacticalAI
         public bool cornerFire = true;               // open breach: gunners lean out from the wall ends beside the hole and fire in before going in
         public bool gasAmmoSwap = true;              // launchers with only gas rounds swap 75 % of them for the explosive round of the same ammo set
         public bool keepRange = true;                // each weapon at its own distance: bows and long guns back off, short guns close in, melee closes in
+        public bool launchersStayOut = true;         // explosive launchers don't follow the assault through the breach: they stay out as base of fire
+        public bool crewWeapons = true;              // industrial+ assault raids of 8+ bring a crew-served gun (carried packed, set up at range, manned)
+        public float cswMaxMass = 40f;               // ... at most this heavy (kg)
+        public int cswWaitTicks = 3000;              // H-hour waits for the guns at most this long
+        public bool fieldFight = true;               // defenders out of their base: the raid turns and fights them there, then back to the plan
+        public bool indirectFire = true;             // grenade launchers lob explosive rounds over walls at targets they can't hit directly
         public bool breachGear = true;               // a raid out to breach that has nothing of its own: 1-3 raiders carry the tech level's breaching kit
         public bool raidGoals = true;                // some raids come to scout or to sabotage instead of to assault
         public float scoutShare = 0.10f;             // base weight of a scouting raid (assault = 1)
@@ -392,6 +398,10 @@ namespace HSKTacticalAI
             Scribe_Values.Look(ref cornerFire, "cornerFire", true);
             Scribe_Values.Look(ref gasAmmoSwap, "gasAmmoSwap", true);
             Scribe_Values.Look(ref keepRange, "keepRange", true);
+            Scribe_Values.Look(ref launchersStayOut, "launchersStayOut", true);
+            Scribe_Values.Look(ref crewWeapons, "crewWeapons", true);
+            Scribe_Values.Look(ref fieldFight, "fieldFight", true);
+            Scribe_Values.Look(ref indirectFire, "indirectFire", true);
             Scribe_Values.Look(ref breachGear, "breachGear", true);
             Scribe_Values.Look(ref raidGoals, "raidGoals", true);
             Scribe_Values.Look(ref scoutShare, "scoutShare", 0.10f);
@@ -494,6 +504,10 @@ namespace HSKTacticalAI
             l.CheckboxLabeled("Burn wooden walls", ref fireBreaching, "Raiders set wooden walls on fire instead of blowing them.");
             l.CheckboxLabeled("Explosive rounds instead of gas", ref gasAmmoSwap, "Raiders whose launcher carries only gas rounds (the waster heavies' 40 mm tox grenades) swap three quarters of them for the explosive round of the same calibre - one for one, no extra gear. Gas only works in an enclosed room; they keep a quarter for that.");
             l.CheckboxLabeled("Keep the weapon's range", ref keepRange, "Each raider fights at its weapon's distance: bowmen and long guns (rifles, more so snipers) step back when you get too close, pistols and SMGs close in before they shoot, melee raiders go for anyone near them in the open. Part of tactical competence: a dull raid fights from wherever it stands.");
+            l.CheckboxLabeled("Crew-served weapons", ref crewWeapons, "Industrial and later raids of 8 or more bring a light crew-served gun (16 or more: two) - a manned turret of up to 40 kg from your modlist (M240B, AGS-17, ...). The gunner carries it packed, one or two raiders carry its ammo. The team sets it up at range in cover with a line of fire, the gunner mans it, the bearers reload it; the assault waits until the guns fire. If the crew falls or the raid withdraws, the gun stays behind as loot.");
+            l.CheckboxLabeled("Fight defenders who come out", ref fieldFight, "When your colonists leave the base to meet the raid, the raid turns on them: shooters take cover at their weapon's distance and fire, melee raiders charge, a sharp command sends men round their side. When they are back inside, the raid returns to its plan. Part of tactical competence: a dull raid only fires back when hit.");
+            l.CheckboxLabeled("Grenade launchers fire over walls", ref indirectFire, "A grenadier with an explosive round and no direct shot lobs it over the wall: at your colonists, turrets and workshops under open sky, spread over the base, never near his own men. One real round per shot; scatter by distance and skill. Part of tactical competence.");
+            l.CheckboxLabeled("Grenade launchers stay out of the breach", ref launchersStayOut, "Once their wall is open, raiders with an explosive launcher (M79 and the like) don't follow the assault through the hole: they stay outside as base of fire and shell whatever shows itself, over the walls too. They shoot at the wall from further out, from cover if there is any.");
             l.CheckboxLabeled("Raids bring breaching gear", ref breachGear, "A raid that has to break in and carries nothing that opens a wall brings it: one raider in eight (1-3) carries the kit of the faction's tech level - a breach axe for tribes, stick bombs for medieval factions, breach charges for industrial ones, more charges and a mining charge for spacers. On top of the loadout; independent of \"extra equipment\".");
             l.CheckboxLabeled("Scouting and sabotage raids", ref raidGoals, "Some raids don't come to take the colony. Scouts watch it from cover out of your fire and leave (survivors tell their faction more about you). Saboteurs set fires, kill livestock out of your fire, jump a colonist who is alone outside and leave before your defence turns out. Weak raids harass more often, strong raids attack; factions that know little of you scout first.");
             if (raidGoals)

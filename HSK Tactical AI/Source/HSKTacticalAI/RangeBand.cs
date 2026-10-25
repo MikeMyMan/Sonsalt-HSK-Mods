@@ -85,7 +85,7 @@ namespace HSKTacticalAI
                     if (c.path < 2f || de < d + 2f) return float.NaN;
                     return c.path * 0.3f + Mathf.Abs(de - want) * 0.6f + c.exposure * 3f + (tm != null && tm.FireAt(c.c) > s.safeFire ? 5f : 0f);
                 },
-                c => GenSight.LineOfSight(c, enemy.Position, map, true) ? -3f : 0f, 12);   // keep a shot from there
+                c => (GenSight.LineOfSight(c, enemy.Position, map, true) ? -3f : 0f) + (JobGiver_HSKTAI_Support.HasCover(c, enemy.Position, map) ? -3f : 0f), 12);   // keep a shot from there, in cover if there is one
             if (!cell.IsValid) return null;
             RangeBand.BackSteps++;
             Job go = JobMaker.MakeJob(JobDefOf.Goto, cell);

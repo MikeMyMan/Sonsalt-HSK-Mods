@@ -49,6 +49,14 @@ namespace HSKTacticalAI
         public Pawn ambushTarget;
         public readonly List<IntVec3> scoutPosts = new List<IntVec3>();
         public readonly List<IntVec3> seeingPosts = new List<IntVec3>();
+        public readonly List<CswTeam> csw = new List<CswTeam>();   // crew-served weapons (0.2)
+        // field fight (0.2): defenders out of their base
+        public bool fieldFight;
+        public int fieldLastSeen = -1;
+        public bool defenceBroken;
+        public int lastAdaptTick = -1;
+        public readonly List<Pawn> fieldEnemies = new List<Pawn>();
+        public readonly Dictionary<Pawn, IntVec3> flankOf = new Dictionary<Pawn, IntVec3>();
         public readonly Dictionary<Pawn, List<IntVec3>> goalRouteOf = new Dictionary<Pawn, List<IntVec3>>();
 
         // force ratio (attackers : fortified defenders)
@@ -144,6 +152,8 @@ namespace HSKTacticalAI
     public static class AssaultPlanner
     {
         public static readonly Dictionary<int, AssaultPlan> Plans = new Dictionary<int, AssaultPlan>();
+        private static readonly HashSet<int> creating = new HashSet<int>();
+        public static int ReentryBlocked;
         public static AssaultPlan LastPlan;
 
         public static float Bearing(IntVec3 from, IntVec3 to) =>
@@ -165,7 +175,11 @@ namespace HSKTacticalAI
         public static AssaultPlan GetOrCreate(Lord lord)
         {
             if (Plans.TryGetValue(lord.loadID, out var p)) return p;
-            p = Create(lord);
+            // planning hands out gear and changes loadouts: should that ever update the lord's duties and land here again,
+            // one plan per raid (a safety net; not seen in the Lab - ReentryBlocked stayed 0)
+            if (!creating.Add(lord.loadID)) { ReentryBlocked++; return null; }
+            try { p = Create(lord); }
+            finally { creating.Remove(lord.loadID); }
             if (p != null) { Plans[lord.loadID] = p; LastPlan = p; }
             return p;
         }
@@ -176,6 +190,7 @@ namespace HSKTacticalAI
             var pawns = lord.ownedPawns.Where(x => x.Spawned && !x.Downed).ToList();
             if (pawns.Count == 0) return null;
             var plan = new AssaultPlan { lordId = lord.loadID, createdTick = Find.TickManager.TicksGame, startCount = pawns.Count, faction = lord.faction, map = map };
+            if (AILab.Active && AILab.Config.stripBreachMeans) LabDefenders.StripBreachMeans(pawns);   // Lab: kit tests
             foreach (var p in pawns) plan.members.Add(p);
             Competence.Init(plan, lord, pawns);
             var defsNow = Suppression.Defenders(map, map.Center, 999f);
@@ -265,6 +280,7 @@ namespace HSKTacticalAI
             RaidRoles.Assign(plan, pawns);
             FactionMemory.AdaptLoadouts(lord, plan, pawns);   // after the roles: medics and breachers keep their kit
             ShieldWall.Assign(plan, pawns);
+            CrewWeapons.Plan(lord, plan, pawns);   // after the roles: gunner and bearers from the riflemen and base of fire
             Grenades.EquipOnce(lord, plan, pawns);
             GasRaid.Plan(lord, plan, pawns);
             JobGiver_HSKTAI_RaidingParty.Assign(plan, pawns);
@@ -1155,7 +1171,8 @@ namespace HSKTacticalAI
             plan.axisOf[p] = axis;
             IntVec3 center = plan.axes[axis];
             // lateral spread (CAI idea): 2+ cells from the others' spots, so one grenade does not catch the group
-            plan.spotOf[p] = CellFinder.RandomClosewalkCellNear(center, p.Map, 5, c => !plan.spotOf.Any(kv => kv.Key != p && kv.Value.DistanceTo(c) < 2f));
+            IntVec3 spot = CoverSpot(p.Map, center, 5f, plan.objective, c => !plan.spotOf.Any(kv => kv.Key != p && kv.Value.DistanceTo(c) < 2f), p.thingIDNumber);
+            plan.spotOf[p] = spot.IsValid ? spot : CellFinder.RandomClosewalkCellNear(center, p.Map, 5, c => !plan.spotOf.Any(kv => kv.Key != p && kv.Value.DistanceTo(c) < 2f));
         }
 
         /// <summary>
@@ -1255,6 +1272,8 @@ namespace HSKTacticalAI
             {
                 if (p.mindState == null) continue;
                 if (plan.mode == PlanMode.Scout || plan.mode == PlanMode.Sabotage) { RaidGoals.Duty(plan, p); continue; }
+                var crew = CrewWeapons.TeamOf(plan, p);
+                if (crew != null && crew.post.IsValid) { p.mindState.duty = new PawnDuty(TAI_DefOf.HSKTAI_CSW, crew.post); continue; }
                 if (plan.mode == PlanMode.Breach && !plan.breachOf.ContainsKey(p) && plan.breaches.Count > 0)
                 {
                     // reinforcements / late joiners: the smallest active group
@@ -1278,6 +1297,18 @@ namespace HSKTacticalAI
                     supporting = false;
                 if (supporting)
                 {
+                    p.mindState.duty = new PawnDuty(TAI_DefOf.HSKTAI_Support, plan.objective);
+                    continue;
+                }
+                // launchers stay out (playtest 2026-10-25: "the M79 etc after they breach they should stay and engage targets of
+                // opportunity"): once his wall is open (walk-in: from H-hour) a raider with an explosive launcher doesn't follow the
+                // assault through the hole - he is base of fire, shelling what shows itself and lobbing over the walls
+                if (s.launchersStayOut && Competence.Knows(plan, Doctrine.SupportFire) && !plan.entered.Contains(p)
+                    && (plan.phase == PlanPhase.Approach || plan.phase == PlanPhase.Assault)
+                    && (plan.mode == PlanMode.Breach ? plan.BreachFor(p) is BreachPoint lbp && (lbp.WallsGone || lbp.abandoned) && (plan.breachTeam.Contains(p) || plan.phase == PlanPhase.Assault) : plan.phase == PlanPhase.Assault)
+                    && Launchers.ExplosiveLauncher(p))
+                {
+                    LaunchersHeldOut++;
                     p.mindState.duty = new PawnDuty(TAI_DefOf.HSKTAI_Support, plan.objective);
                     continue;
                 }
@@ -1409,14 +1440,33 @@ namespace HSKTacticalAI
             return IntVec3.Invalid;
         }
 
+        public static int CoverSpots, CoveredSpots;
+
+        /// <summary>
+        /// A spot near `center` that passes `ok`, in cover from `threat` if there is one (playtest 2026-10-25: "in general
+        /// units should always seek cover if possible and available"); spread at random among the covered ones.
+        /// </summary>
+        public static IntVec3 CoverSpot(Map map, IntVec3 center, float radius, IntVec3 threat, Func<IntVec3, bool> ok, int salt)
+        {
+            var walk = TraverseParms.For(TraverseMode.NoPassClosedDoors, Danger.Deadly);
+            var cells = GenRadial.RadialCellsAround(center, radius, true)
+                .Where(c => c.InBounds(map) && c.Standable(map) && ok(c) && map.reachability.CanReach(center, c, PathEndMode.OnCell, walk)).ToList();
+            if (cells.Count == 0) return IntVec3.Invalid;
+            var covered = cells.Where(c => JobGiver_HSKTAI_Support.HasCover(c, threat, map)).ToList();
+            var pool = covered.Count > 0 ? covered : cells;
+            CoverSpots++;
+            if (covered.Count > 0) CoveredSpots++;
+            return pool[Mathf.FloorToInt(Competence.Hash01(salt, center.x * 31 + center.z) * pool.Count) % pool.Count];
+        }
+
         /// <summary>A waiting spot near a stack point: out of fire and outside the breach cone.</summary>
         private static IntVec3 StackSpot(AssaultPlan plan, BreachPoint bp, Pawn p)
         {
             var tm = MapComponent_TacticalAI.For(p.Map)?.Threat;
             float safe = TacticalAIMod.Settings.safeFire;
             // spread out (cp7 dull fortress: one blast took six stackers waiting shoulder to shoulder): 2+ cells from the next man
-            IntVec3 c = CellFinder.RandomClosewalkCellNear(bp.staging, p.Map, 5, x => !InBreachCone(bp.entry, plan.objective, x) && (tm == null || tm.FireAt(x) <= safe)
-                && !plan.spotOf.Any(kv => kv.Key != p && kv.Value.DistanceTo(x) < 2f));
+            IntVec3 c = CoverSpot(p.Map, bp.staging, 5f, plan.objective, x => !InBreachCone(bp.entry, plan.objective, x) && (tm == null || tm.FireAt(x) <= safe)
+                && !plan.spotOf.Any(kv => kv.Key != p && kv.Value.DistanceTo(x) < 2f), p.thingIDNumber);
             return c.IsValid ? c : bp.staging;
         }
 
@@ -1438,6 +1488,49 @@ namespace HSKTacticalAI
             }
         }
 
+        public static int Adaptations, DefenceBroken;
+        public static int LaunchersHeldOut, BreachShotsFromCover;
+
+        /// <summary>
+        /// The situation changed (playtest 2026-10-25: "once the situation changes the plan needs to adapt that is very
+        /// important"), approach phase:
+        /// - the defence came out and lost half its people in the field (FieldFight): go now (walk-in), returns the reason;
+        /// - the defence moved (its centre, those still at home, 12+ cells from the objective): the objective follows; a
+        ///   walk-in re-plans its axes. A breach keeps its walls (the charges are on them) but aims for the new centre.
+        /// A doctrine (FieldFight): a dull command sticks to the plan it made.
+        /// </summary>
+        private static string Adapt(Map map, Lord lord, AssaultPlan plan, List<Pawn> alive, int now)
+        {
+            var s = TacticalAIMod.Settings;
+            if (plan.phase != PlanPhase.Approach || !s.fieldFight || !Competence.Knows(plan, Doctrine.FieldFight)) return null;
+            var defs = Suppression.Defenders(map, plan.objective, 999f);
+            if (plan.defendersAtStart > 0 && plan.fieldLastSeen >= 0 && defs.Count <= plan.defendersAtStart * 0.5f)
+            {
+                if (!plan.defenceBroken) { plan.defenceBroken = true; DefenceBroken++; plan.capability += "; defence broken in the field (" + defs.Count + "/" + plan.defendersAtStart + " left) -> go"; Log(plan); }
+                return "defence broken in the field";
+            }
+            if (now - plan.lastAdaptTick < 300) return null;
+            plan.lastAdaptTick = now;
+            var home = defs.Where(d => !plan.fieldEnemies.Contains(d)).ToList();
+            if (home.Count == 0) return null;
+            var c = new IntVec3((int)home.Average(d => d.Position.x), 0, (int)home.Average(d => d.Position.z));
+            if (c.DistanceTo(plan.objective) < 12f || !c.InBounds(map)) return null;
+            plan.objective = c;
+            Adaptations++;
+            plan.capability += "; defence moved -> objective " + c;
+            if (plan.mode == PlanMode.Walk)
+            {
+                var walk = TraverseParms.For(TraverseMode.NoPassClosedDoors, Danger.Deadly);
+                plan.axes.Clear(); plan.axisOf.Clear(); plan.spotOf.Clear(); plan.waypoints.Clear(); plan.waypointIndex.Clear();
+                ChooseAxes(map, plan, alive.Count, walk);
+                if (plan.axes.Count == 0) plan.axes.Add(plan.objective);
+                Assign(plan, alive);
+                lord.CurLordToil?.UpdateAllDuties();
+            }
+            Log(plan);
+            return null;
+        }
+
         /// <summary>Every 60 ticks: synchronise the breach teams, and start the assault (H-hour) at the right moment.</summary>
         public static void Tick(Map map)
         {
@@ -1455,6 +1548,7 @@ namespace HSKTacticalAI
                 using (Competence.Perceive(plan, new IntVec3(ox / alive.Count, 0, oz / alive.Count)))
                 {
 
+                if (plan.csw.Count > 0) CrewWeapons.Tick(map, lord, plan, now);
                 if (plan.phase == PlanPhase.Withdraw) { Withdrawal.Tick(plan, now); continue; }
                 if ((plan.phase == PlanPhase.Approach || plan.phase == PlanPhase.Assault) && (plan.mode == PlanMode.Breach || plan.mode == PlanMode.Walk)
                     && Withdrawal.ShouldWithdraw(lord, plan, out string wwhy))
@@ -1464,6 +1558,7 @@ namespace HSKTacticalAI
                     lord.CurLordToil?.UpdateAllDuties();
                     continue;
                 }
+                if (plan.phase == PlanPhase.Approach || plan.phase == PlanPhase.Assault) FieldFight.Tick(map, plan, alive, now);
                 if (plan.mode == PlanMode.Scout || plan.mode == PlanMode.Sabotage) { RaidGoals.Tick(map, lord, plan, alive, now); continue; }
 
                 // walk-mode assault bleeding out (e.g. in a killbox entrance): pull back and make new entrances
@@ -1534,11 +1629,13 @@ namespace HSKTacticalAI
                     if (now - plan.createdTick > s.standoffTicks) Convert(lord, plan, new LordJob_ExitMapBest(LocomotionUrgency.Jog, false, true));
                     continue;
                 }
+                string adapted = Adapt(map, lord, plan, alive, now);
                 string reason = null;
                 if (plan.mode == PlanMode.Breach)
                 {
                     if (!TickBreach(map, lord, plan, alive, now, s, ref reason)) continue;
                 }
+                else if (adapted != null && plan.mode == PlanMode.Walk) reason = adapted;
                 // a crossing decision in progress (smoke, flank group, attrition): the crossing logic decides when to go
                 else if (plan.mode == PlanMode.Walk && plan.crossing != CrossingMode.None && plan.crossing != CrossingMode.Covered && plan.crossing != CrossingMode.Mass && plan.crossing != CrossingMode.Bound) reason = "crossing";
                 else if (alive.Count < plan.startCount * 0.75f) reason = "casualties";
@@ -1556,6 +1653,7 @@ namespace HSKTacticalAI
                     if (allReady) reason = "groups in position";
                 }
                 if (reason == null) continue;
+                if (CrewWeapons.Holding(plan, now)) continue;   // the team attacks when the guns are firing
 
                 // last look before committing: still strong enough to storm the position?
                 if (s.forceRatioCheck && Competence.Knows(plan, Doctrine.ForceCheck))
@@ -2173,29 +2271,44 @@ namespace HSKTacticalAI
             Map map = pawn.Map;
             var s = TacticalAIMod.Settings;
             ThreatMap tm = MapComponent_TacticalAI.For(map)?.Threat;
-            float range = Mathf.Min(verb.verbProps.range * 0.85f, 30f);
+            bool haveThreat = tm != null && tm.CompletedCycles > 0;
+            // from further out and from cover (playtest 2026-10-25: "try to engage the walls from a larger distance and if
+            // possible from cover"): 55-100 % of 85 % of the range, covered from the defence (was: at most 30 cells, the
+            // spot nearest the stack point)
+            float range = Mathf.Min(verb.verbProps.range * 0.85f, 50f);
             float blast = (verb.verbProps.defaultProjectile?.projectile?.explosionRadius ?? 2f) + 3f;
-            bool Good(IntVec3 c)
+            float far = Mathf.Max(blast, range * 0.55f);
+            IntVec3 threat = AssaultPlanner.PlanOf(pawn)?.objective ?? wall.Position;
+            bool Basic(IntVec3 c)
             {
                 if (!c.InBounds(map) || !c.Standable(map)) return false;
                 float d = c.DistanceTo(wall.Position);
                 if (d > range || d < blast) return false;
-                if (tm != null && tm.CompletedCycles > 0 && tm.FireAt(c) > s.safeFire) return false;
-                return verb.CanHitTargetFrom(c, wall);
+                return !haveThreat || tm.FireAt(c) <= s.safeFire;
             }
-            if (Good(pawn.Position)) return pawn.Position;
-            if (firingPos.TryGetValue(pawn, out var cached) && cached.wall == wall && Good(cached.cell)) return cached.cell;
+            bool Covered(IntVec3 c) => JobGiver_HSKTAI_Support.HasCover(c, threat, map);
+            if (Basic(pawn.Position) && pawn.Position.DistanceTo(wall.Position) >= far && Covered(pawn.Position) && verb.CanHitTargetFrom(pawn.Position, wall)) return pawn.Position;
+            if (firingPos.TryGetValue(pawn, out var cached) && cached.wall == wall && cached.cell.IsValid && Basic(cached.cell) && verb.CanHitTargetFrom(cached.cell, wall)) return cached.cell;
             IntVec3 anchor = bp.staging.IsValid ? bp.staging : pawn.Position;
-            IntVec3 best = IntVec3.Invalid;
-            float bestD = float.MaxValue;
+            var cands = new List<(IntVec3 c, float score)>();
             foreach (IntVec3 c in GenRadial.RadialCellsAround(wall.Position, range, true))
             {
-                float d = c.DistanceToSquared(anchor);
-                if (d >= bestD || !Good(c)) continue;
-                if (!pawn.CanReach(c, PathEndMode.OnCell, Danger.Deadly)) continue;
-                bestD = d;
-                best = c;
+                if (!Basic(c)) continue;
+                float d = c.DistanceTo(wall.Position);
+                cands.Add((c, (d < far ? (far - d) * 2f : 0f) + (Covered(c) ? 0f : 10f) + c.DistanceTo(anchor) * 0.15f + (haveThreat ? tm.FireAt(c) * 30f : 0f)));
             }
+            IntVec3 best = IntVec3.Invalid;
+            int tested = 0;
+            foreach (var cand in cands.OrderBy(x => x.score))
+            {
+                if (++tested > 40) break;
+                if (!verb.CanHitTargetFrom(cand.c, wall) || !pawn.CanReach(cand.c, PathEndMode.OnCell, Danger.Deadly)) continue;
+                best = cand.c;
+                if (Covered(best)) AssaultPlanner.BreachShotsFromCover++;
+                break;
+            }
+            // nothing in the top 40: as before, any spot in range with a shot
+            if (!best.IsValid && Basic(pawn.Position) && verb.CanHitTargetFrom(pawn.Position, wall)) best = pawn.Position;
             firingPos[pawn] = (wall, best);
             return best;
         }

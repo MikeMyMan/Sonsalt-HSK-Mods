@@ -16,7 +16,7 @@ namespace HSKTacticalAI
     /// </summary>
     public enum Doctrine
     {
-        PlannedWithdrawal, ForceCheck, KeepRange, SupportFire, MultiAxis2, OpenCrossing, FocusFire, DefendedAxis, Memory,
+        PlannedWithdrawal, ForceCheck, KeepRange, FieldFight, SupportFire, IndirectFire, MultiAxis2, OpenCrossing, FocusFire, DefendedAxis, Memory,
         ThreatAdvance, AvoidFunnels, Smoke, SyncedAssault, Overwatch, FunnelCaution, BreachFallback, MultiBreach,
         Flanking, MultiAxis3, FlankManeuver
     }
@@ -45,7 +45,9 @@ namespace HSKTacticalAI
             new Vector2(0.20f, 0.50f),   // PlannedWithdrawal
             new Vector2(0.22f, 0.52f),   // ForceCheck
             new Vector2(0.24f, 0.54f),   // KeepRange (each weapon at its own distance: bows and long guns back off, short guns close in)
+            new Vector2(0.24f, 0.50f),   // FieldFight (defenders out of their base: fight them there, then back to the plan)
             new Vector2(0.28f, 0.58f),   // SupportFire
+            new Vector2(0.32f, 0.62f),   // IndirectFire (grenade launchers lob over walls)
             new Vector2(0.28f, 0.58f),   // MultiAxis2
             new Vector2(0.30f, 0.60f),   // OpenCrossing
             new Vector2(0.30f, 0.60f),   // FocusFire

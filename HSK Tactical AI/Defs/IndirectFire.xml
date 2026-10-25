@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!-- Indirect fire (0.2): a grenade launcher round lobbed high over the walls. Damage and blast are copied from the
+       loaded round at launch (Projectile_Lobbed); the values here are only the fallback. -->
+  <ThingDef ParentName="BaseBullet">
+    <defName>HSKTAI_LobbedRound</defName>
+    <label>lobbed grenade</label>
+    <thingClass>HSKTacticalAI.Projectile_Lobbed</thingClass>
+    <graphicData>
+      <texPath>Things/Projectile/Grenade</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <projectile>
+      <flyOverhead>true</flyOverhead>
+      <speed>28</speed>
+      <arcHeightFactor>1.6</arcHeightFactor>
+      <shadowSize>0.4</shadowSize>
+      <damageDef>Bomb</damageDef>
+      <damageAmountBase>20</damageAmountBase>
+      <explosionRadius>1.5</explosionRadius>
+    </projectile>
+  </ThingDef>
+
+  <JobDef>
+    <defName>HSKTAI_LobRound</defName>
+    <driverClass>HSKTacticalAI.JobDriver_LobRound</driverClass>
+    <reportString>firing a grenade over the wall.</reportString>
+    <casualInterruptible>false</casualInterruptible>
+  </JobDef>
+
+</Defs>

@@ -26,6 +26,8 @@ namespace HSKTacticalAI
         public static DutyDef HSKTAI_SiegeGuard;
         public static DutyDef HSKTAI_Scout;
         public static DutyDef HSKTAI_Sabotage;
+        public static JobDef HSKTAI_LobRound;
+        public static DutyDef HSKTAI_CSW;
         static TAI_DefOf() { DefOfHelper.EnsureInitializedInCtor(typeof(TAI_DefOf)); }
     }
 
