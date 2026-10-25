@@ -115,7 +115,7 @@ namespace HSKTacticalAI
         public float fragDoorDamage = 140f;          // planning: damage one frag does to a door (Bomb x2 vs doors)
         public bool shieldTactics = true;            // body-shield bearers lead the assault, gunners follow in their shadow
         public int shieldFollowers = 3;              // followers per shield (gunners to the sides, melee straight behind)
-        public int shieldLeadTicks = 300;            // breach: the rest of a group waits this long for its shield to go through first
+        public int shieldLeadTicks = 900;            // breach: the rest of a group waits up to this long for its shield to go through first
         public int shieldCrouchTicks = 60;           // shield advance: crouch this long after each ~4-cell bound
         public int shieldFrags = 3;                  // thrown explosives every shield bearer carries (shield + grenades)
         public int shieldThrowTicks = 240;           // a shield bearer throws at most this often
@@ -123,6 +123,14 @@ namespace HSKTacticalAI
         public bool shieldEscort = true;             // breach work: a shield bearer covers the breacher on its way to and at the wall
         public bool equipRaiders = false;            // extra equipment (breach charges, tools, grenades, masks, smoke) on top of the raiders' own loadout
         public bool proneVisual = true;              // prone raiders drawn in the crawl pose (render only)
+        public bool runAndGunByRole = true;          // RunAndGun installed: only riflemen / assault raiders in the assault shoot on the move
+        public bool raidMemory = true;               // factions remember earlier raids (only through survivors) and adapt their approach
+        public bool adaptiveLoadouts = true;         // ... and their loadout, within budget (swaps, never extra gear)
+        public float memoryShare = 0.3f;             // at most this share of a raid swaps gear
+        public float memoryIntelMin = 0.25f;         // intel needed before a faction adapts
+        public float memoryHalfLifeDays = 30f;       // memory fades by half in this many days (about two seasons)
+        public float memoryArmourHigh = 8f;          // colonists' mean sharp armour that counts as heavily armoured
+        public bool memoryMessages = true;           // a message when a raid arrives adapted
         public float proneMoveFactor = 0.25f;        // prone raiders crawl at this share of their speed
         public bool proneLabel = true;               // "prone" shown above a prone raider while he is prone
         public bool posture = true;                  // suppressed raiders without cover go prone (CE profile x proneHeightFactor, crawl)
@@ -274,7 +282,7 @@ namespace HSKTacticalAI
             Scribe_Values.Look(ref fragDoorDamage, "fragDoorDamage", 140f);
             Scribe_Values.Look(ref shieldTactics, "shieldTactics", true);
             Scribe_Values.Look(ref shieldFollowers, "shieldFollowers", 3);
-            Scribe_Values.Look(ref shieldLeadTicks, "shieldLeadTicks", 300);
+            Scribe_Values.Look(ref shieldLeadTicks, "shieldLeadTicks", 900);
             Scribe_Values.Look(ref shieldCrouchTicks, "shieldCrouchTicks", 60);
             Scribe_Values.Look(ref shieldFrags, "shieldFrags", 3);
             Scribe_Values.Look(ref shieldThrowTicks, "shieldThrowTicks", 240);
@@ -292,6 +300,14 @@ namespace HSKTacticalAI
             Scribe_Values.Look(ref attritionTicks, "attritionTicks", 2700);
             Scribe_Values.Look(ref boundOdds, "boundOdds", 1.5f);
             Scribe_Values.Look(ref proneVisual, "proneVisual", true);
+            Scribe_Values.Look(ref raidMemory, "raidMemory", true);
+            Scribe_Values.Look(ref runAndGunByRole, "runAndGunByRole", true);
+            Scribe_Values.Look(ref adaptiveLoadouts, "adaptiveLoadouts", true);
+            Scribe_Values.Look(ref memoryShare, "memoryShare", 0.3f);
+            Scribe_Values.Look(ref memoryIntelMin, "memoryIntelMin", 0.25f);
+            Scribe_Values.Look(ref memoryHalfLifeDays, "memoryHalfLifeDays", 30f);
+            Scribe_Values.Look(ref memoryArmourHigh, "memoryArmourHigh", 8f);
+            Scribe_Values.Look(ref memoryMessages, "memoryMessages", true);
             Scribe_Values.Look(ref equipRaiders, "equipRaiders", false);
             Scribe_Values.Look(ref proneMoveFactor, "proneMoveFactor", 0.25f);
             Scribe_Values.Look(ref proneLabel, "proneLabel", true);
@@ -387,6 +403,9 @@ namespace HSKTacticalAI
             naturalWallExtraCost = (int)l.Slider(naturalWallExtraCost, 20, 5000);
             l.GapLine();
             l.CheckboxLabeled("Give raiders extra equipment", ref equipRaiders, "Off (default): raiders keep the loadout they spawned with, and pick their breach method from it and their tech level. On: breach specialists get charges, tools or stick bombs, some raiders get grenades and smoke, gas raids get masks and tox grenades.");
+            l.CheckboxLabeled("RunAndGun: only assault troops shoot on the move", ref runAndGunByRole, "With RunAndGun installed: riflemen and assault raiders in the assault may shoot on the move; medics, breachers, shields, support fire, carriers and withdrawing raiders walk.");
+            l.CheckboxLabeled("Factions remember earlier raids", ref raidMemory, "A faction whose raid failed and had survivors who got away learns from it: a walk-in that died becomes a breach next time, a failed breach a siege. Wiping a raid out teaches them nothing. Fades over about two seasons.");
+            l.CheckboxLabeled("Adapt loadouts to what hurt them", ref adaptiveLoadouts, "With raid memory: up to 30 % of the next raid swaps gear against what hurt them (launchers vs turrets, long rifles and smoke vs snipers, shotguns and SMGs vs melee, armour-piercing ammo vs armour). Only weapons their kind may carry, worth no more than what they had; ammo is swapped, not added.");
             l.CheckboxLabeled("Breaching equipment", ref breachKit,
                 "With extra equipment on: breaching raids bring tools for their tech level - Industrial and up carry breach charges they plant against walls " +
                 "(shoot the charge to defuse it); tribal and medieval breachers get breach axes or stick bombs.");

@@ -289,8 +289,9 @@ namespace HSKTacticalAI
         public static void Postfix(Verb __instance, bool __result)
         {
             Pawn p = __instance?.CasterPawn;
-            if (p != null) FireDoctrine.CastStarted(p, __result);
-            if (!__result || p?.Faction == null || __instance.IsMeleeAttack) return;
+            bool started = __result || RunAndGunCompat.ShootingOnTheMove(p);   // RunAndGun shoots on the move and returns false
+            if (p != null) FireDoctrine.CastStarted(p, started);
+            if (!started || p?.Faction == null || __instance.IsMeleeAttack) return;
             if (p.Faction == Faction.OfPlayer) FireDoctrine.DefenderCasts++;
             else if (p.Faction.HostileTo(Faction.OfPlayer))
             {

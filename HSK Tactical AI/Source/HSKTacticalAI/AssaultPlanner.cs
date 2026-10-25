@@ -69,6 +69,17 @@ namespace HSKTacticalAI
         public bool reangled;                        // crossing: already looked for another angle once                // walk mode: how the open ground is crossed
         public int crossingTick = -1, openCells, defendersAtCrossing;
         public int lastShotTick = -1;   // a member last fired a ranged shot (attrition that fires nothing ends early)
+        // raid memory (FactionMemory): who the raid was, what downed each member, what it learned / brought
+        public Faction faction;
+        public Map map;
+        public float defArmour;
+        public readonly Dictionary<Pawn, string> downedBy = new Dictionary<Pawn, string>();
+        public bool memoryDone;
+        // shield breach entry (playtest 2026-10-25): bearers through the gap, side counter for the wide clear points
+        public readonly HashSet<Pawn> shieldThrough = new HashSet<Pawn>();
+        public readonly Dictionary<IntVec3, int> clearCount = new Dictionary<IntVec3, int>();
+        public string memoryOutcome = "", memoryThreat = "";
+        public List<string> memoryAdaptations = new List<string>();
         // satisfied-exit hold (SatisfiedHold): progress since H-hour, our wall damage kept out of the colony-damage count
         public int satCheckTick = -1, satProgressTick = -1, satDefenders = -1, satOpen;
         public bool satReleased;
@@ -147,7 +158,10 @@ namespace HSKTacticalAI
             Map map = lord.Map;
             var pawns = lord.ownedPawns.Where(x => x.Spawned && !x.Downed).ToList();
             if (pawns.Count == 0) return null;
-            var plan = new AssaultPlan { lordId = lord.loadID, createdTick = Find.TickManager.TicksGame, startCount = pawns.Count };
+            var plan = new AssaultPlan { lordId = lord.loadID, createdTick = Find.TickManager.TicksGame, startCount = pawns.Count, faction = lord.faction, map = map };
+            var defsNow = Suppression.Defenders(map, map.Center, 999f);
+            if (defsNow.Count > 0) plan.defArmour = defsNow.Average(d => d.GetStatValue(StatDefOf.ArmorRating_Sharp));
+            PlanMode? remembered = FactionMemory.PreferredMode(lord.faction, true, out string memWhy);
             int sx = 0, sz = 0;
             foreach (var x in pawns) { sx += x.Position.x; sz += x.Position.z; }
             plan.gather = new IntVec3(sx / pawns.Count, 0, sz / pawns.Count);
@@ -167,8 +181,15 @@ namespace HSKTacticalAI
             }
             else
             {
+                // a way in on foot exists - but the faction remembers walking in and failing: breach instead (if it can)
+                if (remembered == PlanMode.Breach)
+                {
+                    PlanBreach(lord, plan, pawns, null, fallbackToWalk: true);
+                    plan.capability = memWhy + (plan.mode == PlanMode.Breach ? "; " : " but cannot breach; ") + plan.capability;
+                    if (plan.mode == PlanMode.Breach) FactionMemory.ApproachChanges++;
+                }
                 // a way in on foot exists - but if it's a covered funnel (the one entrance of a killbox), make new ones
-                if (TacticalAIMod.Settings.avoidFunnels && TryFindNewEntrance(map, plan.gather, plan.objective, TacticalAIMod.Settings.newEntranceRatio, out var entryNodes, out string why, TacticalAIMod.Settings.minFunnelCells))
+                else if (TacticalAIMod.Settings.avoidFunnels && TryFindNewEntrance(map, plan.gather, plan.objective, TacticalAIMod.Settings.newEntranceRatio, out var entryNodes, out string why, TacticalAIMod.Settings.minFunnelCells))
                 {
                     PlanBreach(lord, plan, pawns, entryNodes, fallbackToWalk: true);
                     if (plan.mode == PlanMode.Breach) plan.capability = why + "; " + plan.capability;
@@ -192,11 +213,22 @@ namespace HSKTacticalAI
             foreach (var p in pawns) plan.members.Add(p);
             plan.defendersAtStart = Suppression.Defenders(map, plan.objective, 40f).Count;
             RaidRoles.Assign(plan, pawns);
+            FactionMemory.AdaptLoadouts(lord, plan, pawns);   // after the roles: medics and breachers keep their kit
             ShieldWall.Assign(plan, pawns);
             Grenades.EquipOnce(lord, plan, pawns);
             GasRaid.Plan(lord, plan, pawns);
             JobGiver_HSKTAI_RaidingParty.Assign(plan, pawns);
             CheckForceRatioAtPlanning(lord, plan, pawns);
+            // the faction remembers a breach that failed: siege (factions that can)
+            if (remembered == PlanMode.Siege && (plan.mode == PlanMode.Breach || plan.mode == PlanMode.Walk))
+            {
+                ClearBreaches(plan);
+                plan.axes.Clear(); plan.axisOf.Clear(); plan.spotOf.Clear(); plan.waypoints.Clear(); plan.waypointIndex.Clear();
+                plan.mode = PlanMode.Siege;
+                plan.pendingConvert = true;
+                plan.capability += "; " + memWhy;
+                FactionMemory.ApproachChanges++;
+            }
             if (plan.mode == PlanMode.Breach || plan.mode == PlanMode.Walk || plan.mode == PlanMode.Standoff) Arson.Plan(map, plan, pawns);
             Log(plan);
             return plan;
@@ -1743,11 +1775,19 @@ namespace HSKTacticalAI
             float len = Mathf.Sqrt(dx * dx + dz * dz);
             if (len < 1f) return IntVec3.Invalid;
             dx /= len; dz /= len;
-            int side = (pawn.thingIDNumber & 1) == 0 ? 1 : -1;
-            float lateral = 2f + (pawn.thingIDNumber % 3 == 0 ? 1f : 0f);
-            var c = new IntVec3(entry.x + Mathf.RoundToInt(dx * 3f - dz * lateral * side), 0, entry.z + Mathf.RoundToInt(dz * 3f + dx * lateral * side));
+            // wide (playtest: "others follow and go around wide angle"): alternate left / right per opening, 4 then 5.5
+            // cells out, 2.5 in; narrower if the room is tight
+            var plan = AssaultPlanner.PlanOf(pawn);
+            int k = 0;
+            if (plan != null) { plan.clearCount.TryGetValue(entry, out k); plan.clearCount[entry] = k + 1; }
+            else k = pawn.thingIDNumber;
+            int side = (k & 1) == 0 ? 1 : -1;
             Map map = pawn.Map;
-            if (c.InBounds(map) && c.Standable(map) && pawn.CanReach(c, PathEndMode.OnCell, Danger.Deadly)) return c;
+            foreach (float lateral in new[] { (k / 2) % 2 == 0 ? 4f : 5.5f, 3f, 2f })
+            {
+                var c = new IntVec3(entry.x + Mathf.RoundToInt(dx * 2.5f - dz * lateral * side), 0, entry.z + Mathf.RoundToInt(dz * 2.5f + dx * lateral * side));
+                if (c.InBounds(map) && c.Standable(map) && pawn.CanReach(c, PathEndMode.OnCell, Danger.Deadly)) return c;
+            }
             var inside = new IntVec3(entry.x + Mathf.RoundToInt(dx * 3f), 0, entry.z + Mathf.RoundToInt(dz * 3f));
             return inside.InBounds(map) && inside.Standable(map) && pawn.CanReach(inside, PathEndMode.OnCell, Danger.Deadly) ? inside : IntVec3.Invalid;
         }

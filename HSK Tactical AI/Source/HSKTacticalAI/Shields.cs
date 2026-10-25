@@ -86,9 +86,11 @@ namespace HSKTacticalAI
             var s = TacticalAIMod.Settings;
             if (!s.shieldTactics || plan == null || plan.mode != PlanMode.Breach || plan.phase != PlanPhase.Assault) return false;
             if (Find.TickManager.TicksGame - plan.hHourTick > s.shieldLeadTicks) return false;
-            if (IsBearer(plan, p) || plan.entered.Contains(p)) return false;
-            if (!plan.breachOf.TryGetValue(p, out int gi)) return false;
-            return plan.followersOf.Keys.Any(b => Active(b) && !plan.entered.Contains(b) && plan.breachOf.TryGetValue(b, out int bi) && bi == gi);
+            if (IsBearer(plan, p) || plan.entered.Contains(p) || plan.shieldOf.ContainsKey(p)) return false;   // followers go with it
+            var mine = AssaultPlanner.EntryFor(plan, p, p.Map);
+            if (mine == null) return false;
+            // nobody overtakes: everyone going in through this breach waits until a shield going in here is through
+            return plan.followersOf.Keys.Any(b => Active(b) && !plan.shieldThrough.Contains(b) && AssaultPlanner.EntryFor(plan, b, b.Map) == mine);
         }
 
         public static Pawn NearestEnemy(Pawn p, float maxDist = 70f)
@@ -222,13 +224,82 @@ namespace HSKTacticalAI
             return JobMaker.MakeJob(JobDefOf.Wait_Combat, 30, true);
         }
 
+        public static int BreachLeads, BlastWaits;
+
+        /// <summary>
+        /// Through the breach first (playtest, 2026-10-25: "shield unit goes into the breach but stays while others
+        /// overtake ... should throw a grenade as close as possible to the units without exposing, after exploding moves in
+        /// and others follow and go around wide angle"): the frag-out at the opening is the bearer's (thrown from a covered
+        /// spot beside the gap, Grenades.OrderAtOpening); he waits beside the gap for the blast, then goes straight in and
+        /// never stops in the gap. Null once he is through (then he leads inside like anywhere else).
+        /// </summary>
+        private static Job BreachEntry(Pawn pawn, AssaultPlan plan)
+        {
+            var bp = AssaultPlanner.EntryFor(plan, pawn, pawn.Map);
+            if (bp == null) return null;   // not open yet: the approach keeps him at the stack / escorting
+            Map map = pawn.Map;
+            IntVec3 entry = bp.entry;
+            float dx = plan.objective.x - entry.x, dz = plan.objective.z - entry.z;
+            float len = Mathf.Sqrt(dx * dx + dz * dz);
+            if (len < 1f) { plan.shieldThrough.Add(pawn); return null; }
+            dx /= len; dz /= len;
+            float inward = (pawn.Position.x - entry.x) * dx + (pawn.Position.z - entry.z) * dz;
+            if (inward >= 2.5f)
+            {
+                plan.shieldThrough.Add(pawn);
+                plan.entered.Add(pawn);
+                pawn.mindState.duty = new PawnDuty(TAI_DefOf.HSKTAI_Assault, plan.objective);
+                return null;
+            }
+            // his frag-out: from the covered spot
+            if (plan.throwOrders.ContainsKey(pawn)) return Grenades.TryThrowJob(pawn, plan);
+            // straight in, ~3.5 cells inside on the line to the defenders
+            IntVec3 target = IntVec3.Invalid;
+            for (float k = 3.5f; k >= 2f && !target.IsValid; k -= 0.5f)
+            {
+                var c = new IntVec3(entry.x + Mathf.RoundToInt(dx * k), 0, entry.z + Mathf.RoundToInt(dz * k));
+                if (c.InBounds(map) && c.Standable(map) && pawn.CanReach(c, PathEndMode.OnCell, Danger.Deadly)) target = c;
+            }
+            // no cell inside, or already standing on it (sb1 s4: a Goto to his own cell, 10 jobs a tick): he is through
+            if (!target.IsValid || pawn.Position.DistanceTo(target) <= 1.5f)
+            {
+                plan.shieldThrough.Add(pawn);
+                plan.entered.Add(pawn);
+                pawn.mindState.duty = new PawnDuty(TAI_DefOf.HSKTAI_Assault, plan.objective);
+                return null;
+            }
+            // the blast first: wait beside the gap (out of its line), not in it
+            if (Grenades.InDanger(plan, target) || Grenades.InDanger(plan, entry))
+            {
+                BlastWaits++;
+                if (pawn.Position.DistanceTo(entry) <= 2.5f && bp.staging.IsValid && pawn.CanReach(bp.staging, PathEndMode.OnCell, Danger.Deadly))
+                {
+                    Job back = JobMaker.MakeJob(JobDefOf.Goto, bp.staging);
+                    back.locomotionUrgency = LocomotionUrgency.Sprint;
+                    back.expiryInterval = 60;
+                    return back;
+                }
+                return JobMaker.MakeJob(JobDefOf.Wait_Combat, 30, true);
+            }
+            BreachLeads++;
+            Job go = JobMaker.MakeJob(JobDefOf.Goto, target);
+            go.locomotionUrgency = LocomotionUrgency.Sprint;   // never stop in the gap
+            go.expiryInterval = 120;
+            return go;
+        }
+
         private static Job Lead(Pawn pawn, AssaultPlan plan)
         {
-            // in throwing range: frag from behind the shield (also at the breach, before going through)
+            // breach: through the gap first - frag-out from cover, the blast, then straight in (the group waits)
+            if (plan.mode == PlanMode.Breach && !plan.shieldThrough.Contains(pawn))
+            {
+                Job entryJob = BreachEntry(pawn, plan);
+                if (entryJob != null) return entryJob;
+                if (!plan.shieldThrough.Contains(pawn)) return null;
+            }
+            // in throwing range: frag from behind the shield
             Job frag = Grenades.TryShieldFrag(pawn, plan);
             if (frag != null) return frag;
-            // breach: the normal approach takes the shield to and through the hole (it is first, the group waits)
-            if (plan.mode == PlanMode.Breach && !plan.entered.Contains(pawn)) return null;
             Pawn enemy = ShieldWall.NearestEnemy(pawn);
             if (enemy == null) return null;
             float d = enemy.Position.DistanceTo(pawn.Position);
@@ -247,7 +318,9 @@ namespace HSKTacticalAI
                 var live = fl.Where(ShieldWall.Active).ToList();
                 int now = Find.TickManager.TicksGame;
                 plan.shieldWaitTicks.TryGetValue(pawn, out int waited);
-                if (live.Count > 0 && live.Average(f => f.Position.DistanceTo(pawn.Position)) > 4f && waited < 300)
+                var nearGap = plan.mode == PlanMode.Breach ? AssaultPlanner.EntryFor(plan, pawn, pawn.Map) : null;
+                bool inGap = nearGap != null && pawn.Position.DistanceTo(nearGap.entry) <= 3f;   // never wait in or right behind the gap
+                if (!inGap && live.Count > 0 && live.Average(f => f.Position.DistanceTo(pawn.Position)) > 4f && waited < 300)
                 {
                     plan.shieldWaitTicks[pawn] = waited + 30;
                     // facing the enemy while waiting: shoot if it can, else stand

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 using HarmonyLib;
 using RimWorld;
@@ -34,6 +35,7 @@ namespace HSKTacticalAI
         public float attackRatio = 3f;   // raiders per defender (playtest: "the attack ratio should be about 3 to 1"); 0 = keep `defenders`
         public string startScenario = "NakedBrutality";   // ScenarioDef for the map (never Crashlanded: extra pawns)
         public Dictionary<string, string> settings = new Dictionary<string, string>();   // AI variant: setting name -> value (this run only)
+        public Dictionary<string, float> memory = new Dictionary<string, float>();       // raid memory seed for the raid faction (FactionRaidMemory field -> value)
     }
 
     /// <summary>
@@ -784,6 +786,24 @@ namespace HSKTacticalAI
             }
         }
 
+        /// <summary>Raid memory seed (two-run memory tests: run B starts with what run A learned).</summary>
+        private void SeedMemory(Faction f)
+        {
+            var cfg = AILab.Config;
+            if (cfg.memory == null || cfg.memory.Count == 0) return;
+            var mem = GameComponent_RaidMemory.Instance?.For(f, true);
+            if (mem == null) { notes += "memorySeed=noComponent "; return; }
+            foreach (var kv in cfg.memory)
+            {
+                var fi = typeof(FactionRaidMemory).GetField(kv.Key, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+                if (fi == null) { notes += "memorySeed?" + kv.Key + " "; continue; }
+                if (fi.FieldType == typeof(float)) fi.SetValue(mem, kv.Value);
+                else if (fi.FieldType == typeof(int)) fi.SetValue(mem, (int)kv.Value);
+            }
+            mem.lastDecayTick = Find.TickManager.TicksGame;
+            notes += "memorySeed=[" + mem.Describe() + "] ";
+        }
+
         private void SpawnRaid()
         {
             var cfg = AILab.Config;
@@ -848,6 +868,7 @@ namespace HSKTacticalAI
             {
                 // the raid planned the moment it spawned, against the old defenders: plan again against the matched ones
                 Lord lord = raiders[0].GetLord();
+                SeedMemory(raidFaction);   // after the defenders copied the raid's kit: the re-plan adapts from memory
                 if (lord != null && AssaultPlanner.Plans.Remove(lord.loadID)) lord.CurLordToil?.UpdateAllDuties();
             }
             attackerScore = ForceEstimate.Attackers(raiders);
@@ -1103,6 +1124,8 @@ namespace HSKTacticalAI
                 outcome = AssaultPlanner.LastPlan != null && AssaultPlanner.LastPlan.mode == PlanMode.Siege ? "siege" : "timeout";
             if (outcome.Length > 0)
             {
+                // raid memory: write what the faction learned now (the Lab ends here; the game would do it when the last raider leaves)
+                foreach (var pl in AssaultPlanner.Plans.Values) if (pl.map == map) FactionMemory.TryFinish(pl, force: true);
                 realTime.Stop();
                 state = State.Done;
                 WriteResults();
@@ -1352,6 +1375,18 @@ namespace HSKTacticalAI
                 ["crossAttrition"] = Crossing.Attrition,
                 ["crossAttritionGo"] = Crossing.AttritionGo,
                 ["crossBound"] = Crossing.Bounds,
+                ["memoryAfter"] = raidFaction != null ? (FactionMemory.Read(raidFaction)?.Describe() ?? "") : "",
+                ["memoryOutcome"] = AssaultPlanner.LastPlan?.memoryOutcome ?? "",
+                ["memoryThreat"] = AssaultPlanner.LastPlan?.memoryThreat ?? "",
+                ["memoryAdaptations"] = AssaultPlanner.LastPlan != null ? string.Join(", ", AssaultPlanner.LastPlan.memoryAdaptations) : "",
+                ["memoryDownedBy"] = AssaultPlanner.LastPlan != null ? string.Join(",", AssaultPlanner.LastPlan.downedBy.Values.GroupBy(v => v).Select(g => g.Key + "=" + g.Count())) : "",
+                ["memoryApproachChanges"] = FactionMemory.ApproachChanges,
+                ["shieldBreachLeads"] = JobGiver_HSKTAI_Shield.BreachLeads,
+                ["shieldBlastWaits"] = JobGiver_HSKTAI_Shield.BlastWaits,
+                ["memoryWeaponSwaps"] = FactionMemory.WeaponSwaps,
+                ["memoryAmmoSwaps"] = FactionMemory.AmmoSwaps,
+                ["memoryGrenadeSwaps"] = FactionMemory.GrenadeSwaps,
+                ["memorySwapDebug"] = FactionMemory.SwapDebug,
                 ["unarmedRearmed"] = JobGiver_HSKTAI_Unarmed.Rearmed,
                 ["unarmedKept"] = JobGiver_HSKTAI_Unarmed.Kept,
                 ["satisfiedHeldTicks"] = SatisfiedHold.HeldTicks,

@@ -53,6 +53,10 @@ settings. Tested on RimWorld 1.7 with HSK `1.7-super-unstable` and the full HSK 
   - a raiding party plunders on large raids.
 - **Shield wall:** ballistic-shield bearers lead, crouch between bounds and throw the grenades they carry once in range; gunners
   follow in their shadow. Shields last in a withdrawal.
+- **Shield through the breach:** at an open breach the shield bearer throws first, if he carries a grenade. He throws
+  from a covered spot beside the gap, as close to the defenders as he can reach. He waits beside the gap for the blast,
+  then goes straight in and never stops in the gap. Nobody going in through that breach overtakes him (up to 900
+  ticks). His followers stay in his shadow, and the rest fan out wide left and right of the opening.
 - **Fire discipline** (CE aim and fire modes) by range and situation:
   - aimed single shots at long range;
   - aimed short bursts at medium range;
@@ -89,11 +93,39 @@ settings. Tested on RimWorld 1.7 with HSK `1.7-super-unstable` and the full HSK 
   carried out - except those lying in the defenders' fire without smoke over them (medics too: no rescues into the
   gun line).
 
+**Raid memory**
+- **Factions remember earlier raids**, saved with the game:
+  - which approach failed (walk-in, breach, siege);
+  - what downed their raiders (turrets, traps, explosions, melee, long-range fire);
+  - how well armoured the colonists were.
+  The memory fades by half in about two seasons.
+- **Intel only through survivors:** a faction learns only from raiders who got off the map alive. Wipe a raid out
+  and it learns nothing.
+- **The next raid adapts its approach:** a walk-in that failed becomes a breach; a failed breach becomes a siege
+  (factions that can).
+- **The next raid adapts its loadout, within budget:** up to 30 % of its gunners swap gear against what hurt them.
+  They take only weapons a pawn kind of the same raid carries, within their own weapon budget. Ammo is swapped, not
+  added; medics and breachers keep their kit.
+
+  | What hurt them | What they bring |
+  |---|---|
+  | turrets or a killbox | launchers; their carried frags become EMP grenades |
+  | snipers | long rifles; half their grenades become smoke |
+  | melee fighters | shotguns and SMGs |
+  | heavily armoured colonists | armour-piercing ammo |
+- **A message** tells the player when an adapted raid arrives ("... remember your turrets: this raid brings
+  launchers"). Memory and loadout adaptation each have a switch.
+
 **Performance:** the AI's own code costs about 0.02-0.09 ms per game tick (under 1 % of the tick time), measured up to a
 10,000-point raid with 44 raiders. Under heavy load, its periodic checks run half as often.
 
-**Compatibility:** works with Combat Extended, Smarter Raid AI (`pogo.ai`) and Enemy Self Preservation. Not with
-CAI 5000 (both change the same AI systems). Saves: raid plans are not saved; after a reload a raid plans anew.
+**Compatibility:** works with Combat Extended, Smarter Raid AI (`pogo.ai`) and Enemy Self Preservation.
+- **RunAndGun:** works too. Its "enable for AI" option makes every move order shoot on the move. For raiders under a
+  plan, only riflemen and assault troops in the assault may do that; medics, breachers, shields, support fire,
+  carriers and withdrawing raiders walk. Their shots on the move count for the AI.
+- **Not with CAI 5000 or Raid Tactics:** they change the same raid AI, and this mod has its own raid memory.
+
+Saves: raid plans are not saved (after a reload a raid plans anew); raid memory is.
 
 **For testers:** `Source/HSKTacticalAI/AILab.cs` is a scripted test bench (scenarios, metrics). It is off unless a Lab
 config file is present in the RimWorld config folder.

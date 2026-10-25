@@ -28,10 +28,11 @@ Raiders plan their attack instead of walking into your guns:
 - they cross open ground only in cover, behind smoke, with 3:1 odds or by fire and movement;
 - they fight as combined arms: base of fire, overwatch, shield bearers, medics, flanking, fire discipline by range;
 - under realistic suppression they go prone (drawn lying down, labelled "prone");
-- they plunder instead of chasing you through your corridors, and withdraw when the attack fails.
+- they plunder instead of chasing you through your corridors, and withdraw when the attack fails;
+- factions remember earlier raids (only through survivors) and adapt their approach and loadout within budget.
 
 Every behaviour has a switch in the mod settings; the threat map overlay is the crosshair button in the bottom-right
-bar. Works with Combat Extended, Smarter Raid AI and Enemy Self Preservation; not with CAI 5000. Load after HSK and
+bar. Works with Combat Extended, Smarter Raid AI, Enemy Self Preservation and RunAndGun; not with CAI 5000 or Raid Tactics. Load after HSK and
 Combat Extended.
 
 ## HSK Fortifications Rebalance

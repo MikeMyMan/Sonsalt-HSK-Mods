@@ -30,6 +30,7 @@
   </loadAfter>
   <incompatibleWith>
     <li>Krkr.rule56</li>
+    <li>Funstab.RaidTactics</li>
   </incompatibleWith>
   <description>A custom raid AI for Hardcore SK (0.1, test release).
 
@@ -43,5 +44,5 @@ Raiders plan their attack instead of walking into your guns:
 
 Every behaviour can be switched off in the mod settings.
 
-Works with Smarter Raid AI, Combat Extended and Enemy Self Preservation. Not with CAI 5000 (both change the same AI systems).</description>
+Works with Smarter Raid AI, Combat Extended and Enemy Self Preservation. Not with CAI 5000 or Raid Tactics (they change the same raid AI; this mod has its own raid memory).</description>
 </ModMetaData>

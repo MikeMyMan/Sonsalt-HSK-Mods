@@ -342,7 +342,8 @@ namespace HSKTacticalAI
             int frags = 0;
             bool smoked = false;
             var aimed = new List<IntVec3>();
-            foreach (var p in group.Where(p => p.Spawned && !p.Downed && !plan.throwOrders.ContainsKey(p)).OrderBy(p => p.Position.DistanceToSquared(opening)))
+            foreach (var p in group.Where(p => p.Spawned && !p.Downed && !plan.throwOrders.ContainsKey(p))
+                                   .OrderBy(p => ShieldWall.IsBearer(plan, p) ? 0 : 1).ThenBy(p => p.Position.DistanceToSquared(opening)))   // the shield throws first, then leads in
             {
                 Thing f = frags < 2 ? CarriedFrag(p) : null;
                 Thing sm = !smoked ? CarriedSmoke(p) : null;
