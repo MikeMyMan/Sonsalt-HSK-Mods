@@ -42,6 +42,8 @@ namespace HSKTacticalAI
             float health = pawn.health?.summaryHealth?.SummaryHealthPercent ?? 1f;
             if (aimers.Count < 2 && !(aimers.Count == 1 && health < 0.5f)) return null;
             if (aimers.Any(a => a.Position.DistanceTo(pawn.Position) <= 6f)) return null;   // too close to run: fight
+            // melee with an enemy close: closing in beats turning his back (playtest: "melee units should close in on targets")
+            if (Micro.IsMelee(pawn) && pawn.equipment?.Primary != null && RangeBand.Knows(plan) && ShieldWall.NearestEnemy(pawn, 10f) != null) return null;
             Map map = pawn.Map;
             if (Micro.CoveredFromAll(pawn.Position, aimers, map)) return null;
             IntVec3 cell = PositionFinder.Find(pawn, 12f,
@@ -63,18 +65,40 @@ namespace HSKTacticalAI
     /// </summary>
     public class JobGiver_HSKTAI_Unarmed : ThinkNode_JobGiver
     {
-        public static int Rearmed, Kept;
+        public static int Rearmed, Kept, ReserveMoves;
+
+        /// <summary>8 cells behind the raid's armed fighters (towards where it came from), out of the defenders' fire.</summary>
+        private static IntVec3 Reserve(Pawn pawn, AssaultPlan plan)
+        {
+            Map map = pawn.Map;
+            int x = 0, z = 0, n = 0;
+            foreach (var m in plan.members)
+            {
+                if (m == pawn || !m.Spawned || m.Downed || m.Dead || m.Map != map || m.equipment?.Primary == null || Launchers.GasOnlyArmed(m)) continue;
+                x += m.Position.x; z += m.Position.z; n++;
+            }
+            if (n == 0) return IntVec3.Invalid;
+            var c = new IntVec3(x / n, 0, z / n);
+            float d = c.DistanceTo(plan.gather);
+            if (d > 1f) c = new IntVec3(c.x + Mathf.RoundToInt((plan.gather.x - c.x) * Mathf.Min(1f, 8f / d)), 0, c.z + Mathf.RoundToInt((plan.gather.z - c.z) * Mathf.Min(1f, 8f / d)));
+            return CellFinder.StandableCellNear(c, map, 6f, cell => !Withdrawal.InOpenFire(map, cell) && pawn.CanReach(cell, PathEndMode.OnCell, Danger.Deadly));
+        }
 
         protected override Job TryGiveJob(Pawn pawn)
         {
             AssaultPlan plan = AssaultPlanner.PlanOf(pawn);
             if (plan == null || (plan.phase != PlanPhase.Assault && plan.phase != PlanPhase.Approach)) return null;
-            if (!pawn.RaceProps.Humanlike || pawn.equipment == null || pawn.equipment.Primary != null || pawn.WorkTagIsDisabled(WorkTags.Violent)) return null;
+            if (!pawn.RaceProps.Humanlike || pawn.equipment == null || (pawn.equipment.Primary != null && !Launchers.GasOnlyArmed(pawn)) || pawn.WorkTagIsDisabled(WorkTags.Violent)) return null;   // a gas-only gun with nothing to gas counts as no gun
+            if (pawn.equipment.Primary != null)
+            {
+                Job reload = Launchers.ReloadFromGas(pawn, pawn.equipment.PrimaryEq.PrimaryVerb);   // gas loaded, another round carried
+                if (reload != null) return reload;
+            }
             if (plan.breachTeam.Contains(pawn) && plan.BreachFor(pawn) is BreachPoint bp && !bp.abandoned && !bp.WallsGone
                 && (bp.method == BreachMethod.Tunnel || bp.method == BreachMethod.Fire)) return null;   // digging / lighting needs no weapon
             Map map = pawn.Map;
             Thing gun = GenClosest.ClosestThingReachable(pawn.Position, map, ThingRequest.ForGroup(ThingRequestGroup.Weapon), PathEndMode.OnCell,
-                TraverseParms.For(pawn, Danger.Deadly), 20f,
+                TraverseParms.For(pawn, Danger.Deadly), 30f,
                 t => t.def.IsRangedWeapon && t.def.equipmentType == EquipmentType.Primary && !t.def.destroyOnDrop && t.Spawned
                      && !Withdrawal.InOpenFire(map, t.Position) && pawn.CanReserve(t) && EquipmentUtility.CanEquip(t, pawn));
             if (gun != null)
@@ -85,6 +109,18 @@ namespace HSKTacticalAI
             Kept++;
             Job plunder = TacticalAIMod.Settings.plunder ? Plunder.TryPlunder(pawn, plan, plan.objective, 45f, 2) : null;
             if (plunder != null) return plunder;
+            // the reserve (playtest: "the grenadelaunchers stay at the edge of the map"): keep up with the raid, out of fire,
+            // 8 cells behind its armed fighters - close enough to take up a fallen comrade's gun
+            IntVec3 reserve = Reserve(pawn, plan);
+            if (reserve.IsValid && pawn.Position.DistanceTo(reserve) > 6f)
+            {
+                ReserveMoves++;
+                Job toReserve = JobMaker.MakeJob(JobDefOf.Goto, reserve);
+                toReserve.locomotionUrgency = LocomotionUrgency.Jog;
+                toReserve.expiryInterval = 300;
+                toReserve.checkOverrideOnExpire = true;
+                return toReserve;
+            }
             if (!Withdrawal.InOpenFire(map, pawn.Position)) return JobMaker.MakeJob(JobDefOf.Wait_Combat, 120, true);
             IntVec3 safe = PositionFinder.Find(pawn, 15f, c => Withdrawal.InOpenFire(map, c.c) ? float.NaN : c.path + c.exposure * 3f, null, 1);
             if (!safe.IsValid) return null;

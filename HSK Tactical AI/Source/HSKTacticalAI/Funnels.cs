@@ -107,7 +107,7 @@ namespace HSKTacticalAI
         {
             var s = TacticalAIMod.Settings;
             AssaultPlan plan = AssaultPlanner.PlanOf(pawn);
-            if (!s.funnelCaution || plan == null || plan.phase != PlanPhase.Assault) return null;
+            if (!s.funnelCaution || plan == null || plan.phase != PlanPhase.Assault || !Competence.Knows(plan, Doctrine.FunnelCaution)) return null;
             if (ShieldWall.IsBearer(plan, pawn) || ShieldWall.BearerOf(plan, pawn) != null) return null;   // the shield goes in
             Pawn enemy = ShieldWall.NearestEnemy(pawn, 40f);
             if (enemy == null) { plan.funnelHoldOf.Remove(pawn); return null; }
@@ -122,6 +122,9 @@ namespace HSKTacticalAI
             // 1) a frag in if a defender is in reach
             Job frag = Grenades.TryShieldFrag(pawn, plan);
             if (frag != null) return frag;
+            // 1b) a launcher (M79 and the like): blow the door in the funnel - the blast reaches whoever waits behind it
+            Job doorShot = Launchers.FunnelDoorShot(pawn, f);
+            if (doorShot != null) return doorShot;
 
             // 2) hold beside the mouth while the funnel is fresh
             if (now - first < s.funnelHoldTicks)

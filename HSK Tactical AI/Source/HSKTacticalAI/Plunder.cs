@@ -256,8 +256,9 @@ namespace HSKTacticalAI
             Verb verb = pawn.equipment?.PrimaryEq?.PrimaryVerb;
             if (enemy != null && verb != null && !verb.IsMeleeAttack && enemy.Position.DistanceTo(pawn.Position) <= verb.verbProps.range && verb.CanHitTarget(enemy))
                 return null;   // a shot: fight
+            // a dull command doesn't hold back from the funnel: it chases (vanilla-like)
             bool chase = enemy != null && enemy.Position.DistanceTo(pawn.Position) <= s.plunderChaseDist
-                         && pawn.CanReach(enemy, PathEndMode.Touch, Danger.Deadly) && Funnels.FunnelTo(pawn, enemy) == null;
+                         && pawn.CanReach(enemy, PathEndMode.Touch, Danger.Deadly) && (!Competence.Knows(plan, Doctrine.FunnelCaution) || Funnels.FunnelTo(pawn, enemy) == null);
             if (chase) return null;
 
             int now = Find.TickManager.TicksGame;
@@ -266,13 +267,16 @@ namespace HSKTacticalAI
             Job pj = Plunder.TryPlunder(pawn, plan, pawn.Position, 45f, Mathf.Max(1, Mathf.FloorToInt(alive * s.plunderLooterShare)));
             if (pj != null) return pj;
             // nothing left to take and the defenders stay holed up: leave with what we have
-            if (s.plannedWithdrawal && plan.lastPlunderJobTick >= 0 && now - plan.lastPlunderJobTick > s.plunderIdleWithdrawTicks)
+            // (cp3 killbox: nothing to plunder at all left the raid waiting out the whole run - idle counts from the start)
+            int lastActive = Mathf.Max(plan.lastPlunderJobTick, plan.plunderStartTick);
+            if (now - lastActive > s.plunderIdleWithdrawTicks)
             {
                 Lord lord = pawn.GetLord();
                 var live = lord?.ownedPawns.Where(x => x.Spawned && !x.Downed).ToList();
+                if (lord != null && live.Count > 0 && !Competence.PlannedWithdrawal(plan)) { AssaultPlanner.ExitMap(lord, plan); return null; }
                 if (lord != null && live.Count > 0)
                 {
-                    Withdrawal.Begin(pawn.Map, lord, plan, live, "plundered, defenders holed up");
+                    Withdrawal.Begin(pawn.Map, lord, plan, live, plan.lastPlunderJobTick >= 0 ? "plundered, defenders holed up" : "nothing to take, defenders holed up");
                     Plunder.Withdrawals++;
                     lord.CurLordToil?.UpdateAllDuties();
                     return null;

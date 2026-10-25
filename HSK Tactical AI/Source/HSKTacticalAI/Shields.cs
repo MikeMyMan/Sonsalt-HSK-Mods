@@ -403,3 +403,56 @@ namespace HSKTacticalAI
         }
     }
 }
+
+namespace HSKTacticalAI
+{
+    /// <summary>
+    /// Loadouts the raider can't fight with (playtest 2026-10-25: "some with shields and rifles they can't use"): an energy
+    /// shield belt blocks every ranged shot while it is up, and CE flags a ballistic shield with a two-handed gun. At
+    /// planning, from the raider's own gear only: a ballistic-shield bearer with a one-handed gun in the pack switches to it
+    /// (and stays a shield bearer); otherwise the shield (or belt) goes into the pack so the rifle works. Once per raider.
+    /// </summary>
+    public static class LoadoutFix
+    {
+        public static int SidearmSwaps, ShieldsStowed;
+        private static readonly HashSet<Pawn> done = new HashSet<Pawn>();
+
+        private static bool OneHanded(ThingDef d) => d?.weaponTags != null && d.weaponTags.Contains("CE_OneHandedWeapon");
+
+        public static void Apply(List<Pawn> pawns)
+        {
+            foreach (Pawn p in pawns)
+            {
+                if (p.apparel == null || p.equipment?.Primary == null || !p.equipment.Primary.def.IsRangedWeapon || p.inventory == null || !done.Add(p)) continue;
+                try
+                {
+                    foreach (Apparel a in p.apparel.WornApparel.ToList())
+                    {
+                        var cs = a.TryGetComp<CompShield>();
+                        bool belt = cs != null && cs.Props.blocksRangedWeapons;
+                        bool ceShield = a.GetType().Name == "Apparel_Shield" && !OneHanded(p.equipment.Primary.def);
+                        if (!belt && !ceShield) continue;
+                        if (ceShield)
+                        {
+                            Thing side = p.inventory.innerContainer.FirstOrDefault(t => t.def.IsRangedWeapon && OneHanded(t.def));
+                            if (side != null)
+                            {
+                                ThingWithComps old = p.equipment.Primary;
+                                p.equipment.Remove(old);
+                                p.inventory.innerContainer.TryAdd(old);
+                                p.inventory.innerContainer.Remove(side);
+                                p.equipment.AddEquipment((ThingWithComps)side);
+                                SidearmSwaps++;
+                                continue;
+                            }
+                        }
+                        p.apparel.Remove(a);
+                        if (!p.inventory.innerContainer.TryAdd(a)) GenPlace.TryPlaceThing(a, p.Position, p.Map, ThingPlaceMode.Near);
+                        ShieldsStowed++;
+                    }
+                }
+                catch (System.Exception e) { Log.ErrorOnce("[HSK Tactical AI] loadout fix failed: " + e.Message, 0x48534B43); }
+            }
+        }
+    }
+}

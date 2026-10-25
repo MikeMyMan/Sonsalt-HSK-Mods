@@ -22,8 +22,8 @@ namespace HSKTacticalAI
         {
             var s = TacticalAIMod.Settings;
             float score = d.Position.DistanceTo(shooter.Position);
-            if (s.flanking && !Flanking.Covered(d, shooter.Position)) score -= 40f;
-            if (!s.focusFire) return score + Suppression.State(d) * 15f;
+            if (s.flanking && Competence.Knows(plan, Doctrine.Flanking) && !Flanking.Covered(d, shooter.Position)) score -= 40f;
+            if (!s.focusFire || !Competence.Knows(plan, Doctrine.FocusFire)) return score + Suppression.State(d) * 15f;   // concentrated fire takes a command that directs it
             score -= (1f - (d.health?.summaryHealth?.SummaryHealthPercent ?? 1f)) * 30f;
             if (Dangerous(d)) score -= 25f;
             int focus = 0;
@@ -78,7 +78,7 @@ namespace HSKTacticalAI
         {
             var s = TacticalAIMod.Settings;
             AssaultPlan plan = AssaultPlanner.PlanOf(pawn);
-            if (!s.threatAdvance || plan == null || plan.phase != PlanPhase.Assault) return null;
+            if (!s.threatAdvance || plan == null || plan.phase != PlanPhase.Assault || !Competence.Knows(plan, Doctrine.ThreatAdvance)) return null;
             Map map = pawn.Map;
             var tm = MapComponent_TacticalAI.For(map)?.Threat;
             if (tm == null || tm.CompletedCycles == 0) return null;
@@ -93,6 +93,7 @@ namespace HSKTacticalAI
                 IntVec3 goal = CellFinder.StandableCellNear(enemy.Position, map, 3f, c => c != enemy.Position && pawn.CanReach(c, PathEndMode.OnCell, Danger.Deadly));
                 List<IntVec3> wps = null;
                 if (goal.IsValid)
+                    using (Competence.Perceive(plan, pawn.Position))
                     using (var customizer = new ThreatCustomizer(map, tm, s.routeCostPerFire * 0.5f, s.routeBaseCostInFire, s.funnelCellPenalty, s.safeFire))
                         if (ThreatPathing.TryFindRoute(map, pawn.Position, goal, customizer, out var nodes, out _)) wps = ThreatPathing.Waypoints(nodes, 4);
                 r = (wps, now);

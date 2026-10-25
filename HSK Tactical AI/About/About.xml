@@ -3,7 +3,7 @@
   <name>HSK Tactical AI</name>
   <author>Sonsalt</author>
   <packageId>sonsalt.hsk.tacticalai</packageId>
-  <modVersion>0.1.0</modVersion>
+  <modVersion>0.2.0</modVersion>
   <url>https://github.com/MikeMyMan/Sonsalt-HSK-Mods</url>
   <supportedVersions>
     <li>1.7</li>
@@ -32,7 +32,7 @@
     <li>Krkr.rule56</li>
     <li>Funstab.RaidTactics</li>
   </incompatibleWith>
-  <description>A custom raid AI for Hardcore SK (0.1, test release).
+  <description>A custom raid AI for Hardcore SK (0.2, test release).
 
 Raiders plan their attack instead of walking into your guns:
 - Threat map: they know where your colonists and turrets can shoot (toggle the overlay with the crosshair button, bottom-right bar).
@@ -41,6 +41,7 @@ Raiders plan their attack instead of walking into your guns:
 - Combined arms: base of fire (machine guns, snipers) pins your defenders while the assault moves; overwatch on the breach; shield bearers lead and throw grenades; medics pull the wounded out; fire and movement inside each group; groups arrive together from several sides.
 - Fire discipline: aimed or snap shots, single, short bursts or full auto by range and role; realistic suppression (machine guns and explosives pin, armour does not stop the flinch).
 - Gas and fire against bunkers, arson, plunder (loot, livestock, wrecking) instead of chasing you into your corridors, planned withdrawals carrying the wounded, going prone under fire.
+- Tactical competence: how smart a raid acts depends on its leader's intelligence (Intellectual skill, traits like too smart or slow learner) and its faction's tech level. A sharp spacer commander uses every tactic and walks around your traps and IEDs; a dull tribal chief walks straight into your killbox and traps. Kill the leader and the raid loses its edge.
 
 Every behaviour can be switched off in the mod settings.
 

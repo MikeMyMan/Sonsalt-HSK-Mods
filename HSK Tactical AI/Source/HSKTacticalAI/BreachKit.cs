@@ -23,6 +23,7 @@ namespace HSKTacticalAI
         public static DutyDef HSKTAI_Support;
         public static DutyDef HSKTAI_Withdraw;
         public static DutyDef HSKTAI_Arson;
+        public static DutyDef HSKTAI_SiegeGuard;
         static TAI_DefOf() { DefOfHelper.EnsureInitializedInCtor(typeof(TAI_DefOf)); }
     }
 
@@ -220,7 +221,7 @@ namespace HSKTacticalAI
             if (bp.smoked) return;
             bp.smoked = true;
             var s = TacticalAIMod.Settings;
-            if (s == null || !s.breachKit || !s.smokeOnBreach || !bp.entry.IsValid) return;
+            if (s == null || !s.breachKit || !s.smokeOnBreach || !bp.entry.IsValid || !Competence.Knows(plan, Doctrine.Smoke)) return;
             if (lord.faction == null || lord.faction.def.techLevel < TechLevel.Industrial) return;
             if (lord.ownedPawns.Any(p => plan.BreachFor(p) == bp && Grenades.CarriedSmoke(p) != null)) return;   // real smoke grenades are thrown instead
             if (!s.equipRaiders) return;   // no smoke out of nothing: only grenades the raiders carry

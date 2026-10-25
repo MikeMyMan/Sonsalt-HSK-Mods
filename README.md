@@ -5,7 +5,7 @@ Each mod is one folder; copy the folders you want into your `RimWorld\Mods` fold
 
 | Mod | packageId | Game version | Needs |
 |---|---|---|---|
-| [HSK Tactical AI](#hsk-tactical-ai) (0.1, test release) | `sonsalt.hsk.tacticalai` | 1.7 | HSK, Harmony (Combat Extended recommended) |
+| [HSK Tactical AI](#hsk-tactical-ai) (0.2, test release) | `sonsalt.hsk.tacticalai` | 1.7 | HSK, Harmony (Combat Extended recommended) |
 | [HSK Weapon Blueprints](#hsk-weapon-blueprints) (0.1, test release) | `sonsalt.hsk.weaponblueprints` | 1.7 | Harmony; built for HSK and Combat Extended. New colony only |
 | [HSK Fortifications Rebalance](#hsk-fortifications-rebalance) | `sonsalt.hsk.fortifications` | 1.7 | HSK + Aoba's Fortifications - Medieval and/or - Industrial |
 | [HSK Outposts](#hsk-outposts) | `sonsalt.hsk.outposts` | 1.7 | HSK, Vanilla Expanded Framework, Vanilla Outposts Expanded (VOE: Additional Outposts optional) |
@@ -25,7 +25,7 @@ the game's auto-sort). Put the compatibility fixes near the end.
 
 ## HSK Tactical AI
 
-A custom raid AI for HSK (0.1 is a test release for the dev team; see the [changelog](CHANGELOG.md) for the full list).
+A custom raid AI for HSK (0.2 is a test release for the dev team; see the [changelog](CHANGELOG.md) for the full list).
 Raiders plan their attack instead of walking into your guns:
 - they read where your guns can shoot (threat map) and avoid killboxes and funnels;
 - they breach several walls at once with what they carry (launchers, explosives, tools, fire, tunnels);
@@ -33,7 +33,10 @@ Raiders plan their attack instead of walking into your guns:
 - they fight as combined arms: base of fire, overwatch, shield bearers, medics, flanking, fire discipline by range;
 - under realistic suppression they go prone (drawn lying down, labelled "prone");
 - they plunder instead of chasing you through your corridors, and withdraw when the attack fails;
-- factions remember earlier raids (only through survivors) and adapt their approach and loadout within budget.
+- factions remember earlier raids (only through survivors) and adapt their approach and loadout within budget;
+- how smart a raid acts depends on its leader's intelligence and its faction's tech level (tactical competence): a
+  sharp spacer commander uses every tactic and walks around your traps, a dull tribal chief walks into your killbox;
+  losing the leader costs the raid its edge.
 
 Every behaviour has a switch in the mod settings; the threat map overlay is the crosshair button in the bottom-right
 bar. Works with Combat Extended, Smarter Raid AI, Enemy Self Preservation and RunAndGun; not with CAI 5000 or Raid Tactics. Load after HSK and

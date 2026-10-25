@@ -236,7 +236,7 @@ namespace HSKTacticalAI
             var s = TacticalAIMod.Settings;
             if (!s.raidMemory || !s.adaptiveLoadouts || lord?.faction == null) return;
             var m = Read(lord.faction);
-            if (m == null || m.intel < s.memoryIntelMin) return;
+            if (m == null || m.intel < s.memoryIntelMin || !Competence.Knows(plan, Doctrine.Memory)) return;   // a dull command ignores what the survivors told
             if (adapted.TryGetValue(lord.loadID, out var done0))
             {
                 // the same raid planned again: what it brought stays
@@ -253,7 +253,7 @@ namespace HSKTacticalAI
                                            && !(plan.roleOf.TryGetValue(p, out var r) && (r == RaidRole.Medic || r == RaidRole.Breacher))
                                            && !(p.equipment.Primary.TryGetComp<CompBiocodable>()?.Biocoded ?? false))
                                .OrderBy(p => p.thingIDNumber).ToList();
-            int budget = Mathf.Max(1, Mathf.FloorToInt(pawns.Count(p => p.RaceProps.Humanlike) * s.memoryShare));
+            int budget = Mathf.Max(1, Mathf.FloorToInt(pawns.Count(p => p.RaceProps.Humanlike) * s.memoryShare * Competence.Of(plan)));   // sharper commands adapt more of the raid
             raidTags = pawns.Where(p => p.kindDef?.weaponTags != null).SelectMany(p => p.kindDef.weaponTags).Distinct().ToList();
             var changes = new List<string>();
             int done = 0;
