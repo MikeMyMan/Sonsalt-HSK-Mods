@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Build one game version at a time:
+         dotnet build -c Release -p:RimVersion=1.5
+         dotnet build -c Release -p:RimVersion=1.6
+         dotnet build -c Release -p:RimVersion=1.7
+       Output goes to ../<RimVersion>/Assemblies. Harmony is a compile-time reference only;
+       the game's Harmony mod (or HSK's bundled copy) provides it at runtime. -->
+
+  <PropertyGroup>
+    <RimVersion Condition="'$(RimVersion)' == ''">1.6</RimVersion>
+    <AssemblyName>RelationBasedTrading</AssemblyName>
+    <RootNamespace>RelationBasedTrading</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <DebugType>none</DebugType>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <OutputPath>..\$(RimVersion)\Assemblies\</OutputPath>
+    <Version>2.1.0</Version>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(RimVersion)' == '1.5'">
+    <TargetFramework>net472</TargetFramework>
+    <RimRef>1.5.4409</RimRef>
+    <HarmonyRef>2.3.3</HarmonyRef>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(RimVersion)' == '1.6'">
+    <TargetFramework>net472</TargetFramework>
+    <RimRef>1.6.4871</RimRef>
+    <HarmonyRef>2.4.1</HarmonyRef>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(RimVersion)' == '1.7'">
+    <TargetFramework>net10.0</TargetFramework>
+    <RimRef>1.7.4981-unstable</RimRef>
+    <!-- Compile against 2.4.1 so the reference binds to Workshop Harmony 2.4.x as well as HSK's bundled 3.0 (higher loaded version satisfies a lower reference). -->
+    <HarmonyRef>2.4.1</HarmonyRef>
+    <ImplicitUsings>disable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="$(RimRef)" ExcludeAssets="runtime" PrivateAssets="all" />
+    <PackageReference Include="Lib.Harmony" Version="$(HarmonyRef)" ExcludeAssets="runtime" PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>

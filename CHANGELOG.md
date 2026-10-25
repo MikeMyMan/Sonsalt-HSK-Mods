@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.3.0 (2026-10-25)
+
+- **Relation Based Trading 2.1.0** joins the release (`thelonetec.relationbasedtrading`, original mod by TheLoneTec,
+  updated by Sonsalt; not covered by this repo's MIT license). Trader stock follows goodwill gradually instead of in
+  fixed tech tiers: the most valuable item a faction sells grows from 150 silver at -75 to no limit at Ally (75);
+  weapons, ammo and explosives only from 25 and counted 4x their price; quality from Normal up to Legendary; tech
+  relative to the faction's own level. Settlement stock is trimmed when goodwill drops and regenerated after a rise of
+  15. All limits are sliders in the mod settings. Also includes the 2.0.1 fixes (about 150 never-filtered items, mostly
+  CE ammo; reliable stock updates after trades and with Dynamic Trade Interface). Tested in game with the full HSK list
+  (214 mods): 88 automated checks pass and the mod logs no errors. Details in `Relation Based Trading/CHANGELOG.md`.
+- README: Relation Based Trading section and credits.
+
 ## 1.2.0 (2026-10-25)
 
 - **HSK Weapon Blueprints 0.1.0** joins the release (`sonsalt.hsk.weaponblueprints`, test release): Industrial and

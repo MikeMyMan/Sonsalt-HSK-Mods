@@ -1,12 +1,13 @@
 # Sonsalt's HSK mods
 
-Six mods for [Hardcore SK](https://github.com/HardcoreSK/Hardcore-SK) on RimWorld 1.7 (`1.7-super-unstable` branch).
+Seven mods for [Hardcore SK](https://github.com/HardcoreSK/Hardcore-SK) on RimWorld 1.7 (`1.7-super-unstable` branch).
 Each mod is one folder; copy the folders you want into your `RimWorld\Mods` folder.
 
 | Mod | packageId | Game version | Needs |
 |---|---|---|---|
 | [HSK Tactical AI](#hsk-tactical-ai) (0.1, test release) | `sonsalt.hsk.tacticalai` | 1.7 | HSK, Harmony (Combat Extended recommended) |
 | [HSK Weapon Blueprints](#hsk-weapon-blueprints) (0.1, test release) | `sonsalt.hsk.weaponblueprints` | 1.7 | Harmony; built for HSK and Combat Extended. New colony only |
+| [Relation Based Trading](#relation-based-trading) (2.1, by TheLoneTec) | `thelonetec.relationbasedtrading` | 1.7 (also contains 1.4-1.6 builds, untested) | Harmony |
 | [HSK Fortifications Rebalance](#hsk-fortifications-rebalance) | `sonsalt.hsk.fortifications` | 1.7 | HSK + Aoba's Fortifications - Medieval and/or - Industrial |
 | [HSK Outposts](#hsk-outposts) | `sonsalt.hsk.outposts` | 1.7 | HSK, Vanilla Expanded Framework, Vanilla Outposts Expanded (VOE: Additional Outposts optional) |
 | [HSK Zero Research Start](#hsk-zero-research-start) | `sonsalt.hsk.zeroresearch` | 1.7 | HSK |
@@ -16,7 +17,9 @@ Each mod is one folder; copy the folders you want into your `RimWorld\Mods` fold
 with zero errors. Gameplay testing is still light. HSK 1.7 itself is a dev sandbox, so expect changes.
 
 **Game version:** the mods are made for RimWorld 1.7 and HSK 1.7 and are only tested there. Tactical AI and Weapon
-Blueprints contain code built for the 1.7 runtime and won't load on 1.6. The XML mods patch HSK 1.7's defs.
+Blueprints contain code built for the 1.7 runtime and won't load on 1.6. The XML mods patch HSK 1.7's defs. Relation
+Based Trading also contains builds for 1.4-1.6: the 1.5 and 1.6 builds compile from the same source but have not been
+tested in game, and the 1.4 build is the old 1.x version.
 
 **Load order:** after HSK and after the mods each one patches (the `loadAfter` lists in About.xml handle this if you use
 the game's auto-sort). Put the compatibility fixes near the end.
@@ -58,6 +61,35 @@ menus only list the weapons you know, which keeps big weapon packs tidy.
 
 **Start a new colony.** Adding it to an existing save locks every gated weapon in that save. Load after HSK and Combat
 Extended.
+
+## Relation Based Trading
+
+Faction trader stock follows your goodwill with that faction. Better relations unlock better goods: more expensive,
+higher quality, more dangerous and more advanced. Original mod by **TheLoneTec**, updated by Sonsalt (2.0 for RimWorld
+1.5-1.7, 2.1 with gradual limits). The packageId is unchanged, so existing saves keep working.
+
+There are no fixed steps; every point of goodwill opens a little more (default settings):
+
+| Goodwill | Most expensive item | Weapons, ammo, explosives | Best quality | Tech (relative to the faction) |
+|---|---|---|---|---|
+| below -75 | nothing for sale | | | |
+| -75 | 150 silver | none | Normal | two levels below |
+| -25 | ~530 | none | Good | one below |
+| 0 | ~1,000 | none | Excellent | its own level |
+| 25 | ~1,900 | up to ~470 silver | Masterwork | its own level |
+| 50 | ~3,550 | up to ~890 silver | Masterwork (Legendary from 56) | one above |
+| 75+ (Ally) | any | all | Legendary | one above, archotech from spacer factions |
+
+- Weapons, ammo, explosives and weapon blueprints count four times their price against the value limit, so cheap
+  weapons come first and the best ones only near Ally. Survival tools are work gear, not weapons.
+- Better-quality items are lowered to the quality limit instead of being removed.
+- Food, raw materials, animals and plants are always available. Orbital traders and traders without a faction are not
+  filtered.
+- When goodwill drops, settlement stock above the new limits is removed; when it rises by 15 or more, the stock is
+  regenerated. Changes during an open trade window wait until it closes.
+- Every limit is a slider in the mod settings, with a preview table. Safe to add to or remove from a running save.
+
+See [its changelog](Relation%20Based%20Trading/CHANGELOG.md).
 
 ## HSK Fortifications Rebalance
 
@@ -168,7 +200,8 @@ Some XML is generated. Edit the generator, not the XML:
 ## Credits
 
 - [Hardcore SK team](https://github.com/HardcoreSK/Hardcore-SK) for HSK.
-- **TheLoneTec**: the original HSK outposts design in *Tec's Assorted Patches*.
+- **TheLoneTec**: *Relation Based Trading* (original author) and the original HSK outposts design in *Tec's Assorted
+  Patches*. **Lightwave** helped with the Relation Based Trading update.
 - **Aoba**: *Fortifications - Medieval / Industrial*.
 - **Oskar Potocki and the Vanilla Expanded team**: Vanilla Outposts Expanded and the framework.
 - **MrHydralisk**: VOE: Additional Outposts.
@@ -180,5 +213,6 @@ original artwork over those screenshots.
 
 ## License
 
-[MIT](LICENSE). This covers the files in this repo. The mods these patches change keep their own licenses and are
-not included.
+[MIT](LICENSE). This covers the files in this repo except the `Relation Based Trading` folder: that is TheLoneTec's
+mod with Sonsalt's update and is not covered by this license. The mods these patches change keep their own licenses
+and are not included.
