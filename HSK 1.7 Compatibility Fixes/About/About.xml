@@ -3,7 +3,7 @@
   <name>HSK 1.7 Compatibility Fixes</name>
   <author>Sonsalt</author>
   <packageId>sonsalt.hsk.compatfixes</packageId>
-  <modVersion>1.0.0</modVersion>
+  <modVersion>1.0.1</modVersion>
   <url>https://github.com/MikeMyMan/Sonsalt-HSK-Mods</url>
   <supportedVersions>
     <li>1.7</li>

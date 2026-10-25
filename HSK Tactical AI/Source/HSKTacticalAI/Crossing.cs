@@ -233,7 +233,7 @@ namespace HSKTacticalAI
                     reason += ", massed rush over " + plan.openCells + " open cells (odds " + ratio.ToString("0.0") + ":1)";
                     return false;
                 }
-                if (s.grenadeKit && alive.Any(p => Grenades.CarriedSmoke(p) != null) && Grenades.OrderSmokeScreen(map, plan, alive, stretches) > 0)
+                if (s.grenadeKit && Competence.Knows(plan, Doctrine.Smoke) && alive.Any(p => Grenades.CarriedSmoke(p) != null) && Grenades.OrderSmokeScreen(map, plan, alive, stretches) > 0)
                 {
                     plan.crossing = CrossingMode.Smoke;
                     plan.crossingTick = now;
@@ -242,7 +242,7 @@ namespace HSKTacticalAI
                     return true;
                 }
                 // a covered approach on another side: the maneuver element flanks while the base of fire pins
-                if (s.flankManeuver && TryFlankManeuver(map, lord, plan, alive))
+                if (s.flankManeuver && Competence.Knows(plan, Doctrine.FlankManeuver) && TryFlankManeuver(map, lord, plan, alive))
                 {
                     plan.crossing = CrossingMode.Flank;
                     plan.crossingTick = now;
@@ -298,13 +298,13 @@ namespace HSKTacticalAI
                 {
                     if (idle) IdleAttrition++;
                     // before giving up: another angle to sneak in from (a covered approach on another side)?
-                    if (!plan.reangled && TryOtherAngle(map, lord, plan, alive))
+                    if (!plan.reangled && Competence.Knows(plan, Doctrine.Flanking) && TryOtherAngle(map, lord, plan, alive))
                     {
                         Reangled++;
                         return true;
                     }
                     // ... or something to breach?
-                    if (s.breachFallback && !plan.breachTried && AssaultPlanner.TryBreachInstead(lord, plan, alive))
+                    if (s.breachFallback && !plan.breachTried && Competence.Knows(plan, Doctrine.BreachFallback) && AssaultPlanner.TryBreachInstead(lord, plan, alive))
                     {
                         BreachFallback++;
                         return true;
@@ -321,7 +321,8 @@ namespace HSKTacticalAI
                     }
                     NoApproach++;
                     plan.capability += "; no safe approach over " + plan.openCells + " open cells (odds " + ratio.ToString("0.0") + ":1 < " + s.boundOdds.ToString("0.0") + ")";
-                    if (s.plannedWithdrawal) Withdrawal.Begin(map, lord, plan, alive, "no safe approach");
+                    if (Competence.PlannedWithdrawal(plan)) Withdrawal.Begin(map, lord, plan, alive, "no safe approach");
+                    else AssaultPlanner.ExitMap(lord, plan);
                     lord.CurLordToil?.UpdateAllDuties();
                     return true;
                 }

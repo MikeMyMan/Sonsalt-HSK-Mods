@@ -169,8 +169,14 @@ namespace HSKTacticalAI
             }
             Learned++;
             mem.intel = Mathf.Clamp01(mem.intel + 0.2f + 0.1f * Mathf.Min(3, escaped));
-            if (failed) mem.AddFail(plan.mode, 0.6f);
-            else if (success) mem.AddFail(plan.mode, -0.3f);
+            // scouts and saboteurs came for something else: no lesson about the approach; scouts who watched long bring more
+            if (plan.mode == PlanMode.Scout)
+                mem.intel = Mathf.Clamp01(mem.intel + 0.3f * Mathf.Clamp01(plan.observedTicks / (float)Mathf.Max(1, s.scoutObserveTicks)));
+            else if (plan.mode != PlanMode.Sabotage)
+            {
+                if (failed) mem.AddFail(plan.mode, 0.6f);
+                else if (success) mem.AddFail(plan.mode, -0.3f);
+            }
             foreach (var c in plan.downedBy.Values)
             {
                 switch (c)
@@ -236,7 +242,7 @@ namespace HSKTacticalAI
             var s = TacticalAIMod.Settings;
             if (!s.raidMemory || !s.adaptiveLoadouts || lord?.faction == null) return;
             var m = Read(lord.faction);
-            if (m == null || m.intel < s.memoryIntelMin) return;
+            if (m == null || m.intel < s.memoryIntelMin || !Competence.Knows(plan, Doctrine.Memory)) return;   // a dull command ignores what the survivors told
             if (adapted.TryGetValue(lord.loadID, out var done0))
             {
                 // the same raid planned again: what it brought stays
@@ -253,7 +259,7 @@ namespace HSKTacticalAI
                                            && !(plan.roleOf.TryGetValue(p, out var r) && (r == RaidRole.Medic || r == RaidRole.Breacher))
                                            && !(p.equipment.Primary.TryGetComp<CompBiocodable>()?.Biocoded ?? false))
                                .OrderBy(p => p.thingIDNumber).ToList();
-            int budget = Mathf.Max(1, Mathf.FloorToInt(pawns.Count(p => p.RaceProps.Humanlike) * s.memoryShare));
+            int budget = Mathf.Max(1, Mathf.FloorToInt(pawns.Count(p => p.RaceProps.Humanlike) * s.memoryShare * Competence.Of(plan)));   // sharper commands adapt more of the raid
             raidTags = pawns.Where(p => p.kindDef?.weaponTags != null).SelectMany(p => p.kindDef.weaponTags).Distinct().ToList();
             var changes = new List<string>();
             int done = 0;

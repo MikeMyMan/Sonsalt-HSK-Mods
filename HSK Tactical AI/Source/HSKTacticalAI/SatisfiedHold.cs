@@ -42,7 +42,10 @@ namespace HSKTacticalAI
             if (plan.phase == PlanPhase.Approach) return now - plan.createdTick <= s.satisfiedPrepMaxTicks || Release(plan, "prep took too long");
             if (plan.phase != PlanPhase.Assault || plan.hHourTick < 0) return false;
             if (plan.satReleased) return false;
-            if (now - plan.hHourTick > s.satisfiedAssaultTicks) return Release(plan, "assault ran " + s.satisfiedAssaultTicks + " ticks");
+            // the clock and the losses release a raid only while it is not winning (cp5 village: 6 raiders against the last
+            // defender left "satisfied" and kidnapped and looted under his fire); a hard cap at 3x the assault time
+            if (now - plan.hHourTick > s.satisfiedAssaultTicks * 3) return Release(plan, "assault ran " + (s.satisfiedAssaultTicks * 3) + " ticks");
+            if (now - plan.hHourTick > s.satisfiedAssaultTicks && !plan.satWinning) return Release(plan, "assault ran " + s.satisfiedAssaultTicks + " ticks");
             // progress, every 60 ticks: a defender fewer standing, a breach more open
             if (plan.satCheckTick < 0 || now - plan.satCheckTick >= 60)
             {
@@ -56,7 +59,8 @@ namespace HSKTacticalAI
                 plan.satOpen = open;
                 int alive = 0;
                 foreach (var m in plan.members) if (m.Spawned && !m.Dead && !m.Downed) alive++;
-                if (plan.aliveAtHHour > 0 && alive < plan.aliveAtHHour * (1f - s.satisfiedLossShare)) return Release(plan, "losses " + (plan.aliveAtHHour - alive) + "/" + plan.aliveAtHHour);
+                plan.satWinning = alive >= defs * 3 && now - plan.satProgressTick <= s.satisfiedStallTicks;
+                if (plan.aliveAtHHour > 0 && !plan.satWinning && alive < plan.aliveAtHHour * (1f - s.satisfiedLossShare)) return Release(plan, "losses " + (plan.aliveAtHHour - alive) + "/" + plan.aliveAtHHour);
             }
             if (now - plan.satProgressTick > s.satisfiedStallTicks) return Release(plan, "stalled " + s.satisfiedStallTicks + " ticks");
             return true;

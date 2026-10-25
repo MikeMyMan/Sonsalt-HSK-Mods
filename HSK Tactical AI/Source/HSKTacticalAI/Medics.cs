@@ -111,7 +111,7 @@ namespace HSKTacticalAI
         {
             var s = TacticalAIMod.Settings;
             AssaultPlan plan = AssaultPlanner.PlanOf(pawn);
-            if (!s.flanking || plan == null || plan.phase != PlanPhase.Assault) return null;
+            if (!s.flanking || plan == null || plan.phase != PlanPhase.Assault || !Competence.Knows(plan, Doctrine.Flanking)) return null;
             if (ShieldWall.IsBearer(plan, pawn) || ShieldWall.BearerOf(plan, pawn) != null) return null;
             Verb v = pawn.equipment?.PrimaryEq?.PrimaryVerb;
             if (v == null || v.IsMeleeAttack) return null;

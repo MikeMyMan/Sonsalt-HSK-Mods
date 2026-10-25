@@ -58,10 +58,7 @@ namespace HSKTacticalAI
                 foreach (var p in pawns.Where(p => plan.roleOf[p] == RaidRole.Rifleman && !fire.Take(maxFire).Contains(p))
                                        .OrderByDescending(p => p.equipment.Primary.MarketValue).Take(minFire - have))
                     plan.roleOf[p] = RaidRole.Support;
-            plan.leader = pawns.FirstOrDefault(p => p.Faction?.leader == p)
-                          ?? pawns.FirstOrDefault(p => p.kindDef?.factionLeader == true)
-                          ?? pawns.FirstOrDefault(p => p.royalty?.MostSeniorTitle != null)
-                          ?? pawns.OrderByDescending(p => p.kindDef?.combatPower ?? 0f).FirstOrDefault();
+            plan.leader = Competence.PickLeader(pawns);
             if (pawns.Count >= 6)
             {
                 var medic = pawns.Where(p => plan.roleOf[p] == RaidRole.Rifleman || plan.roleOf[p] == RaidRole.Assault)
@@ -71,8 +68,11 @@ namespace HSKTacticalAI
             }
         }
 
+        // grenadiers with an explosive launcher soften the defenders from cover before the assault (playtest 2026-10-25:
+        // "the grenadiers did not move forward until already units were lost")
         public static bool IsBaseOfFire(AssaultPlan plan, Pawn p) =>
-            (plan.roleOf.TryGetValue(p, out var r) && (r == RaidRole.Support || r == RaidRole.Marksman)) || plan.overwatchOf.ContainsKey(p);
+            (plan.roleOf.TryGetValue(p, out var r) && (r == RaidRole.Support || r == RaidRole.Marksman || (r == RaidRole.Grenadier && Launchers.ExplosiveLauncher(p))))
+            || plan.overwatchOf.ContainsKey(p);
 
         /// <summary>A gunner that can cover a breach from range (not the medic; range ≥ 15; not a grenade or launcher).</summary>
         public static bool IsRangedFighter(AssaultPlan plan, Pawn p)
@@ -161,6 +161,8 @@ namespace HSKTacticalAI
             if (throwS != null) return throwS;
             Verb verb = pawn.equipment?.PrimaryEq?.PrimaryVerb;
             if (plan == null || verb == null || verb.IsMeleeAttack) return null;
+            Job reloadHE = Launchers.ReloadFromGas(pawn, verb);   // grenadier with gas loaded: the explosive round first
+            if (reloadHE != null) return reloadHE;
             Map map = pawn.Map;
             bool holding = plan.overwatchOf.TryGetValue(pawn, out IntVec3 owCell);
             if (holding && pawn.Position.DistanceTo(owCell) > 1.5f)
@@ -183,11 +185,11 @@ namespace HSKTacticalAI
                 if (d.Position.DistanceTo(pawn.Position) > verb.verbProps.range) continue;
                 if (!verb.CanHitTargetFrom(pawn.Position, d)) continue;
                 // unpinned first; exposed (flanked) defenders first - marksmen take them before anything else
-                bool exposed = s.flanking && !Flanking.Covered(d, pawn.Position);
+                bool exposed = s.flanking && Competence.Knows(plan, Doctrine.Flanking) && !Flanking.Covered(d, pawn.Position);
                 bool marks = plan.roleOf.TryGetValue(pawn, out var rl) && rl == RaidRole.Marksman;
                 // base of fire: unpinned first (that is its job); marksmen: exposed and dangerous first; focus fire
                 float score = Suppression.State(d) * 100f + d.Position.DistanceTo(pawn.Position) - (exposed ? (marks ? 250f : 40f) : 0f)
-                              + (s.focusFire ? Targeting.Score(pawn, d, plan) - d.Position.DistanceTo(pawn.Position) : 0f);
+                              + (s.focusFire && Competence.Knows(plan, Doctrine.FocusFire) ? Targeting.Score(pawn, d, plan) - d.Position.DistanceTo(pawn.Position) : 0f);
                 if (score < best) { best = score; target = d; }
             }
             Perf.Stop("support.target", tp);
@@ -218,6 +220,7 @@ namespace HSKTacticalAI
             if (cover != null && verb.CanHitTargetFrom(pawn.Position, cover)) aim = cover;
             Job shoot = JobMaker.MakeJob(JobDefOf.AttackStatic, aim);
             shoot.maxNumStaticAttacks = 3;
+            if ((verb.verbProps.defaultProjectile?.projectile?.explosionRadius ?? 0f) > 0f) shoot.preventFriendlyFire = true;   // launchers: not through our own men
             shoot.endIfCantShootTargetFromCurPos = true;
             shoot.expiryInterval = 240;
             shoot.checkOverrideOnExpire = true;
@@ -295,7 +298,7 @@ namespace HSKTacticalAI
                                     .OrderBy(d => d.Position.DistanceToSquared(c)).Take(3)
                                     .FirstOrDefault(d => GenSight.LineOfSight(c, d.Position, map, true));
                     if (seen == null || !verb.CanHitTargetFrom(c, seen)) return float.NaN;
-                    return s.flanking ? -s.flankPositionBonus * Flanking.ExposedFrom(c, defs, range, map) : 0f;
+                    return s.flanking && Competence.Knows(plan, Doctrine.Flanking) ? -s.flankPositionBonus * Flanking.ExposedFrom(c, defs, range, map) : 0f;
                 }, 20);
         }
 

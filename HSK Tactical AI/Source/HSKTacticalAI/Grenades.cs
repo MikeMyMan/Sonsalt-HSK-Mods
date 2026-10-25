@@ -340,7 +340,7 @@ namespace HSKTacticalAI
             var defs = Suppression.Defenders(map, plan.objective, 40f).Where(d => d.Position.DistanceTo(opening) <= 16f).ToList();
             if (defs.Count == 0) return;
             int frags = 0;
-            bool smoked = false;
+            bool smoked = !Competence.Knows(plan, Doctrine.Smoke);   // smoking the opening takes a sharp command
             var aimed = new List<IntVec3>();
             foreach (var p in group.Where(p => p.Spawned && !p.Downed && !plan.throwOrders.ContainsKey(p))
                                    .OrderBy(p => ShieldWall.IsBearer(plan, p) ? 0 : 1).ThenBy(p => p.Position.DistanceToSquared(opening)))   // the shield throws first, then leads in
@@ -425,7 +425,7 @@ namespace HSKTacticalAI
         public static void OrderScreen(Map map, AssaultPlan plan, IEnumerable<Pawn> group)
         {
             var s = TacticalAIMod.Settings;
-            if (s == null || !s.grenadeKit) return;
+            if (s == null || !s.grenadeKit || !Competence.Knows(plan, Doctrine.Smoke)) return;
             var defs = Suppression.Defenders(map, plan.objective, 60f);
             if (defs.Count == 0) return;
             foreach (var p in group.Where(p => p.Spawned && !p.Downed && CarriedSmoke(p) != null))

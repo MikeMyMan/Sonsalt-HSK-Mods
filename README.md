@@ -5,7 +5,7 @@ Each mod is one folder; copy the folders you want into your `RimWorld\Mods` fold
 
 | Mod | packageId | Game version | Needs |
 |---|---|---|---|
-| [HSK Tactical AI](#hsk-tactical-ai) (0.1, test release) | `sonsalt.hsk.tacticalai` | 1.7 | HSK, Harmony (Combat Extended recommended) |
+| [HSK Tactical AI](#hsk-tactical-ai) (0.2, test release) | `sonsalt.hsk.tacticalai` | 1.7 | HSK, Harmony (Combat Extended recommended) |
 | [HSK Weapon Blueprints](#hsk-weapon-blueprints) (0.1, test release) | `sonsalt.hsk.weaponblueprints` | 1.7 | Harmony; built for HSK and Combat Extended. New colony only |
 | [Relation Based Trading](#relation-based-trading) (2.1, by TheLoneTec) | `thelonetec.relationbasedtrading` | 1.7 (also contains 1.4-1.6 builds, untested) | Harmony |
 | [HSK Fortifications Rebalance](#hsk-fortifications-rebalance) | `sonsalt.hsk.fortifications` | 1.7 | HSK + Aoba's Fortifications - Medieval and/or - Industrial |
@@ -28,15 +28,25 @@ the game's auto-sort). Put the compatibility fixes near the end.
 
 ## HSK Tactical AI
 
-A custom raid AI for HSK (0.1 is a test release for the dev team; see the [changelog](CHANGELOG.md) for the full list).
+A custom raid AI for HSK (0.2 is a test release for the dev team; see the [changelog](CHANGELOG.md) for the full list).
 Raiders plan their attack instead of walking into your guns:
 - they read where your guns can shoot (threat map) and avoid killboxes and funnels;
-- they breach several walls at once with what they carry (launchers, explosives, tools, fire, tunnels);
+- they breach several walls at once with what they carry (launchers, explosives, tools, fire, tunnels), and a raid
+  out to break in always brings the means of its tech level (breach axe, stick bombs, charges);
+- they adapt when the situation changes: defenders who come out are fought where they are (from cover at each weapon's
+  range, with flankers), a defence beaten in the field is stormed at once, the objective follows the defence;
+- grenadiers lob explosive rounds over your walls, and bigger raids bring a crew-served gun (M240B, AGS ...) that a
+  team carries, sets up at range and mans before the assault;
+- not every raid comes to take the colony: scouts watch from cover and leave, saboteurs set fires, kill livestock,
+  pick off a colonist alone outside and leave before your defence turns out;
 - they cross open ground only in cover, behind smoke, with 3:1 odds or by fire and movement;
 - they fight as combined arms: base of fire, overwatch, shield bearers, medics, flanking, fire discipline by range;
 - under realistic suppression they go prone (drawn lying down, labelled "prone");
 - they plunder instead of chasing you through your corridors, and withdraw when the attack fails;
-- factions remember earlier raids (only through survivors) and adapt their approach and loadout within budget.
+- factions remember earlier raids (only through survivors) and adapt their approach and loadout within budget;
+- how smart a raid acts depends on its leader's intelligence and its faction's tech level (tactical competence): a
+  sharp spacer commander uses every tactic and walks around your traps, a dull tribal chief walks into your killbox;
+  losing the leader costs the raid its edge.
 
 Every behaviour has a switch in the mod settings; the threat map overlay is the crosshair button in the bottom-right
 bar. Works with Combat Extended, Smarter Raid AI, Enemy Self Preservation and RunAndGun; not with CAI 5000 or Raid Tactics. Load after HSK and

@@ -39,13 +39,16 @@ namespace HSKTacticalAI
         {
             var s = TacticalAIMod.Settings;
             why = null;
-            if (!s.plannedWithdrawal || plan.members.Count == 0) return false;
+            // a dull command doesn't plan a withdrawal: vanilla's panic run (Patch_NoPanicWhilePlanned lets it through)
+            if (!Competence.PlannedWithdrawal(plan) || plan.members.Count == 0) return false;
             float lost = plan.members.Count(p => p.Dead || p.Downed || p.Destroyed) / (float)plan.members.Count;
             int defNow = Suppression.Defenders(lord.Map, plan.objective, 40f).Count;
             float defLost = plan.defendersAtStart > 0 ? 1f - defNow / (float)plan.defendersAtStart : 0f;
             bool leaderDown = plan.leader != null && (plan.leader.Dead || plan.leader.Downed);
             bool failing = defLost < lost * s.withdrawExchangeRatio;
-            float threshold = leaderDown ? s.withdrawLossFractionLeaderDown : s.withdrawLossFraction;
+            // competence: sharp commanders cut their losses in time, middling ones keep going longer
+            float threshold = leaderDown ? Competence.WithdrawLoss(plan, s.withdrawLossFractionLeaderDown, 0.65f) : Competence.WithdrawLoss(plan, s.withdrawLossFraction, 0.75f);
+            float hardLoss = Competence.WithdrawLoss(plan, s.withdrawHardLoss, 0.9f);
             // running dry (playtest: "Also when they run low on ammunition"): most gunners down to under a magazine
             if (s.ammoWithdraw)
             {
@@ -64,7 +67,7 @@ namespace HSKTacticalAI
                     return true;
                 }
             }
-            if ((lost >= threshold && failing) || lost >= s.withdrawHardLoss)
+            if ((lost >= threshold && failing) || lost >= hardLoss)
             {
                 why = Mathf.RoundToInt(lost * 100f) + "% lost, defenders " + Mathf.RoundToInt(defLost * 100f) + "% down" + (leaderDown ? ", leader down" : "");
                 return true;
@@ -279,8 +282,38 @@ namespace HSKTacticalAI
             var s = TacticalAIMod.Settings;
             if (s == null || !s.plannedWithdrawal || lord == null) return true;
             if (!AssaultPlanner.Plans.TryGetValue(lord.loadID, out var plan) || plan.phase == PlanPhase.Converted) return true;
+            if (plan.phase != PlanPhase.Withdraw && !Competence.PlannedWithdrawal(plan)) return true;   // dull command: the vanilla panic run
             __result = false;
             return false;
+        }
+    }
+}
+
+namespace HSKTacticalAI
+{
+    /// <summary>
+    /// No One Left Behind (CM_No_Pawn_Left_Behind) makes raiders carry downed comrades off, through fire or not (playtest
+    /// 2026-10-25: "they retrieve their injured even if they are in the line of fire"). On the colony map, while a defender
+    /// still stands, a raider does not go for a comrade lying in the defenders' open fire (threat map, no smoke) - the same
+    /// rule as our own medics and withdrawal carriers.
+    /// </summary>
+    [HarmonyPatch]
+    public static class Patch_NOLBNoRescueIntoFire
+    {
+        public static int Blocked;
+
+        public static bool Prepare() => AccessTools.TypeByName("CM_No_Pawn_Left_Behind.JobGiver_Rescue") != null;
+
+        public static System.Reflection.MethodBase TargetMethod() =>
+            AccessTools.Method(AccessTools.TypeByName("CM_No_Pawn_Left_Behind.JobGiver_Rescue"), "TryGiveJob");
+
+        public static void Postfix(Pawn pawn, ref Job __result)
+        {
+            if (__result == null || pawn?.Map == null || !pawn.Map.IsPlayerHome || pawn.Faction == null || !pawn.Faction.HostileTo(Faction.OfPlayer)) return;
+            if (!(__result.targetA.Thing is Pawn ally) || !Withdrawal.InOpenFire(pawn.Map, ally.Position)) return;
+            if (Suppression.Defenders(pawn.Map, ally.Position, 60f).Count == 0) return;
+            __result = null;
+            Blocked++;
         }
     }
 }

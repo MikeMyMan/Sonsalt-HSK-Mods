@@ -1,5 +1,240 @@
 # Changelog
 
+## 1.4.0 (2026-10-25)
+
+- **HSK Tactical AI 0.2.0** (test release, details below). Highlights:
+  - tactical competence: the leader's intelligence and the faction's tech level decide how smart a raid acts;
+  - every weapon at its own range;
+  - breach gear by tech level;
+  - scouting and sabotage raids;
+  - plans that adapt when defenders come out;
+  - grenade launchers firing over walls and staying out of the breach;
+  - crew-served guns;
+  - clearing the breach by fire and entering in waves;
+  - siege guards and spotters;
+  - cover wherever there is some.
+
+  Tested in the AI Lab with defenders that patrol, sally, hold the door and work alone outside; no errors from the mod.
+- **HSK 1.7 Compatibility Fixes 1.0.1:** New 130 mm Rocket Missiles' white phosphorus smoke no longer breaks Combat
+  Extended turrets and mortars.
+- README: Tactical AI 0.2.
+
+## HSK 1.7 Compatibility Fixes 1.0.1 (2026-10-25)
+
+- **New 130 mm Rocket Missiles:** its white phosphorus smoke inherits the gas category but is a different kind of
+  thing, so Combat Extended errored every time a turret or mortar checked a line of fire through it. That was up to
+  2,000 errors per siege, and the turret stopped working. The smoke is moved out of the gas category; it still burns,
+  heats and fades as before.
+
+## HSK Tactical AI 0.2.0 (2026-10-25)
+
+**Tactical competence:** how smart a raid acts now depends on its leader and its faction's tech level, instead of every
+raid using every tactic.
+- **Competence (0-100 %)** = tech ceiling x (30 % + 70 % x the leader's intelligence). The 70/30 split is a setting.
+  - **Tech ceiling** (the most a raid of that tech level can reach): tribal 55 %, medieval 70 %, industrial 85 %,
+    spacer, ultra and archotech 100 %. Mechanoids think as a hive (fixed intelligence 75 %).
+  - **Leader:** the raid's faction leader, else its leader kind, royal title or the pawn with the highest combat
+    power. HSK has no intelligence stat, so intelligence comes from the Intellectual skill plus the learning factor,
+    times consciousness. The learning factor carries the intelligence traits (too smart, slow learner, HSK's dumb,
+    dunce and volatile genius), learning genes and brain implants; consciousness covers head wounds and drugs.
+  - **Loss of command:** when the leader goes down, dies or leaves, the next in rank takes over. The raid is then at
+    most as sharp as him, minus a fifth, and confused for about 20 s.
+- **What it scales:**
+  - how far ahead and how well the raid reads your fire for its routes (dull raids see only nearby, heavy fire and walk
+    nearly straight in);
+  - killbox and funnel avoidance (a new entrance instead of your gate, holding funnel mouths). A sharp raid that can't
+    get round your killbox and can't breach besieges you (factions that can) or stands off; a dull one walks in and
+    chases your defenders into the funnel;
+  - **traps and IEDs:** vanilla 1.7 lets an assault know a share of your traps (0.3 for "smart" raids, else none). That
+    share now follows competence, from none to 95 %, plus up to 45 % more when survivors of earlier raids told of traps.
+    Known traps are walked around (also on the planned routes); unknown ones are walked into;
+  - breach planning: dull raids pick breach points nearly at random and ignore which side your defence faces; several
+    simultaneous breaches and door breaches take a sharp command;
+  - envelopment from 2 or 3 sides, synchronised arrival and fire and movement, base of fire, overwatch, smoke, flanking
+    and flank groups, focus fire, covered advances;
+  - the 3:1 strength check (dull raids skip it, middling ones are overconfident), the open-ground crossing logic, the
+    breach fallback;
+  - withdrawal: sharp raids cut their losses in time; dull ones fight on and then run the vanilla way;
+  - raid memory: only a command that listens uses what survivors told, and sharper ones adapt more of the raid;
+  - **each weapon at its own distance** (playtest): every raider fights at a distance set by his weapon's range,
+    from 45 % of it for short guns to 70 % for long ones. Bowmen and other pre-industrial shooters step back when you
+    come within 8-10 cells, riflemen within about 13, snipers within about 22. Pistols and SMGs close in before they
+    shoot, from cover to cover (never across your open fire), and only step back from melee. Melee raiders go for anyone near them in the open and don't turn to run
+    when an enemy is close. Inside a breach, and for the assault role, only melee makes them step back. Dull raids
+    fight from wherever they stand. Setting: "Keep the weapon's range".
+  Each tactic has a competence band, and one roll per raid decides within the band. A raid that masters a harder
+  tactic always masters the easier ones.
+- **Settings:** master switch, intelligence vs tech weight, loss of command, and a readout. The readout shows a message
+  per raid with its competence and why, a log line, and the raids on the map in the threat-map button's tooltip.
+  Switched off, every raid uses all tactics (the 0.1 behaviour).
+
+**Area weapons where they work** (playtest):
+- Raiders (sieges included) no longer put gas down in the open, where it drifts off: no tox, tear gas, healing gas,
+  insecticide or firefoam grenades, and no gas shells from launchers (the waster heavies' M79s load 40 mm tox
+  grenades). Gas is used only in a gas raid against an enclosed, roofed room. Smoke, EMP and flashbangs are unchanged.
+- **Explosive rounds instead of gas** (playtest): a raider whose launcher carries only gas rounds (the waster heavies'
+  40 mm tox grenades) swaps three quarters of them one for one for the explosive round of the same calibre, so he can
+  breach and shell. A quarter stays gas for an enclosed room. Setting: "Explosive rounds instead of gas".
+- **Shields that block the gun** (playtest): an energy shield belt blocks every ranged shot while it is up, and CE flags a
+  ballistic shield with a two-handed gun. At planning, from the raider's own gear: a shield bearer with a one-handed gun
+  in the pack switches to it and stays a shield bearer; otherwise the shield goes into the pack so the rifle works.
+- **Reserve:** a raider with no usable weapon no longer waits where he arrived. He keeps up with the raid 8 cells behind
+  its armed fighters, out of fire, and takes up a fallen comrade's gun (searched within 30 cells).
+- **The right round for the job:** a launcher counts for breaching only with a round that breaks walls, loaded or
+  carried; fire (molotovs, incendiary rounds) does not count against stone or steel (wooden walls are set alight by
+  hand instead). At the wall the breacher reloads a carried HE round if gas, smoke or EMP is loaded (the contact beam and
+  M79 take 40 mm tox grenades too). A raider loaded with gas who carries another round reloads it. One whose only
+  weapon fires gas counts as unarmed: he picks up a gun, plunders or holds back.
+- **Grenadiers soften the defence first:** grenadiers with an explosive launcher (loaded or in the pack) join the base of
+  fire. Before the assault moves they shell the defenders' positions and cover from a covered spot in range, together
+  with the machine guns and marksmen, instead of waiting with the assault group. Launcher shots never go through their
+  own men.
+- **Doors broken down by hand:** a raid with nothing on your walls takes a door as its way in, with grenades, a charge,
+  a launcher, or, as a last resort, 2 to 4 raiders with melee weapons breaking it down (vanilla raiders do; tribal and
+  medieval raids without explosives stood off before).
+- Building-destroying launchers (the M79 and the like) now also take your doors as breach points. In a funnel, a
+  launcher shoots the door when the defender behind it can't be seen.
+- **A raid out to break in brings the means** (playtest: "units would not engage a settlement without any means of
+  breaching it"). If none of its raiders carries anything that opens a wall (a charge, a wall-breaking launcher round,
+  grenades, a breach or digging tool), one raider in eight (1 to 3) brings the kit of the faction's tech level:
+  - tribes: a breach axe;
+  - medieval factions: stick bombs, or a breach axe for a bowman;
+  - industrial factions: breach charges;
+  - spacer factions: more charges and a mining charge.
+  This comes on top of the loadout and doesn't depend on "extra equipment". Raids that can walk in, scout or
+  sabotage bring none. Setting: "Raids bring breaching gear".
+
+**Raids with other goals** (playtest: "other attacks where it is about sieging or scouting or sabotage etc where
+breaching is not needed"):
+- **Scouting raids:** a small party walks a covered route to posts 32-48 cells out, in cover and in sight of your
+  base, and watches without firing. It leaves once it has seen enough, as soon as it is shot at or loses a man, or
+  when its time runs out. Survivors give their faction up to 30 % more intel than other raids (raid memory).
+- **Sabotage raids:** they set fires (one site per three raiders), shoot your livestock where your fire doesn't reach,
+  and go for a colonist who is alone outside, with no one else within 15 cells and no roof over him. They leave when
+  there is nothing left to wreck, when your defence turns out, after a quarter of them are down, or when their time
+  runs out.
+- Each raid rolls its goal. Assault weighs 1; scouting 0.10 and sabotage 0.15 by default. A raid well under even odds
+  harasses about three times as often. A strong raid mostly attacks. A faction that knows little of you scouts twice
+  as often, and a raid of more than 12 rarely scouts. Mechanoids, insects and animals always attack.
+  Sieges stay as before.
+- Neither goal teaches the faction anything about its approach (raid memory).
+  Setting: "Scouting and sabotage raids", with the two weights.
+
+**The plan adapts when the situation changes** (playtest: "when the defenders leave the base the attackers do not
+adjust their attack accordingly"; "once the situation changes the plan needs to adapt, that is very important"):
+- **Defenders who come out get fought where they are.** Colonists more than 15 cells from their base and within 40 of
+  the raid turn it into a field fight. Everyone not busy at a wall turns on them:
+  - shooters fire from where they stand if they have a shot at a sensible range, else take a covered spot at their
+    weapon's distance;
+  - melee raiders charge;
+  - a sharp command sends every third rifleman round their side.
+
+  Five seconds after the last one is back inside, the raid returns to its plan. Before this, the raid kept waiting at
+  its breach and assault spots and only fired back when hit.
+- **A defence beaten in the field is stormed at once.** If half the defenders are down after coming out, a walk-in
+  raid stops waiting for its timetable and goes.
+- **The objective follows the defence.** If the defenders still at home move 12 or more cells from where the plan
+  expected them, the objective moves with them, and a walk-in re-plans its axes. A breach keeps its walls (its charges
+  are on them).
+- A doctrine (field fight): a dull raid sticks to the plan it made. Setting: "Fight defenders who come out".
+
+**Grenade launchers fire over walls** (playtest: "M79 and alike weapons are great as indirect fire weapons to fire into
+the base at different places"). CE fires 40 mm rounds on a flat line, so a wall stops them. A grenadier in the base of
+fire or a siege camp, with an explosive round loaded and no direct shot, now lobs it high over the wall:
+- targets: your colonists, then turrets, then workshops and power, all under open sky, between 8 cells and 95 % of the
+  launcher's range;
+- shots spread over the base, never land near his own men, and each shot uses one real round from the magazine, with
+  the round's own damage and blast;
+- scatter is 5-15 % of the distance, depending on his Shooting skill;
+- he needs open sky himself, and a thin roof over the target takes the round.
+
+A doctrine (indirect fire). Setting: "Grenade launchers fire over walls".
+- **Launchers stay out of the breach** (playtest: "the M79 etc after they breach should stay and engage targets of
+  opportunity, also try to engage the walls from a larger distance and if possible from cover"):
+  - once his wall is open (walk-in: from H-hour), a raider with an explosive launcher doesn't follow the assault
+    through the hole; he stays outside as base of fire and shells whatever shows itself, over the walls too;
+  - he shoots at the wall from 55-100 % of his range, from cover from the defence where there is some, out of fire
+    (was: at most 30 cells, from the spot nearest the stack point).
+
+  Setting: "Grenade launchers stay out of the breach".
+- **Cover wherever there is some** (playtest: "in general units should always seek cover if possible and available"):
+  - waiting spots before a walk-in and beside a breach are picked in cover from the defence where the area has any;
+  - in a field fight, a raider with a shot but in the open first steps to cover within 5 cells that keeps the shot;
+  - stepping back from enemies who come too close prefers covered cells.
+
+**Crew-served weapons** (playtest: "smaller static weapons like HMGs can be carried by raiders and placed closer as part
+of a normal raid ... one of the raiders carries the gun and 1-2 the ammo, they stay together and deploy, the team
+attacks when everything is ready"):
+- Industrial and later assault raids of 8 or more bring one light crew-served gun (16 or more: two). It is a manned
+  turret of up to 40 kg at or below the faction's tech level, from whatever the modlist has (HSK: M240B, AGS-17, ...).
+- The gunner carries it packed; one or two bearers carry three magazines of its ammo.
+- The team walks a covered route together, the gunner waiting for his bearers, to a post at 60-75 % of the gun's
+  range: out of your fire, in cover, with a line of fire on your base. They set it up in 4 seconds and the gunner mans
+  it. Only he stays at the gun: the bearers spread out into cover 4 to 8 cells beside and behind it, cover it, reload
+  it from their packs, and take it over if the gunner falls. The gun is set up facing your base with
+  the gunner behind it, and an idle gun turns toward the nearest colonist in range, or toward your base.
+- The assault waits until every team still alive is firing, for at most 50 seconds.
+- If the crew falls or the raid withdraws, the gun stays where it stands, unowned: loot.
+- Part of the base of fire (a doctrine). Setting: "Crew-served weapons".
+
+**Clear the breach by fire, then go in** (playtest: "better to be outside, cover the breach from cover and shoot inside
+until there is no more enemy to shoot at, then slowly approach"): once a wall is open, nobody goes through while a
+defender who isn't pinned (hunkering) still covers the gap. Gunners at the corner posts and on overwatch fire in;
+whoever else waits within 8 cells fires too if he has a shot, or steps out of the line of fire through the gap. Shield
+bearers still lead. At most 30 s, then in. From middling competence on.
+
+**Snipers and machine guns hold overwatch before the breach** (playtest): from middling competence on (riflemen still
+need a sharper command), they take covered positions facing where the breach will open, snipers at about 75 % of their
+range (up to 49 cells), and cover the entrance while the wall comes down.
+
+**Breach entry in waves** (playtest: "deadly funnel, all try to enter through the same breach at the same time"): every
+raid, however dull, goes through an opening at most 3 at a time, about 4 s apart; the rest hold 6 cells back instead of
+crowding the gap. While they wait for the wall to come down they stand 2+ cells apart (one blast took six
+stackers waiting shoulder to shoulder). Inside they fan out left and right as before.
+
+**Corner fire at the breach** (playtest): when a wall opens, gunners about to go in take the posts beside the hole on
+their side of the wall (two per side) and lean out past the wall end to fire through the gap - RimWorld's and CE's
+lean-out shot lines, with the wall covering them - before they go in (at most 10 s, at once when nobody inside is in
+sight). Nobody stands in the hole itself. Setting: "Corner fire at the breach".
+
+**Siege camp** (playtest):
+- Raiders who besiege you and aren't building or manning a gun take posts in cover around the camp, facing your
+  defenders, by role:
+  - riflemen in the front arc;
+  - machine guns on the flanks;
+  - marksmen behind the camp centre;
+  - melee close in front of the builders;
+  - with 6 or more guards, one watching the rear.
+  The posts turn with the threat when you try to flank. A guard moves to another covered spot when his cover stops
+  working or he gets hit there, and fires from his post instead of chasing. Every siege does this; from middling
+  competence the guards spread by role, and sharp ones turn with flanking defenders and keep a rear guard.
+- Once the camp's own sandbags and barricades are finished, guards take post behind those on their side first.
+- Our raids that turn to a siege set up camp on their side of your base, where it sees your nearest wall from within 80
+  cells if there is such a spot, else about 75 cells out (vanilla: anywhere within 60 cells of where the raid stood,
+  often far out of range and behind hills).
+- **Direct-fire siege guns** (cannons, ordnance rifles, flak) stay inside the camp, at most 14 cells from its
+  centre, so the camp's guards cover them: at a spot in range with a line of fire on your nearest wall, out of your
+  fire if possible, else at the camp's front edge. Vanilla put them anywhere in the camp. Mortars and other guns that fire overhead are unchanged.
+  With no one of yours in sight, explosive guns fire at your structures: turrets first, then the walls and doors
+  nearest your defenders (vanilla and CE turrets only ever picked pawns unless they fire overhead). Machine guns, whose
+  rounds do nothing to walls, take your animals in sight instead.
+- **Forward observer:** CE scatters mortar fire beyond 75 cells or without sight of the target, unless a spotter has
+  marked it. Vanilla sieges never spot, so their mortars fired almost at random. One guard with the best eye (a
+  marksman first) now goes to a covered spot that sees what the siege's mortars are firing at, and marks it the way CE
+  spotting does. The mark lasts 30 s and is renewed.
+- Setting: "Siege camp: guards in cover, guns at range".
+
+**Fixes**
+- A raid that was winning inside (6 raiders against the last defender) let vanilla's "satisfied" exit go after 3,000
+  ticks of assault and turned to kidnapping and looting under fire. The time and loss limits now release a raid only
+  while it is not winning (it outnumbers the standing defenders 3:1 and took one down within the stall time); hard cap 3x.
+- No One Left Behind compatibility: on the colony map, while a defender stands, raiders don't go for a downed comrade
+  lying in the defenders' open fire (same rule as our medics and withdrawal carriers).
+- A raid holding back from defenders holed up behind a funnel, with nothing to plunder, waited out the whole raid. It now
+  leaves after the plunder idle time (planned withdrawal, or the vanilla way for dull raids).
+- The siege mortar spotter never marked a target. It didn't see CE mortars at all, and once fixed it walked out to its
+  post and back each time the mortar dropped its target between reloads. Now it keeps watching the last target for 15 s.
+
 ## 1.3.0 (2026-10-25)
 
 - **Relation Based Trading 2.1.0** joins the release (`thelonetec.relationbasedtrading`, original mod by TheLoneTec,

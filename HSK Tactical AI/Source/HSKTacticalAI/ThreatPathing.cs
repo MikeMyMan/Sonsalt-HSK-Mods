@@ -20,15 +20,45 @@ namespace HSKTacticalAI
             int n = map.cellIndices.NumGridCells;
             offsets = new NativeArray<ushort>(n, Allocator.TempJob);
             if (tm == null || tm.CompletedCycles == 0 || tm.CellCount != n) return;
+            // tactical competence (Competence.Perceive): the raid's command reads the fire only so far ahead and only the
+            // heavier fire, weighs it less, prices funnels only if it knows them - and walks around the traps it knows of
+            AssaultPlan plan = Competence.Enabled ? Competence.Ctx : null;
+            bool perceive = plan != null && Competence.CtxOrigin.IsValid;
+            float minFire = 0.02f, look2 = float.MaxValue;
+            int ox = 0, oz = 0, sizeX = map.Size.x;
+            if (perceive)
+            {
+                float scale = Competence.FireScale(plan);
+                costPerFire *= scale;
+                baseCostInFire = (int)(baseCostInFire * scale);
+                if (!Competence.Knows(plan, Doctrine.AvoidFunnels)) funnelPenalty *= 0.15f;
+                minFire = Math.Max(minFire, Competence.MinFireNoticed(plan));
+                float look = Competence.LookAhead(plan);
+                look2 = look * look;
+                ox = Competence.CtxOrigin.x; oz = Competence.CtxOrigin.z;
+            }
             for (int i = 0; i < n; i++)
             {
                 float f = tm.FireAt(i);
-                if (f <= 0.02f) continue;
+                if (f <= minFire) continue;
+                if (perceive)
+                {
+                    int dx = i % sizeX - ox, dz = i / sizeX - oz;
+                    if (dx * dx + dz * dz > look2) continue;
+                }
                 int v = baseCostInFire + (int)(f * costPerFire);
                 if (funnelPenalty > 0f && f > safeFire && OpenNeighbours(map, map.cellIndices.IndexToCell(i)) <= 4) v += (int)funnelPenalty;
                 offsets[i] = (ushort)Math.Min(v, 30000);
             }
+            if (plan != null)
+            {
+                traps.Clear();
+                Competence.KnownTrapCells(map, plan, traps);
+                foreach (int i in traps) offsets[i] = (ushort)Math.Min(offsets[i] + Competence.KnownTrapRouteCost, 30000);
+            }
         }
+
+        private static readonly List<int> traps = new List<int>();
 
         /// <summary>Walkable neighbours of a cell (8 max): ≤ 4 means corridor / doorway / gap.</summary>
         public static int OpenNeighbours(Map map, IntVec3 c)

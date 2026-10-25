@@ -6,7 +6,7 @@ namespace HSKTacticalAI
 {
     public class TacticalAIMod : Mod
     {
-        public const string Version = "0.1.0";
+        public const string Version = "0.2.0";
         public static TacticalAISettings Settings;
         public static Harmony Harmony;
 
@@ -197,6 +197,32 @@ namespace HSKTacticalAI
         public bool plunderDuringBreach = true;      // while the breach is prepared, the stackers plunder near their stack point
         public float plunderPrepRadius = 25f;        // ... within this distance of it
         public float plunderRecallFraction = 0.6f;   // slow breaches (tools, fire, tunnels): back at the stack once this much wall is down
+        // tactical competence (0.2): the leader's intelligence and the faction's tech level decide how smart the raid acts
+        public bool tacticalCompetence = true;
+        public float competenceIntelWeight = 0.7f;   // share of the leader's intelligence (the rest: the tech ceiling alone)
+        public bool competenceLossOfCommand = true;  // leader down or dead: the next in rank takes over, less sharp, after a moment of confusion
+        public bool competenceReadout;               // message + log line with each raid's competence; threat-map button tooltip
+        public float competenceOverride = -1f;       // AI Lab only (not saved): fixed competence for every raid, -1 = off
+        public float competenceRoll = -1f;           // AI Lab only (not saved): fixed doctrine roll, -1 = per raid
+        public bool siegeGuards = true;              // siege camp: guards in cover by role facing the defenders; direct-fire siege guns inside the camp with a line of fire
+        public bool cornerFire = true;               // open breach: gunners lean out from the wall ends beside the hole and fire in before going in
+        public bool gasAmmoSwap = true;              // launchers with only gas rounds swap 75 % of them for the explosive round of the same ammo set
+        public bool keepRange = true;                // each weapon at its own distance: bows and long guns back off, short guns close in, melee closes in
+        public bool launchersStayOut = true;         // explosive launchers don't follow the assault through the breach: they stay out as base of fire
+        public bool crewWeapons = true;              // industrial+ assault raids of 8+ bring a crew-served gun (carried packed, set up at range, manned)
+        public float cswMaxMass = 40f;               // ... at most this heavy (kg)
+        public int cswWaitTicks = 3000;              // H-hour waits for the guns at most this long
+        public bool fieldFight = true;               // defenders out of their base: the raid turns and fights them there, then back to the plan
+        public bool indirectFire = true;             // grenade launchers lob explosive rounds over walls at targets they can't hit directly
+        public bool breachGear = true;               // a raid out to breach that has nothing of its own: 1-3 raiders carry the tech level's breaching kit
+        public bool raidGoals = true;                // some raids come to scout or to sabotage instead of to assault
+        public float scoutShare = 0.10f;             // base weight of a scouting raid (assault = 1)
+        public float sabotageShare = 0.15f;          // base weight of a sabotage raid
+        public int scoutObserveTicks = 2500;         // a scouting party watches this long, then leaves
+        public int sabotageTicks = 6000;             // a sabotage raid leaves after this long at the latest
+        public int sabotageIdleTicks = 1500;         // ... or once it has found nothing to wreck for this long
+        public string raidGoalOverride = "";        // AI Lab only (not saved): assault | scout | sabotage
+        public int cornerHoldTicks = 1800;           // ... and clearing the gap by fire before entry: at most this long after H-hour
 
         public override void ExposeData()
         {
@@ -364,17 +390,55 @@ namespace HSKTacticalAI
             Scribe_Values.Look(ref plunderDuringBreach, "plunderDuringBreach", true);
             Scribe_Values.Look(ref plunderPrepRadius, "plunderPrepRadius", 25f);
             Scribe_Values.Look(ref plunderRecallFraction, "plunderRecallFraction", 0.6f);
+            Scribe_Values.Look(ref tacticalCompetence, "tacticalCompetence", true);
+            Scribe_Values.Look(ref competenceIntelWeight, "competenceIntelWeight", 0.7f);
+            Scribe_Values.Look(ref competenceLossOfCommand, "competenceLossOfCommand", true);
+            Scribe_Values.Look(ref competenceReadout, "competenceReadout", false);
+            Scribe_Values.Look(ref siegeGuards, "siegeGuards", true);
+            Scribe_Values.Look(ref cornerFire, "cornerFire", true);
+            Scribe_Values.Look(ref gasAmmoSwap, "gasAmmoSwap", true);
+            Scribe_Values.Look(ref keepRange, "keepRange", true);
+            Scribe_Values.Look(ref launchersStayOut, "launchersStayOut", true);
+            Scribe_Values.Look(ref crewWeapons, "crewWeapons", true);
+            Scribe_Values.Look(ref fieldFight, "fieldFight", true);
+            Scribe_Values.Look(ref indirectFire, "indirectFire", true);
+            Scribe_Values.Look(ref breachGear, "breachGear", true);
+            Scribe_Values.Look(ref raidGoals, "raidGoals", true);
+            Scribe_Values.Look(ref scoutShare, "scoutShare", 0.10f);
+            Scribe_Values.Look(ref sabotageShare, "sabotageShare", 0.15f);
+            Scribe_Values.Look(ref scoutObserveTicks, "scoutObserveTicks", 2500);
+            Scribe_Values.Look(ref sabotageTicks, "sabotageTicks", 6000);
+            Scribe_Values.Look(ref sabotageIdleTicks, "sabotageIdleTicks", 1500);
+            Scribe_Values.Look(ref cornerHoldTicks, "cornerHoldTicks", 1800);
         }
 
         private Vector2 scroll;
 
         public void DoWindow(Rect inRect)
         {
-            var view = new Rect(0f, 0f, inRect.width - 16f, 1500f);
+            var view = new Rect(0f, 0f, inRect.width - 16f, 1700f);
             Widgets.BeginScrollView(inRect, ref scroll, view);
             var l = new Listing_Standard();
             l.Begin(view);
-            l.Label("HSK Tactical AI " + TacticalAIMod.Version + " - threat map and AI Lab (no behaviour changes yet).");
+            l.Label("HSK Tactical AI " + TacticalAIMod.Version + " - raid tactics on a threat map of your defences.");
+            l.GapLine();
+            l.CheckboxLabeled("Tactical competence: smarter leaders, smarter raids", ref tacticalCompetence,
+                "How well a raid uses its tactics depends on its leader's intelligence (Intellectual skill; traits such as too smart, slow learner, dumb, " +
+                "dunce or volatile genius; learning genes and brain injuries) and on its faction's tech level, which sets the ceiling: tribal 55 %, " +
+                "medieval 70 %, industrial 85 %, spacer and above 100 %; mechanoids think as a hive. A sharp raid reads your whole defence, avoids " +
+                "killboxes, funnels and most of your traps, envelops you from several sides with smoke, overwatch and fire and movement, attacks only " +
+                "with the odds on its side and withdraws in time. A dull one walks the straight way in, into your killbox and traps, picks poor " +
+                "breach points and runs like vanilla raiders. Off: every raid uses all tactics.");
+            if (tacticalCompetence)
+            {
+                l.Label("Leader's intelligence " + Mathf.RoundToInt(competenceIntelWeight * 100f) + " %, faction tech level " + Mathf.RoundToInt((1f - competenceIntelWeight) * 100f) + " %");
+                competenceIntelWeight = l.Slider(competenceIntelWeight, 0f, 1f);
+                l.CheckboxLabeled("Loss of command when the leader falls", ref competenceLossOfCommand,
+                    "Leader down, dead or gone: the next in rank takes over, at most as sharp as himself and a fifth less than that, and the raid " +
+                    "is confused for about 20 seconds.");
+                l.CheckboxLabeled("Show each raid's competence", ref competenceReadout,
+                    "A message when a raid arrives (and when it loses its leader) with its competence and why, also in the log and in the tooltip of the threat-map button.");
+            }
             l.GapLine();
             l.CheckboxLabeled("Compute the threat map", ref enableThreatMap,
                 "Where your colonists and turrets can shoot. Later versions use it for raider tactics; 0.1 only shows it.");
@@ -390,6 +454,8 @@ namespace HSKTacticalAI
             weightDrafted = l.Slider(weightDrafted, 0f, 3f);
             weightUndrafted = l.Slider(weightUndrafted, 0f, 3f);
             weightTurret = l.Slider(weightTurret, 0f, 3f);
+            l.CheckboxLabeled("Siege camp: guards in cover, guns at range", ref siegeGuards,
+                "Raiders who besiege you and aren't building take covered positions around their camp facing your defenders, by role: riflemen in front, machine guns on the flanks, snipers further back, melee guarding the builders, one watching the rear. They turn with you when you try to flank them and move when their cover stops working. Direct-fire siege guns (cannons, ordnance rifles) are set up as close as their range needs, with a line of fire on your walls, instead of in the middle of the camp.");
             l.GapLine();
             l.CheckboxLabeled("Smart breaching: only break walls when walking around is worse", ref smartBreaching,
                 "Breaching raids compare the open route (walking + exposure to your fire) with breaking through walls. " +
@@ -436,6 +502,22 @@ namespace HSKTacticalAI
             l.Label("Breach points on different sides, opened together: up to " + maxBreaches + " (one per " + raidersPerBreach + " raiders)");
             maxBreaches = (int)l.Slider(maxBreaches, 1, 4);
             l.CheckboxLabeled("Burn wooden walls", ref fireBreaching, "Raiders set wooden walls on fire instead of blowing them.");
+            l.CheckboxLabeled("Explosive rounds instead of gas", ref gasAmmoSwap, "Raiders whose launcher carries only gas rounds (the waster heavies' 40 mm tox grenades) swap three quarters of them for the explosive round of the same calibre - one for one, no extra gear. Gas only works in an enclosed room; they keep a quarter for that.");
+            l.CheckboxLabeled("Keep the weapon's range", ref keepRange, "Each raider fights at its weapon's distance: bowmen and long guns (rifles, more so snipers) step back when you get too close, pistols and SMGs close in before they shoot, melee raiders go for anyone near them in the open. Part of tactical competence: a dull raid fights from wherever it stands.");
+            l.CheckboxLabeled("Crew-served weapons", ref crewWeapons, "Industrial and later raids of 8 or more bring a light crew-served gun (16 or more: two) - a manned turret of up to 40 kg from your modlist (M240B, AGS-17, ...). The gunner carries it packed, one or two raiders carry its ammo. The team sets it up at range in cover with a line of fire, the gunner mans it, the bearers reload it; the assault waits until the guns fire. If the crew falls or the raid withdraws, the gun stays behind as loot.");
+            l.CheckboxLabeled("Fight defenders who come out", ref fieldFight, "When your colonists leave the base to meet the raid, the raid turns on them: shooters take cover at their weapon's distance and fire, melee raiders charge, a sharp command sends men round their side. When they are back inside, the raid returns to its plan. Part of tactical competence: a dull raid only fires back when hit.");
+            l.CheckboxLabeled("Grenade launchers fire over walls", ref indirectFire, "A grenadier with an explosive round and no direct shot lobs it over the wall: at your colonists, turrets and workshops under open sky, spread over the base, never near his own men. One real round per shot; scatter by distance and skill. Part of tactical competence.");
+            l.CheckboxLabeled("Grenade launchers stay out of the breach", ref launchersStayOut, "Once their wall is open, raiders with an explosive launcher (M79 and the like) don't follow the assault through the hole: they stay outside as base of fire and shell whatever shows itself, over the walls too. They shoot at the wall from further out, from cover if there is any.");
+            l.CheckboxLabeled("Raids bring breaching gear", ref breachGear, "A raid that has to break in and carries nothing that opens a wall brings it: one raider in eight (1-3) carries the kit of the faction's tech level - a breach axe for tribes, stick bombs for medieval factions, breach charges for industrial ones, more charges and a mining charge for spacers. On top of the loadout; independent of \"extra equipment\".");
+            l.CheckboxLabeled("Scouting and sabotage raids", ref raidGoals, "Some raids don't come to take the colony. Scouts watch it from cover out of your fire and leave (survivors tell their faction more about you). Saboteurs set fires, kill livestock out of your fire, jump a colonist who is alone outside and leave before your defence turns out. Weak raids harass more often, strong raids attack; factions that know little of you scout first.");
+            if (raidGoals)
+            {
+                l.Label("Scouting raids (weight vs 1 for an assault): " + scoutShare.ToString("0.00"));
+                scoutShare = l.Slider(scoutShare, 0f, 1f);
+                l.Label("Sabotage raids (weight vs 1 for an assault): " + sabotageShare.ToString("0.00"));
+                sabotageShare = l.Slider(sabotageShare, 0f, 1f);
+            }
+            l.CheckboxLabeled("Corner fire at the breach", ref cornerFire, "When a wall opens, gunners take the corners beside the hole on their side of the wall and lean out to fire through it at the defenders inside - covered by the wall - before they go in (at most about 10 s).");
             l.CheckboxLabeled("Shield wall", ref shieldTactics, "Raiders with ballistic or body shields lead the assault straight at the defenders; two gunners follow behind each shield and shoot past it. Through a breach the shield goes first.");
             l.CheckboxLabeled("Fire discipline", ref fireDoctrine, "Raiders choose aimed or snap shots and single, burst or full-auto fire by range and situation: aimed single shots at long range, aimed bursts at medium range, snap bursts up close, full auto in close quarters and to suppress defenders in cover. Marksmen always take aimed single shots; machine guns fire bursts.");
             l.CheckboxLabeled("Don't chase into funnels", ref funnelCaution, "When defenders fall back into a narrow corridor, raiders don't follow straight in: they throw grenades into it, hold covered spots beside its mouth and shoot whoever comes out, and go in after a while (smoke first). Shield bearers still lead in.");

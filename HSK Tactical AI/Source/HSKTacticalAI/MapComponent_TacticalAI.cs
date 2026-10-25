@@ -1,3 +1,4 @@
+using System.Linq;
 using HarmonyLib;
 using RimWorld;
 using UnityEngine;
@@ -89,8 +90,12 @@ namespace HSKTacticalAI
         public static void Postfix(WidgetRow row, bool worldView)
         {
             if (worldView || row == null || TacticalAIMod.Settings == null || !TacticalAIMod.Settings.enableThreatMap) return;
-            row.ToggleableIcon(ref TacticalAIMod.Settings.showThreatOverlay, TacticalAITex.ThreatIcon,
-                "HSK Tactical AI: show the threat map (where your colonists and turrets can shoot; red = heavy fire).");
+            string tip = "HSK Tactical AI: show the threat map (where your colonists and turrets can shoot; red = heavy fire).";
+            if (TacticalAIMod.Settings.competenceReadout && Competence.Enabled && Find.CurrentMap != null)
+                foreach (var plan in AssaultPlanner.Plans.Values)
+                    if (plan.map == Find.CurrentMap && plan.phase != PlanPhase.Converted && plan.members.Any(p => p.Spawned && !p.Dead && !p.Downed))
+                        tip += "\n\n" + (plan.faction?.Name ?? "Raid") + ": tactical competence " + Competence.Pct(Competence.Of(plan)) + " - " + plan.competenceWhy;
+            row.ToggleableIcon(ref TacticalAIMod.Settings.showThreatOverlay, TacticalAITex.ThreatIcon, tip);
         }
     }
 }

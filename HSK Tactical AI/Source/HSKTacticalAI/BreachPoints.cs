@@ -8,7 +8,7 @@ using Verse.AI;
 namespace HSKTacticalAI
 {
     /// <summary>How a breach point's wall comes down.</summary>
-    public enum BreachMethod { None, Charge, Launcher, Tool, Fire, Tunnel, Grenade }
+    public enum BreachMethod { None, Charge, Launcher, Tool, Fire, Tunnel, Grenade, Bash }
 
     /// <summary>
     /// One breach point of a breach plan: the wall layer to open, where its group stacks, the covered route there, and

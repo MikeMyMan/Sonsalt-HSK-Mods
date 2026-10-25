@@ -36,6 +36,12 @@ namespace HSKTacticalAI
         public string startScenario = "NakedBrutality";   // ScenarioDef for the map (never Crashlanded: extra pawns)
         public Dictionary<string, string> settings = new Dictionary<string, string>();   // AI variant: setting name -> value (this run only)
         public Dictionary<string, float> memory = new Dictionary<string, float>();       // raid memory seed for the raid faction (FactionRaidMemory field -> value)
+        public int leaderIntellectual = -1;   // tactical competence tests: the raid leader's Intellectual skill (-1 = as generated)
+        public string leaderTrait = "";       // ... and this trait on the leader (TooSmart, SlowLearner, Dumb, ...), other intelligence traits removed
+        public int traps = 0;                 // traps (IEDs and spike traps) on the raid's approach (east); killbox: some in the corridor
+        public string defenderMode = "hold";   // hold | patrol | sally | door | lone | mix (LabDefenders)
+        public float sallyRange = 6f;          // sally: how close the defenders go to the nearest raider
+        public bool stripBreachMeans = false;  // take away the raid's own wall-breaking means before planning (breach kit tests)
     }
 
     /// <summary>
@@ -172,6 +178,7 @@ namespace HSKTacticalAI
                         state = raiders.Count > 0 ? State.Running : State.Done;
                         if (raiders.Count == 0) { outcome = "noRaid"; WriteResults(); }
                         raidStartTick = now;
+                        LabDefenders.Init(map, center, defenders);
                         realTime.Restart(); Perf.On = true;
                         break;
                     case State.Running:
@@ -578,6 +585,7 @@ namespace HSKTacticalAI
                 }
             }
             SpawnDefenders(positions);
+            PlaceTraps(cfg);
             notes += "center=" + center + " start=" + (Find.Scenario?.name ?? "?") + " ";
             TacticalAIMod.Settings.smartBreaching = cfg.aiEnabled;   // A/B switch, this run only (not saved)
             TacticalAIMod.Settings.breachKit = cfg.aiEnabled;
@@ -768,7 +776,7 @@ namespace HSKTacticalAI
         }
 
         /// <summary>Combat Extended guns need ammo in the inventory; found by reflection so CE stays optional.</summary>
-        private static void GiveCEAmmo(Pawn p, ThingWithComps gun, int count)
+        internal static void GiveCEAmmo(Pawn p, ThingWithComps gun, int count)
         {
             foreach (var comp in gun.AllComps)
             {
@@ -815,9 +823,9 @@ namespace HSKTacticalAI
             try {
             for (int attempt = 0; attempt < 5 && raiders.Count == 0; attempt++)
             {
-                bool Wanted(Faction f) => !tried.Contains(f) && f.def.humanlikeFaction
+                bool Wanted(Faction f) => !tried.Contains(f) && (f.def.humanlikeFaction || !string.IsNullOrEmpty(cfg.faction))
                                           && (string.IsNullOrEmpty(cfg.faction) ? f.def.techLevel >= TechLevel.Industrial : f.def.defName == cfg.faction);
-                if (!PawnGroupMakerUtility.TryGetRandomFactionForCombatPawnGroup(cfg.points, out raidFaction, Wanted, allowNonHumanlike: false)
+                if (!PawnGroupMakerUtility.TryGetRandomFactionForCombatPawnGroup(cfg.points, out raidFaction, Wanted, allowNonHumanlike: !string.IsNullOrEmpty(cfg.faction))
                     && !PawnGroupMakerUtility.TryGetRandomFactionForCombatPawnGroup(cfg.points, out raidFaction, f => !tried.Contains(f) && f.def.humanlikeFaction, allowNonHumanlike: false))
                 {
                     notes += "noHostileFaction ";
@@ -852,10 +860,11 @@ namespace HSKTacticalAI
             foreach (Pawn p in map.mapPawns.SpawnedPawnsInFaction(raidFaction))
                 if (!before.Contains(p)) raiders.Add(p);
             notes += "faction=" + raidFaction.def.defName + " raidOk=" + ok + " entry=" + parms.spawnCenter + " ";
+            bool leaderChanged = raiders.Count > 0 && ApplyLeaderIntel(cfg);
             // 3 to 1: the defenders are a third of the raid (at least one)
             if (raiders.Count > 0 && cfg.attackRatio > 0f)
             {
-                int want = Math.Max(1, (int)Math.Round(raiders.Count(r => r.RaceProps.Humanlike) / cfg.attackRatio));
+                int want = Math.Max(1, (int)Math.Round(raiders.Count(r => r.RaceProps.Humanlike || r.RaceProps.IsMechanoid) / cfg.attackRatio));
                 while (defenders.Count > want) { var d = defenders[defenders.Count - 1]; defenders.RemoveAt(defenders.Count - 1); if (d.Spawned) d.DeSpawn(); }
                 notes += "defenders=" + defenders.Count + " (raid " + raiders.Count + ", ratio " + cfg.attackRatio + ") ";
             }
@@ -871,6 +880,11 @@ namespace HSKTacticalAI
                 SeedMemory(raidFaction);   // after the defenders copied the raid's kit: the re-plan adapts from memory
                 if (lord != null && AssaultPlanner.Plans.Remove(lord.loadID)) lord.CurLordToil?.UpdateAllDuties();
             }
+            else if (leaderChanged)
+            {
+                Lord lord = raiders[0].GetLord();
+                if (lord != null && AssaultPlanner.Plans.Remove(lord.loadID)) lord.CurLordToil?.UpdateAllDuties();
+            }
             attackerScore = ForceEstimate.Attackers(raiders);
             defenderScore = defenders.Sum(ForceEstimate.PawnScore);
             attackerGear = raiders.Sum(GearValue);
@@ -878,6 +892,87 @@ namespace HSKTacticalAI
         }
 
         private float attackerScore, defenderScore, attackerGear, defenderGear;
+        private int trapsAtStart;
+        private string leaderNote = "";
+
+        private static readonly string[] IntelTraits = { "TooSmart", "SlowLearner", "FastLearner", "Dumb", "Ignorant", "ChaoticGenius" };
+
+        /// <summary>Tactical competence tests: set the raid leader's Intellectual skill and intelligence trait. True if changed.</summary>
+        private bool ApplyLeaderIntel(LabConfig cfg)
+        {
+            if (cfg.leaderIntellectual < 0 && string.IsNullOrEmpty(cfg.leaderTrait)) return false;
+            Pawn leader = Competence.PickLeader(raiders.Where(r => r.Spawned && !r.Downed).ToList());
+            if (leader?.skills == null || leader.story?.traits == null) { notes += "leaderIntel=none "; return false; }
+            if (cfg.leaderIntellectual >= 0)
+            {
+                var sk = leader.skills.GetSkill(SkillDefOf.Intellectual);
+                if (sk != null) { sk.Level = Math.Min(20, cfg.leaderIntellectual); sk.xpSinceLastLevel = 0f; }
+            }
+            if (!string.IsNullOrEmpty(cfg.leaderTrait))
+            {
+                foreach (var t in leader.story.traits.allTraits.Where(t => IntelTraits.Contains(t.def.defName)).ToList()) leader.story.traits.RemoveTrait(t);
+                TraitDef td = cfg.leaderTrait == "none" ? null : DefDatabase<TraitDef>.GetNamedSilentFail(cfg.leaderTrait);   // "none": no intelligence trait
+                if (td != null) leader.story.traits.GainTrait(new Trait(td, td.degreeDatas[0].degree, true));
+                else if (cfg.leaderTrait != "none") notes += "unknownTrait=" + cfg.leaderTrait + " ";
+            }
+            leader.Notify_DisabledWorkTypesChanged();
+            StatDefOf.GlobalLearningFactor.Worker.ClearCacheForThing(leader);
+            leaderNote = leader.LabelShort + " (" + leader.kindDef.defName + ") Intellectual " + (leader.skills.GetSkill(SkillDefOf.Intellectual)?.Level ?? -1)
+                         + " traits " + string.Join(",", leader.story.traits.allTraits.Select(t => t.def.defName));
+            notes += "leaderIntel=[" + leaderNote + "] ";
+            return true;
+        }
+
+        /// <summary>Traps (IEDs, spike traps) on the raid's approach: a band east of the base, the killbox corridor too.</summary>
+        private void PlaceTraps(LabConfig cfg)
+        {
+            if (cfg.traps <= 0) return;
+            ThingDef ied = DefDatabase<ThingDef>.GetNamedSilentFail("TrapIED_HighExplosive");
+            ThingDef spike = DefDatabase<ThingDef>.GetNamedSilentFail("TrapSpike");
+            var rnd = new System.Random(cfg.seed * 13 + 5);
+            var cells = new List<IntVec3>();
+            if (cfg.scenario == "killbox")
+                for (int dx = 2; dx <= 8; dx += 3) cells.Add(new IntVec3(center.x + 7 + dx, 0, center.z));   // the corridor (base wall at +7)
+            // a band across the way in: on the walking route from the raid's entry, 12-34 cells out, every 2nd cell, 2 cells to
+            // either side too (a minefield the straight way in crosses)
+            IntVec3 entry = EastEntryCell();
+            if (entry.IsValid)
+                using (PawnPath path = map.pathFinder.FindPathNow(entry, center, TraverseParms.For(TraverseMode.PassDoors, Danger.Deadly), null, PathEndMode.Touch))
+                    if (path != null && path.Found)
+                    {
+                        var nodes = path.NodesReversed.Where(n => n.DistanceTo(center) >= 12f && n.DistanceTo(center) <= 34f).ToList();
+                        for (int i = 0; i < nodes.Count && cells.Count < cfg.traps; i += 2)
+                            foreach (int dz in new[] { 0, 2, -2 })
+                            {
+                                var c = nodes[i] + new IntVec3(0, 0, dz);
+                                if (c.InBounds(map) && c.Standable(map) && c.GetFirstBuilding(map) == null && !cells.Contains(c)) cells.Add(c);
+                            }
+                    }
+            for (int i = 0; i < 400 && cells.Count < cfg.traps; i++)
+            {
+                var c = new IntVec3(center.x + 12 + rnd.Next(0, 24), 0, center.z + rnd.Next(-16, 17));
+                if (!c.InBounds(map) || !c.Standable(map) || c.GetFirstBuilding(map) != null || cells.Any(o => o.DistanceTo(c) < 2.5f)) continue;
+                cells.Add(c);
+            }
+            int n = 0;
+            foreach (var c in cells.Take(cfg.traps))
+            {
+                ThingDef d = (n % 2 == 0 ? ied : spike) ?? ied ?? spike;
+                if (d == null || !c.Standable(map)) continue;
+                try
+                {
+                    Thing t = ThingMaker.MakeThing(d, d.MadeFromStuff ? GenStuff.DefaultStuffFor(d) : null);
+                    t.SetFaction(Faction.OfPlayer);
+                    GenSpawn.Spawn(t, c, map);
+                    n++;
+                }
+                catch (Exception e) { notes += "trapFail=" + e.Message + " "; break; }
+            }
+            trapsAtStart = n;
+            notes += "traps=" + n + " ";
+        }
+
+        private int TrapsLeft() => map == null ? 0 : map.listerBuildings.allBuildingsColonist.Count(b => b is Building_Trap && b.Spawned);
         private long defenderSuppressedTicks, defenderHunkerTicks;
         private int withdrawStartTick = -1, lostAfterWithdraw;
         private readonly HashSet<int> throwsSeen = new HashSet<int>();   // CE opportunistic throws (ours and CE's own), by job id
@@ -1058,6 +1153,7 @@ namespace HSKTacticalAI
         private void RunTick(int now)
         {
             ticksRun++;
+            if (now % 60 == 0) LabDefenders.Tick(map, center, defenders, raiders, now);
             var tm = MapComponent_TacticalAI.For(map)?.Threat;
             if (tm != null)
             {
@@ -1292,6 +1388,47 @@ namespace HSKTacticalAI
                 ["wallMaxHp"] = trackedWallsMaxHp,
                 ["assaultPlanner"] = TacticalAIMod.Settings.assaultPlanner,
                 ["plan"] = AssaultPlanner.LastPlan?.Describe() ?? "",
+                ["competence"] = AssaultPlanner.LastPlan != null ? Math.Round(Competence.Of(AssaultPlanner.LastPlan), 3) : -1,
+                ["competenceBase"] = AssaultPlanner.LastPlan != null ? Math.Round(AssaultPlanner.LastPlan.competenceBase, 3) : -1,
+                ["competenceRoll"] = AssaultPlanner.LastPlan != null ? Math.Round(AssaultPlanner.LastPlan.competenceRoll, 3) : -1,
+                ["techCeiling"] = AssaultPlanner.LastPlan?.techCeiling ?? -1,
+                ["leaderIntel"] = AssaultPlanner.LastPlan != null ? Math.Round(AssaultPlanner.LastPlan.leaderIntel, 3) : -1,
+                ["competenceWhy"] = AssaultPlanner.LastPlan?.competenceWhy ?? "",
+                ["commandLost"] = AssaultPlanner.LastPlan?.commandLost ?? false,
+                ["doctrines"] = AssaultPlanner.LastPlan != null ? string.Join(" ", Enum.GetValues(typeof(Doctrine)).Cast<Doctrine>().Where(d => Competence.Knows(AssaultPlanner.LastPlan, d))) : "",
+                ["trapRatio"] = AssaultPlanner.LastPlan != null ? Math.Round(Competence.TrapRatio(AssaultPlanner.LastPlan), 3) : -1,
+                ["trapsAtStart"] = trapsAtStart,
+                ["trapsLeft"] = TrapsLeft(),
+                ["trapSprings"] = Competence.TrapSprings,
+                ["leaderSet"] = leaderNote,
+                ["gasHeld"] = Launchers.GasHeld,
+                ["funnelDoorShots"] = Launchers.FunnelDoorShots,
+                ["ammoSwitches"] = Launchers.AmmoSwitches,
+                ["gasRoundsSwapped"] = Launchers.GasRoundsSwapped,
+                ["shieldSidearmSwaps"] = LoadoutFix.SidearmSwaps,
+                ["shieldsStowed"] = LoadoutFix.ShieldsStowed,
+                ["gasCastsBlocked"] = Patch_NoGasCast.Blocked,
+                ["toxPacksHeld"] = Patch_ToxPackIndoorsOnly.Held,
+                ["siegeGuards"] = SiegeGuards.Guards,
+                ["siegeGuardMoves"] = SiegeGuards.PlacementJobs,
+                ["siegeGuardRotations"] = SiegeGuards.Rotations,
+                ["siegeGuardShots"] = SiegeGuards.Shots,
+                ["siegeDirectFirePlaced"] = Patch_DirectFireArtySpot.Placed,
+                ["siegeDirectFireNoSpot"] = Patch_DirectFireArtySpot.NoSpot,
+                ["siegeCampWithSight"] = SiegeGuards.SpotsWithSight,
+                ["siegeCampBlind"] = SiegeGuards.SpotsBlind,
+                ["siegeMarks"] = SiegeGuards.Marks,
+                ["cornerPosts"] = CornerFire.Posts,
+                ["siegeGunStructurePicks"] = Patch_SiegeGunStructureTarget.Picks,
+                ["siegeGunAnimalPicks"] = Patch_SiegeGunStructureTarget.AnimalPicks,
+                ["siegeShotChecksFailed"] = Patch_SiegeGunStructureTarget.ShotChecksFailed,
+                ["siegeGunTargetSearches"] = Patch_SiegeGunStructureTarget.Asked,
+                ["siegeGunsBuilt"] = map != null && raidFaction != null ? map.listerBuildings.allBuildingsNonColonist.Count(b => b.Faction == raidFaction && b is Building_Turret) : 0,
+                ["siegeGunsList"] = map != null && raidFaction != null ? string.Join(",", map.listerBuildings.allBuildingsNonColonist.Where(b => b.Faction == raidFaction && b is Building_Turret).Select(b => b.def.defName)) : "",
+                ["cornerShots"] = CornerFire.Shots,
+                ["breachWaveHolds"] = BreachWaves.Holds,
+                ["breachGapHolds"] = CornerFire.GapHolds,
+                ["siegeSpotterMoves"] = SiegeGuards.SpotterMoves,
                 ["contactSectors"] = firstContactBySector.Count,
                 ["contactSpreadTicks"] = firstContactBySector.Count > 1 ? firstContactBySector.Values.Max() - firstContactBySector.Values.Min() : 0,
                 ["firstContactBySector"] = firstContactBySector.ToDictionary(kv => (kv.Key * 60) + "deg", kv => kv.Value),
@@ -1315,6 +1452,37 @@ namespace HSKTacticalAI
                 ["toolsGiven"] = BreachKit.ToolsGiven,
                 ["smokeDeployed"] = BreachKit.SmokeDeployed,
                 ["defenderGearMode"] = cfg.defenderGear,
+                ["defenderMode"] = cfg.defenderMode,
+                ["fieldFightStarts"] = FieldFight.Starts,
+                ["adaptations"] = AssaultPlanner.Adaptations,
+                ["planReentryBlocked"] = AssaultPlanner.ReentryBlocked,
+                ["defenceBroken"] = AssaultPlanner.DefenceBroken,
+                ["fieldFightJobs"] = FieldFight.Jobs,
+                ["fieldFlanks"] = FieldFight.Flanks,
+                ["fieldCharges"] = FieldFight.Charges,
+                ["lobs"] = IndirectFire.Lobs,
+                ["launchersHeldOut"] = AssaultPlanner.LaunchersHeldOut,
+                ["breachShotsFromCover"] = AssaultPlanner.BreachShotsFromCover,
+                ["coverSpots"] = AssaultPlanner.CoverSpots,
+                ["coveredSpots"] = AssaultPlanner.CoveredSpots,
+                ["fieldToCover"] = FieldFight.ToCover,
+                ["cswTeams"] = CrewWeapons.Teams,
+                ["cswFaced"] = CrewWeapons.Faced,
+                ["cswCrewBehind"] = CrewWeapons.CrewBehind,
+                ["cswCoverPosts"] = JobGiver_HSKTAI_CSW.CoverPosts,
+                ["cswDeployed"] = CrewWeapons.Deployed,
+                ["cswAbandoned"] = CrewWeapons.Abandoned,
+                ["cswWaits"] = CrewWeapons.Waits,
+                ["cswGuns"] = CrewWeapons.Seen,
+                ["cswPlan"] = AssaultPlanner.LastPlan != null ? string.Join("; ", AssaultPlanner.LastPlan.csw.Select(t => t.Describe())) : "",
+                ["lobReloads"] = IndirectFire.Reloads,
+                ["lobNoTarget"] = IndirectFire.NoTarget,
+                ["defenderMoves"] = LabDefenders.Moves + LabDefenders.SallyMoves + LabDefenders.DoorMoves + LabDefenders.LoneMoves,
+                ["sallyMoves"] = LabDefenders.SallyMoves,
+                ["doorMoves"] = LabDefenders.DoorMoves,
+                ["loneMoves"] = LabDefenders.LoneMoves,
+                ["gapsManned"] = LabDefenders.GapsManned,
+                ["breachMeansStripped"] = LabDefenders.Stripped,
                 ["defenderSuppressedTicks"] = defenderSuppressedTicks,
                 ["defenderHunkerTicks"] = defenderHunkerTicks,
                 ["supportBursts"] = HSKTAI_Stats.SupportBursts,
@@ -1389,6 +1557,8 @@ namespace HSKTacticalAI
                 ["memorySwapDebug"] = FactionMemory.SwapDebug,
                 ["unarmedRearmed"] = JobGiver_HSKTAI_Unarmed.Rearmed,
                 ["unarmedKept"] = JobGiver_HSKTAI_Unarmed.Kept,
+                ["unarmedReserveMoves"] = JobGiver_HSKTAI_Unarmed.ReserveMoves,
+                ["nolbRescuesBlocked"] = Patch_NOLBNoRescueIntoFire.Blocked,
                 ["satisfiedHeldTicks"] = SatisfiedHold.HeldTicks,
                 ["satisfiedReleases"] = SatisfiedHold.Releases,
                 ["satisfiedRelease"] = SatisfiedHold.LastRelease,
@@ -1405,6 +1575,21 @@ namespace HSKTacticalAI
                 ["meleeIntercepts"] = Micro.Intercepts,
                 ["meleeSideApproaches"] = Micro.SideApproaches,
                 ["kites"] = Micro.Kites,
+                ["rangeBackSteps"] = RangeBand.BackSteps,
+                ["raidGoal"] = AssaultPlanner.LastPlan != null ? AssaultPlanner.LastPlan.goal.ToString() : "",
+                ["raidGoalWhy"] = AssaultPlanner.LastPlan?.goalWhy ?? "",
+                ["goalLeaveWhy"] = RaidGoals.LastLeaveWhy,
+                ["goalJobs"] = RaidGoals.GoalJobs,
+                ["ambushes"] = RaidGoals.Ambushes,
+                ["scoutObserved"] = AssaultPlanner.LastPlan?.observedTicks ?? 0,
+                ["scoutPostsWithSight"] = AssaultPlanner.LastPlan?.scoutPostsWithSight ?? 0,
+                ["breachGearCarriers"] = BreachKit.GearCarriers,
+                ["breachGear"] = AssaultPlanner.LastPlan?.breachGear ?? "",
+                ["animalsKilledJobs"] = Plunder.KillJobs,
+                ["burnJobs"] = Plunder.BurnJobs,
+                ["rangeCloseIns"] = RangeBand.CloseIns,
+                ["meleeCharges"] = RangeBand.MeleeCharges,
+                ["rangeBands"] = string.Join(" ", RangeBand.Seen.Select(kv => kv.Key + "=" + kv.Value)),
                 ["raidingPartyMembers"] = JobGiver_HSKTAI_RaidingParty.Members,
                 ["raidingPartyJobs"] = JobGiver_HSKTAI_RaidingParty.Jobs,
                 ["ducks"] = Evasion.Ducks,

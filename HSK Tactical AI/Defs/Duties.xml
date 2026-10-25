@@ -10,6 +10,9 @@
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Evade" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Retreat" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Unarmed" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_KeepRange" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_FieldFight" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_IndirectFire" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_RaidingParty" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Throw" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Medic" />
@@ -44,6 +47,8 @@
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Retreat" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Throw" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Medic" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_FieldFight" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_IndirectFire" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Support" />
         <li Class="JobGiver_AIFightEnemies">
           <targetAcquireRadius>65</targetAcquireRadius>
@@ -61,6 +66,39 @@
       <subNodes>
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Throw" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Withdraw" />
+      </subNodes>
+    </thinkNode>
+  </DutyDef>
+
+  <!-- Siege camp guard (0.2): a post in cover facing the defenders by role (SiegeGuards), else vanilla's Defend. -->
+  <DutyDef>
+    <defName>HSKTAI_SiegeGuard</defName>
+    <alwaysShowWeapon>true</alwaysShowWeapon>
+    <thinkNode Class="ThinkNode_Priority">
+      <subNodes>
+        <li Class="CombatExtended.JobGiver_DefenderReloadTurret" MayRequire="CETeam.CombatExtended" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_Evade" />
+        <li Class="JobGiver_TakeCombatEnhancingDrug">
+          <onlyIfInDanger>true</onlyIfInDanger>
+        </li>
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_IndirectFire" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_SiegeGuard" />
+        <li Class="JobGiver_AIDefendPoint">
+          <targetAcquireRadius>86</targetAcquireRadius>
+          <targetKeepRadius>93</targetKeepRadius>
+        </li>
+        <li Class="ThinkNode_ForbidOutsideFlagRadius">
+          <maxDistToSquadFlag>45</maxDistToSquadFlag>
+          <subNodes>
+            <li Class="ThinkNode_Subtree">
+              <treeDef>SatisfyBasicNeedsAndWork</treeDef>
+            </li>
+          </subNodes>
+        </li>
+        <li Class="JobGiver_WanderNearDutyLocation">
+          <wanderRadius>12</wanderRadius>
+          <locomotionUrgencyOutsideRadius>Sprint</locomotionUrgencyOutsideRadius>
+        </li>
       </subNodes>
     </thinkNode>
   </DutyDef>
@@ -93,6 +131,9 @@
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Shield" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_FunnelCaution" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Plunder" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_KeepRange" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_FieldFight" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_IndirectFire" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Melee" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_AssaultFire" />
         <li Class="JobGiver_TakeCombatEnhancingDrug">
@@ -109,4 +150,67 @@
     </thinkNode>
   </DutyDef>
 
+
+  <!-- Scout raid (0.2): covered route to an observation post, watch without firing, fight back only when hit, then leave. -->
+  <DutyDef>
+    <defName>HSKTAI_Scout</defName>
+    <alwaysShowWeapon>true</alwaysShowWeapon>
+    <thinkNode Class="ThinkNode_Priority">
+      <subNodes>
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_Evade" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_Retreat" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_KeepRange" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_Scout" />
+        <li Class="JobGiver_AIFightEnemies">
+          <targetAcquireRadius>30</targetAcquireRadius>
+          <targetKeepRadius>35</targetKeepRadius>
+        </li>
+        <li Class="JobGiver_WanderNearDutyLocation">
+          <wanderRadius>3</wanderRadius>
+        </li>
+      </subNodes>
+    </thinkNode>
+  </DutyDef>
+
+  <!-- Sabotage raid (0.2): fires, livestock out of the defenders' fire, a colonist alone outside; then leave. -->
+  <DutyDef>
+    <defName>HSKTAI_Sabotage</defName>
+    <alwaysShowWeapon>true</alwaysShowWeapon>
+    <thinkNode Class="ThinkNode_Priority">
+      <subNodes>
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_Evade" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_Retreat" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_KeepRange" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_FieldFight" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_Sabotage" />
+        <li Class="JobGiver_AIFightEnemies">
+          <targetAcquireRadius>30</targetAcquireRadius>
+          <targetKeepRadius>35</targetKeepRadius>
+        </li>
+        <li Class="JobGiver_WanderNearDutyLocation">
+          <wanderRadius>8</wanderRadius>
+        </li>
+      </subNodes>
+    </thinkNode>
+  </DutyDef>
+
+  <!-- Crew-served weapon (0.2): carry it packed to the post together, set up, man it; the bearers reload it from their packs. -->
+  <DutyDef>
+    <defName>HSKTAI_CSW</defName>
+    <alwaysShowWeapon>true</alwaysShowWeapon>
+    <thinkNode Class="ThinkNode_Priority">
+      <subNodes>
+        <li Class="CombatExtended.JobGiver_DefenderReloadTurret" MayRequire="CETeam.CombatExtended" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_Evade" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_CSW" />
+        <li Class="JobGiver_AIFightEnemies">
+          <targetAcquireRadius>30</targetAcquireRadius>
+          <targetKeepRadius>35</targetKeepRadius>
+        </li>
+        <li Class="JobGiver_WanderNearDutyLocation">
+          <wanderRadius>3</wanderRadius>
+        </li>
+      </subNodes>
+    </thinkNode>
+  </DutyDef>
 </Defs>
