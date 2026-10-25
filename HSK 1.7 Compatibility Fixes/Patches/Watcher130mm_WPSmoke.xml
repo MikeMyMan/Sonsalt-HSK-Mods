@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!--
+    New 130 mm Rocket Missiles (HSK.Watcher.content.New130mmRocketMissiles): WhitePhosphorus_Smoke inherits category Gas
+    from its parent but is a ThingWithComps (it needs its heat pusher and lifespan comps). Combat Extended casts every
+    gas-category thing on a line of fire to RimWorld.Gas, so each turret or mortar line check through the smoke throws
+    InvalidCastException and breaks that turret's tick (Lab sieges: 476 to 2,033 errors per siege). Ethereal keeps the
+    smoke burning, heating and expiring as before, but out of the gas checks. Remove once the mod fixes the def.
+  -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="WhitePhosphorus_Smoke"]/category</xpath>
+    <match Class="PatchOperationReplace">
+      <xpath>Defs/ThingDef[defName="WhitePhosphorus_Smoke"]/category</xpath>
+      <value><category>Ethereal</category></value>
+    </match>
+    <nomatch Class="PatchOperationConditional">
+      <xpath>Defs/ThingDef[defName="WhitePhosphorus_Smoke"]</xpath>
+      <match Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="WhitePhosphorus_Smoke"]</xpath>
+        <value><category>Ethereal</category></value>
+      </match>
+    </nomatch>
+  </Operation>
+</Patch>
