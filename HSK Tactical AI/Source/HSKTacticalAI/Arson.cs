@@ -33,12 +33,12 @@ namespace HSKTacticalAI
         private static bool Flammable(Thing t) => t.GetStatValue(StatDefOf.Flammability) >= 0.5f;
 
         /// <summary>Choose sites and arsonists for a plan (once, at planning).</summary>
-        public static void Plan(Map map, AssaultPlan plan, List<Pawn> pawns)
+        public static void Plan(Map map, AssaultPlan plan, List<Pawn> pawns, int wantOverride = -1, bool anySize = false)
         {
             var s = TacticalAIMod.Settings;
             plan.arsonSites.Clear();
             plan.arsonistOf.Clear();
-            if (!s.arson || pawns.Count < s.arsonMinRaid) return;
+            if (!s.arson || (!anySize && pawns.Count < s.arsonMinRaid)) return;
             if (map.weatherManager.RainRate > 0.3f) return;   // rain puts it out
             var tm = MapComponent_TacticalAI.For(map)?.Threat;
             bool haveThreat = tm != null && tm.CompletedCycles > 0;
@@ -74,7 +74,7 @@ namespace HSKTacticalAI
                 }
                 if (site.approach.IsValid) sites.Add(site);
             }
-            int want = Mathf.Min(s.arsonSites, Mathf.Max(1, pawns.Count / 5));
+            int want = wantOverride > 0 ? wantOverride : Mathf.Min(s.arsonSites, Mathf.Max(1, pawns.Count / 5));
             // many places at once: big clusters, far from the defenders (a diversion), different directions
             foreach (var site in sites.OrderByDescending(x => x.targets.Count + x.center.DistanceTo(plan.objective) * 0.2f))
             {

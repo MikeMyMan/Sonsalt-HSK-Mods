@@ -169,8 +169,14 @@ namespace HSKTacticalAI
             }
             Learned++;
             mem.intel = Mathf.Clamp01(mem.intel + 0.2f + 0.1f * Mathf.Min(3, escaped));
-            if (failed) mem.AddFail(plan.mode, 0.6f);
-            else if (success) mem.AddFail(plan.mode, -0.3f);
+            // scouts and saboteurs came for something else: no lesson about the approach; scouts who watched long bring more
+            if (plan.mode == PlanMode.Scout)
+                mem.intel = Mathf.Clamp01(mem.intel + 0.3f * Mathf.Clamp01(plan.observedTicks / (float)Mathf.Max(1, s.scoutObserveTicks)));
+            else if (plan.mode != PlanMode.Sabotage)
+            {
+                if (failed) mem.AddFail(plan.mode, 0.6f);
+                else if (success) mem.AddFail(plan.mode, -0.3f);
+            }
             foreach (var c in plan.downedBy.Values)
             {
                 switch (c)

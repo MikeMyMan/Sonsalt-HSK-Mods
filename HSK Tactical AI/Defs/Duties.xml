@@ -143,4 +143,46 @@
     </thinkNode>
   </DutyDef>
 
+
+  <!-- Scout raid (0.2): covered route to an observation post, watch without firing, fight back only when hit, then leave. -->
+  <DutyDef>
+    <defName>HSKTAI_Scout</defName>
+    <alwaysShowWeapon>true</alwaysShowWeapon>
+    <thinkNode Class="ThinkNode_Priority">
+      <subNodes>
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_Evade" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_Retreat" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_KeepRange" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_Scout" />
+        <li Class="JobGiver_AIFightEnemies">
+          <targetAcquireRadius>30</targetAcquireRadius>
+          <targetKeepRadius>35</targetKeepRadius>
+        </li>
+        <li Class="JobGiver_WanderNearDutyLocation">
+          <wanderRadius>3</wanderRadius>
+        </li>
+      </subNodes>
+    </thinkNode>
+  </DutyDef>
+
+  <!-- Sabotage raid (0.2): fires, livestock out of the defenders' fire, a colonist alone outside; then leave. -->
+  <DutyDef>
+    <defName>HSKTAI_Sabotage</defName>
+    <alwaysShowWeapon>true</alwaysShowWeapon>
+    <thinkNode Class="ThinkNode_Priority">
+      <subNodes>
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_Evade" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_Retreat" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_KeepRange" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_Sabotage" />
+        <li Class="JobGiver_AIFightEnemies">
+          <targetAcquireRadius>30</targetAcquireRadius>
+          <targetKeepRadius>35</targetKeepRadius>
+        </li>
+        <li Class="JobGiver_WanderNearDutyLocation">
+          <wanderRadius>8</wanderRadius>
+        </li>
+      </subNodes>
+    </thinkNode>
+  </DutyDef>
 </Defs>

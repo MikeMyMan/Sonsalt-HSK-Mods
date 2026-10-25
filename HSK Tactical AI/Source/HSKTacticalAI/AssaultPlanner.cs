@@ -10,7 +10,7 @@ using Verse.AI.Group;
 
 namespace HSKTacticalAI
 {
-    public enum PlanMode { Walk, Breach, Siege, Standoff }
+    public enum PlanMode { Walk, Breach, Siege, Standoff, Scout, Sabotage }
     public enum PlanPhase { Approach, Assault, Converted, Withdraw }
 
     /// <summary>One raid's plan: envelopment from several directions, synchronised assault (design 3.8).</summary>
@@ -41,6 +41,15 @@ namespace HSKTacticalAI
         public int lastBreachProgressTick = -1, lastBreachDamage, breachReplans;
         public int firstReadyTick = -1, goTick = -1, firstThroughTick = -1;
         public readonly HashSet<Pawn> entered = new HashSet<Pawn>();
+
+        // raid goal (0.2): assault, scout or sabotage (RaidGoals); breach gear brought for an assault (BreachKit.EnsureMeans)
+        public RaidGoal goal = RaidGoal.Assault;
+        public string goalWhy = "", goalLeaveWhy = "", breachGear = "";
+        public int goalEndTick = -1, lastGoalJobTick = -1, observedTicks, scoutPostsWithSight;
+        public Pawn ambushTarget;
+        public readonly List<IntVec3> scoutPosts = new List<IntVec3>();
+        public readonly List<IntVec3> seeingPosts = new List<IntVec3>();
+        public readonly Dictionary<Pawn, List<IntVec3>> goalRouteOf = new Dictionary<Pawn, List<IntVec3>>();
 
         // force ratio (attackers : fortified defenders)
         public float forceRatio = -1f, requiredRatio = -1f;
@@ -124,6 +133,7 @@ namespace HSKTacticalAI
                 ? " axes=" + axes.Count + " [" + string.Join(" ", axes.Select(a => Mathf.RoundToInt(AssaultPlanner.Bearing(objective, a)) + "deg/" + Mathf.RoundToInt(a.DistanceTo(objective)) + "c")) + "] routeExposure=" + routeExposure.ToString("0.0")
                 : mode == PlanMode.Breach ? " breaches=" + breaches.Count + " [" + string.Join("; ", breaches.Select(b => b.Describe())) + "]" : "") +
             " objective=" + objective + " [" + capability + "]" +
+            (goalWhy.Length > 0 ? " goal=" + goalWhy : "") +
             (roleOf.Count > 0 ? " roles[" + RaidRoles.Describe(this) + "]" : "") +
             (arsonSites.Count > 0 ? " arson[" + string.Join(" ", arsonSites.Select(a => a.Describe())) + "]" : "") +
             (forceRatio >= 0f ? " force " + forceRatio.ToString("0.00") + " vs " + requiredRatio.ToString("0.00") : "") +
@@ -174,6 +184,7 @@ namespace HSKTacticalAI
             foreach (var x in pawns) { sx += x.Position.x; sz += x.Position.z; }
             plan.gather = new IntVec3(sx / pawns.Count, 0, sz / pawns.Count);
             if (!plan.gather.Standable(map)) plan.gather = pawns[0].Position;
+            plan.goal = RaidGoals.Roll(lord, plan, pawns, out plan.goalWhy);
             // every route this raid plans reads the threat map as far and as well as its command can
             using (Competence.Perceive(plan, plan.gather)) return Build(lord, plan, pawns, map);
         }
@@ -187,6 +198,15 @@ namespace HSKTacticalAI
             LoadoutFix.Apply(pawns);        // shield + a gun it blocks: one-handed sidearm, else the shield into the pack
             Launchers.SwapGasAmmo(pawns);   // gas-only launchers take explosive rounds (before the breach planning counts launchers)
             plan.objective = Objective(map, plan.gather);
+            if (plan.goal != RaidGoal.Assault)
+            {
+                // scouting and sabotage need no way in (playtest 2026-10-25)
+                RaidGoals.Plan(lord, plan, pawns, map);
+                plan.defendersAtStart = Suppression.Defenders(map, plan.objective, 40f).Count;
+                RaidRoles.Assign(plan, pawns);
+                Log(plan);
+                return plan;
+            }
             bool avoidFunnels = s0.avoidFunnels && Competence.Knows(plan, Doctrine.AvoidFunnels);
 
             var walk = TraverseParms.For(TraverseMode.NoPassClosedDoors, Danger.Deadly);
@@ -565,6 +585,7 @@ namespace HSKTacticalAI
             Map map = lord.Map;
             var s = TacticalAIMod.Settings;
             BreachKit.EquipOnce(lord, force: true);
+            BreachKit.EnsureMeans(lord, plan, pawns);   // a raid out to breach never comes without the means (playtest 2026-10-25)
             ClearBreaches(plan);
             var tm = MapComponent_TacticalAI.For(map)?.Threat;
 
@@ -583,7 +604,7 @@ namespace HSKTacticalAI
             int charges = pool.Sum(p => BreachKit.CarriedCharge(p)?.stackCount ?? 0);
             int launchers = pool.Count(p => DestructiveRangedVerb(p) != null);
             int tools = pool.Count(p => HasBreachTool(p));
-            plan.capability = "charges " + charges + ", launchers " + launchers + ", tools " + tools + (rock ? ", rock" : "");
+            plan.capability = "charges " + charges + ", launchers " + launchers + ", tools " + tools + (rock ? ", rock" : "") + (plan.breachGear.Length > 0 ? ", brought " + plan.breachGear : "");
 
             // ... competes with breach points from every side: breach where the defence isn't facing (flank / rear),
             // and from several sides at once
@@ -1233,6 +1254,7 @@ namespace HSKTacticalAI
             foreach (Pawn p in lord.ownedPawns)
             {
                 if (p.mindState == null) continue;
+                if (plan.mode == PlanMode.Scout || plan.mode == PlanMode.Sabotage) { RaidGoals.Duty(plan, p); continue; }
                 if (plan.mode == PlanMode.Breach && !plan.breachOf.ContainsKey(p) && plan.breaches.Count > 0)
                 {
                     // reinforcements / late joiners: the smallest active group
@@ -1442,6 +1464,7 @@ namespace HSKTacticalAI
                     lord.CurLordToil?.UpdateAllDuties();
                     continue;
                 }
+                if (plan.mode == PlanMode.Scout || plan.mode == PlanMode.Sabotage) { RaidGoals.Tick(map, lord, plan, alive, now); continue; }
 
                 // walk-mode assault bleeding out (e.g. in a killbox entrance): pull back and make new entrances
                 if (plan.phase == PlanPhase.Assault && plan.mode == PlanMode.Walk && !plan.replanned && s.avoidFunnels && Competence.Knows(plan, Doctrine.AvoidFunnels)

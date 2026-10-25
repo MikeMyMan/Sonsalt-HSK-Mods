@@ -208,6 +208,14 @@ namespace HSKTacticalAI
         public bool cornerFire = true;               // open breach: gunners lean out from the wall ends beside the hole and fire in before going in
         public bool gasAmmoSwap = true;              // launchers with only gas rounds swap 75 % of them for the explosive round of the same ammo set
         public bool keepRange = true;                // each weapon at its own distance: bows and long guns back off, short guns close in, melee closes in
+        public bool breachGear = true;               // a raid out to breach that has nothing of its own: 1-3 raiders carry the tech level's breaching kit
+        public bool raidGoals = true;                // some raids come to scout or to sabotage instead of to assault
+        public float scoutShare = 0.10f;             // base weight of a scouting raid (assault = 1)
+        public float sabotageShare = 0.15f;          // base weight of a sabotage raid
+        public int scoutObserveTicks = 2500;         // a scouting party watches this long, then leaves
+        public int sabotageTicks = 6000;             // a sabotage raid leaves after this long at the latest
+        public int sabotageIdleTicks = 1500;         // ... or once it has found nothing to wreck for this long
+        public string raidGoalOverride = "";        // AI Lab only (not saved): assault | scout | sabotage
         public int cornerHoldTicks = 1800;           // ... and clearing the gap by fire before entry: at most this long after H-hour
 
         public override void ExposeData()
@@ -384,6 +392,13 @@ namespace HSKTacticalAI
             Scribe_Values.Look(ref cornerFire, "cornerFire", true);
             Scribe_Values.Look(ref gasAmmoSwap, "gasAmmoSwap", true);
             Scribe_Values.Look(ref keepRange, "keepRange", true);
+            Scribe_Values.Look(ref breachGear, "breachGear", true);
+            Scribe_Values.Look(ref raidGoals, "raidGoals", true);
+            Scribe_Values.Look(ref scoutShare, "scoutShare", 0.10f);
+            Scribe_Values.Look(ref sabotageShare, "sabotageShare", 0.15f);
+            Scribe_Values.Look(ref scoutObserveTicks, "scoutObserveTicks", 2500);
+            Scribe_Values.Look(ref sabotageTicks, "sabotageTicks", 6000);
+            Scribe_Values.Look(ref sabotageIdleTicks, "sabotageIdleTicks", 1500);
             Scribe_Values.Look(ref cornerHoldTicks, "cornerHoldTicks", 1800);
         }
 
@@ -479,6 +494,15 @@ namespace HSKTacticalAI
             l.CheckboxLabeled("Burn wooden walls", ref fireBreaching, "Raiders set wooden walls on fire instead of blowing them.");
             l.CheckboxLabeled("Explosive rounds instead of gas", ref gasAmmoSwap, "Raiders whose launcher carries only gas rounds (the waster heavies' 40 mm tox grenades) swap three quarters of them for the explosive round of the same calibre - one for one, no extra gear. Gas only works in an enclosed room; they keep a quarter for that.");
             l.CheckboxLabeled("Keep the weapon's range", ref keepRange, "Each raider fights at its weapon's distance: bowmen and long guns (rifles, more so snipers) step back when you get too close, pistols and SMGs close in before they shoot, melee raiders go for anyone near them in the open. Part of tactical competence: a dull raid fights from wherever it stands.");
+            l.CheckboxLabeled("Raids bring breaching gear", ref breachGear, "A raid that has to break in and carries nothing that opens a wall brings it: one raider in eight (1-3) carries the kit of the faction's tech level - a breach axe for tribes, stick bombs for medieval factions, breach charges for industrial ones, more charges and a mining charge for spacers. On top of the loadout; independent of \"extra equipment\".");
+            l.CheckboxLabeled("Scouting and sabotage raids", ref raidGoals, "Some raids don't come to take the colony. Scouts watch it from cover out of your fire and leave (survivors tell their faction more about you). Saboteurs set fires, kill livestock out of your fire, jump a colonist who is alone outside and leave before your defence turns out. Weak raids harass more often, strong raids attack; factions that know little of you scout first.");
+            if (raidGoals)
+            {
+                l.Label("Scouting raids (weight vs 1 for an assault): " + scoutShare.ToString("0.00"));
+                scoutShare = l.Slider(scoutShare, 0f, 1f);
+                l.Label("Sabotage raids (weight vs 1 for an assault): " + sabotageShare.ToString("0.00"));
+                sabotageShare = l.Slider(sabotageShare, 0f, 1f);
+            }
             l.CheckboxLabeled("Corner fire at the breach", ref cornerFire, "When a wall opens, gunners take the corners beside the hole on their side of the wall and lean out to fire through it at the defenders inside - covered by the wall - before they go in (at most about 10 s).");
             l.CheckboxLabeled("Shield wall", ref shieldTactics, "Raiders with ballistic or body shields lead the assault straight at the defenders; two gunners follow behind each shield and shoot past it. Through a breach the shield goes first.");
             l.CheckboxLabeled("Fire discipline", ref fireDoctrine, "Raiders choose aimed or snap shots and single, burst or full-auto fire by range and situation: aimed single shots at long range, aimed bursts at medium range, snap bursts up close, full auto in close quarters and to suppress defenders in cover. Marksmen always take aimed single shots; machine guns fire bursts.");

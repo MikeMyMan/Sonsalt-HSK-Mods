@@ -24,6 +24,8 @@ namespace HSKTacticalAI
         public static DutyDef HSKTAI_Withdraw;
         public static DutyDef HSKTAI_Arson;
         public static DutyDef HSKTAI_SiegeGuard;
+        public static DutyDef HSKTAI_Scout;
+        public static DutyDef HSKTAI_Sabotage;
         static TAI_DefOf() { DefOfHelper.EnsureInitializedInCtor(typeof(TAI_DefOf)); }
     }
 
@@ -55,37 +57,87 @@ namespace HSKTacticalAI
             // prefer pawns without a gun (they would melee the wall anyway), then the toughest
             var order = pawns.OrderBy(p => p.equipment?.Primary != null && p.equipment.Primary.def.IsRangedWeapon ? 1 : 0)
                              .ThenByDescending(p => p.skills?.GetSkill(SkillDefOf.Melee)?.Level ?? 0).ToList();
-            for (int i = 0; i < specialists && i < order.Count; i++)
+            for (int i = 0; i < specialists && i < order.Count; i++) GiveKit(order[i], tech, s);
+        }
+
+        /// <summary>The breaching kit of a tech level: crude tools, then simple explosives, then charges (spacer: more, and a mining charge).</summary>
+        private static string GiveKit(Pawn p, TechLevel tech, TacticalAISettings s)
+        {
+            if (tech >= TechLevel.Industrial)
             {
-                Pawn p = order[i];
-                if (tech >= TechLevel.Industrial)
+                int n = s.chargesPerSpecialist + (tech >= TechLevel.Spacer ? 2 : 0);
+                Thing c = ThingMaker.MakeThing(TAI_DefOf.HSKTAI_BreachCharge);
+                c.stackCount = n;
+                if (!p.inventory.innerContainer.TryAdd(c)) return null;
+                ChargesGiven += n;
+                if (tech >= TechLevel.Spacer && TAI_DefOf.HSKTAI_MiningCharge != null)
                 {
-                    Thing c = ThingMaker.MakeThing(TAI_DefOf.HSKTAI_BreachCharge);
-                    c.stackCount = s.chargesPerSpecialist;
-                    if (p.inventory.innerContainer.TryAdd(c)) ChargesGiven += s.chargesPerSpecialist;
+                    Thing m = ThingMaker.MakeThing(TAI_DefOf.HSKTAI_MiningCharge);
+                    if (p.inventory.innerContainer.TryAdd(m)) MiningChargesGiven++;
+                    return n + " breach charges + a mining charge";
                 }
-                else if (tech >= TechLevel.Medieval)
-                {
-                    // HSK medieval breachers carry stick bombs / Odin hammers (thrown, Bomb x4 vs walls)
-                    GiveThrown(p, "CE_Weapon_GrenadeStickBomb", "Norbhammar", s.thrownPerSpecialist);
-                }
-                else
-                {
-                    GiveTool(p, "MeleeWeapon_BreachAxe", true);   // Demolish x7.5 vs walls, x10 vs doors; the bow goes in the pack (tl1: bows kept the kit to 1 axe)
-                }
+                return n + " breach charges";
             }
+            if (tech >= TechLevel.Medieval)
+            {
+                // HSK medieval breachers carry stick bombs / Odin hammers (thrown, Bomb x4 vs walls); a bowman or crossbowman
+                // (who keeps his gun) takes a breach axe instead and slings the bow
+                string thrown = GiveThrown(p, "CE_Weapon_GrenadeStickBomb", "Norbhammar", s.thrownPerSpecialist);
+                if (thrown != null) return thrown;
+            }
+            return GiveTool(p, "MeleeWeapon_BreachAxe", true);   // Demolish x7.5 vs walls, x10 vs doors; the bow goes in the pack (tl1: bows kept the kit to 1 axe)
+        }
+
+        public static int GearCarriers;
+        private static readonly HashSet<int> meansChecked = new HashSet<int>();
+        private static readonly Dictionary<int, string> gearOf = new Dictionary<int, string>();   // lord -> what it brought (a re-made plan keeps the note)
+
+        /// <summary>Anything of its own that opens a wall: a charge, a wall-breaking launcher round, thrown explosives, a breach or digging tool.</summary>
+        public static bool OwnMeans(Pawn p) =>
+            CarriedCharge(p) != null || CarriedMiningCharge(p) != null || AssaultPlanner.DestructiveRangedVerb(p) != null || AssaultPlanner.HasBreachTool(p)
+            || OwnMiningGain(p) >= 1.3f || Grenades.CarriedFrag(p) != null || (p.equipment?.Primary != null && Grenades.IsFrag(p.equipment.Primary.def));
+
+        /// <summary>
+        /// A raid out to breach brings the means (playtest 2026-10-25: "units would not engage a settlement without any means
+        /// of breaching it ... at least one attacker needs to have it"): with nothing of its own, one raider per eight
+        /// (1-3) carries the kit of the faction's tech level - on top of the loadout, independent of "extra equipment".
+        /// </summary>
+        public static void EnsureMeans(Lord lord, AssaultPlan plan, List<Pawn> pawns)
+        {
+            var s = TacticalAIMod.Settings;
+            if (s == null || !s.breachGear || lord?.faction == null || plan == null || plan.goal != RaidGoal.Assault) return;
+            if (equippedLords.Contains(lord.loadID)) return;   // the full kit (extra equipment) or already checked
+            if (!meansChecked.Add(lord.loadID)) { if (gearOf.TryGetValue(lord.loadID, out string had)) plan.breachGear = had; return; }
+            if (Find.TickManager.TicksGame - plan.createdTick > 120) return;   // at planning only: gear doesn't appear mid-fight
+            var people = pawns.Where(p => p.RaceProps.Humanlike && !p.Downed && p.inventory != null && p.equipment != null && !p.WorkTagIsDisabled(WorkTags.Violent)).ToList();
+            if (people.Count == 0) return;
+            if (people.Any(OwnMeans)) { plan.breachGear = ""; return; }
+            int n = UnityEngine.Mathf.Clamp(UnityEngine.Mathf.CeilToInt(people.Count / 8f), 1, 3);
+            TechLevel tech = lord.faction.def.techLevel;
+            var order = people.OrderBy(p => p.equipment.Primary != null && p.equipment.Primary.def.IsRangedWeapon ? 1 : 0)
+                              .ThenByDescending(p => p.skills?.GetSkill(SkillDefOf.Melee)?.Level ?? 0).ToList();
+            var given = new List<string>();
+            for (int i = 0; i < n && i < order.Count; i++)
+            {
+                string what = GiveKit(order[i], tech, s);
+                if (what == null) continue;
+                GearCarriers++;
+                given.Add(what);
+            }
+            plan.breachGear = given.Count == 0 ? "" : given.Count + " carrier" + (given.Count > 1 ? "s" : "") + " (" + string.Join("; ", given.Distinct()) + ")";
+            gearOf[lord.loadID] = plan.breachGear;
         }
 
         public static int ThrownGiven;
 
         /// <summary>A thrown breaching weapon (stick bombs): one equipped, the rest in the pockets. Never replaces a gun.</summary>
-        private static void GiveThrown(Pawn p, string defName, string fallback, int count)
+        private static string GiveThrown(Pawn p, string defName, string fallback, int count)
         {
-            if (p.equipment == null || p.inventory == null) return;
+            if (p.equipment == null || p.inventory == null) return null;
             var primary = p.equipment.Primary;
-            if (primary != null && primary.def.IsRangedWeapon) return;
+            if (primary != null && primary.def.IsRangedWeapon) return null;
             ThingDef def = DefDatabase<ThingDef>.GetNamedSilentFail(defName) ?? DefDatabase<ThingDef>.GetNamedSilentFail(fallback);
-            if (def == null) { GiveTool(p, "MeleeWeapon_BreachAxe"); return; }
+            if (def == null) return GiveTool(p, "MeleeWeapon_BreachAxe");
             if (primary != null) p.equipment.DestroyEquipment(primary);
             p.equipment.AddEquipment((ThingWithComps)ThingMaker.MakeThing(def));
             if (count > 1 && def.stackLimit > 1)
@@ -95,24 +147,26 @@ namespace HSKTacticalAI
                 p.inventory.innerContainer.TryAdd(rest);
             }
             ThrownGiven += count;
+            return count + " " + def.label;
         }
 
-        private static void GiveTool(Pawn p, string defName, bool stowGun = false)
+        private static string GiveTool(Pawn p, string defName, bool stowGun = false)
         {
-            if (p.equipment == null) return;
+            if (p.equipment == null) return null;
             var primary = p.equipment.Primary;
             if (primary != null && primary.def.IsRangedWeapon)
             {
                 // never take a gun away - except a tribal breacher, who stows the bow in the pack (it stays there)
-                if (!stowGun || p.inventory == null || !p.equipment.TryTransferEquipmentToContainer(primary, p.inventory.innerContainer)) return;
+                if (!stowGun || p.inventory == null || !p.equipment.TryTransferEquipmentToContainer(primary, p.inventory.innerContainer)) return null;
                 primary = null;
             }
             ThingDef def = DefDatabase<ThingDef>.GetNamedSilentFail(defName) ?? DefDatabase<ThingDef>.GetNamedSilentFail("MeleeWeapon_BreachAxe");
-            if (def == null) return;
+            if (def == null) return null;
             if (primary != null) p.equipment.DestroyEquipment(primary);
             var tool = (ThingWithComps)ThingMaker.MakeThing(def, def.MadeFromStuff ? GenStuff.DefaultStuffFor(def) : null);
             p.equipment.AddEquipment(tool);
             ToolsGiven++;
+            return def.label;
         }
 
         public static int MiningToolsGiven;

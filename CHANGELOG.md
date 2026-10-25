@@ -68,6 +68,31 @@ raid using every tactic.
   medieval raids without explosives stood off before).
 - Building-destroying launchers (the M79 and the like) now also take your doors as breach points. In a funnel, a
   launcher shoots the door when the defender behind it can't be seen.
+- **A raid out to break in brings the means** (playtest: "units would not engage a settlement without any means of
+  breaching it"). If none of its raiders carries anything that opens a wall (a charge, a wall-breaking launcher round,
+  grenades, a breach or digging tool), one raider in eight (1 to 3) brings the kit of the faction's tech level:
+  - tribes: a breach axe;
+  - medieval factions: stick bombs, or a breach axe for a bowman;
+  - industrial factions: breach charges;
+  - spacer factions: more charges and a mining charge.
+  This comes on top of the loadout and doesn't depend on "extra equipment". Raids that can walk in, scout or
+  sabotage bring none. Setting: "Raids bring breaching gear".
+
+**Raids with other goals** (playtest: "other attacks where it is about sieging or scouting or sabotage etc where
+breaching is not needed"):
+- **Scouting raids:** a small party walks a covered route to posts 32-48 cells out, in cover and in sight of your
+  base, and watches without firing. It leaves once it has seen enough, as soon as it is shot at or loses a man, or
+  when its time runs out. Survivors give their faction up to 30 % more intel than other raids (raid memory).
+- **Sabotage raids:** they set fires (one site per three raiders), shoot your livestock where your fire doesn't reach,
+  and go for a colonist who is alone outside, with no one else within 15 cells and no roof over him. They leave when
+  there is nothing left to wreck, when your defence turns out, after a quarter of them are down, or when their time
+  runs out.
+- Each raid rolls its goal. Assault weighs 1; scouting 0.10 and sabotage 0.15 by default. A raid well under even odds
+  harasses about three times as often. A strong raid mostly attacks. A faction that knows little of you scouts twice
+  as often, and a raid of more than 12 rarely scouts. Mechanoids, insects and animals always attack.
+  Sieges stay as before.
+- Neither goal teaches the faction anything about its approach (raid memory).
+  Setting: "Scouting and sabotage raids", with the two weights.
 
 **Clear the breach by fire, then go in** (playtest: "better to be outside, cover the breach from cover and shoot inside
 until there is no more enemy to shoot at, then slowly approach"): once a wall is open, nobody goes through while a
