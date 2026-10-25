@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <!-- Generated blueprint defs -->
+  <WBS_BlueprintLabel>{WEAPON} blueprint</WBS_BlueprintLabel>
+  <WBS_BlueprintDesc>Technical drawings and assembly notes for the {WEAPON} ({TECH}). Studying it teaches the colony to craft this weapon. Pawns study blueprints while reading for recreation, or as Research work.</WBS_BlueprintDesc>
+
+  <!-- Book info -->
+  <WBS_BenefitTeaches>Teaches crafting: {WEAPON} ({TECH})</WBS_BenefitTeaches>
+  <WBS_BenefitKnown>already known</WBS_BenefitKnown>
+  <WBS_BenefitNotNeeded>no blueprint needed</WBS_BenefitNotNeeded>
+  <WBS_BenefitProgress>Colony study progress: {PCT} (about {HOURS} h left for an Intellectual 10 reader)</WBS_BenefitProgress>
+  <WBS_BenefitStudyTime>Study time: about {HOURS} h for an Intellectual 10 reader</WBS_BenefitStudyTime>
+  <WBS_BenefitNeedsResearch>Also needs research: {PROJECTS}</WBS_BenefitNeedsResearch>
+  <WBS_KindRanged>ranged weapon</WBS_KindRanged>
+  <WBS_KindMelee>melee weapon</WBS_KindMelee>
+  <WBS_KindGrenade>grenade</WBS_KindGrenade>
+
+  <!-- Letters and messages -->
+  <WBS_TheColony>The colony</WBS_TheColony>
+  <WBS_LetterLabel>Weapon learned: {WEAPON}</WBS_LetterLabel>
+  <WBS_LetterStudied>{PAWN} finished studying the {WEAPON} blueprint. The colony can now craft the {WEAPON} at: {BENCHES}.</WBS_LetterStudied>
+  <WBS_LetterReverseEngineered>{PAWN} took apart the {WEAPON} and worked out how it is made. The weapon was used up. The colony can now craft the {WEAPON} at: {BENCHES}.</WBS_LetterReverseEngineered>
+  <WBS_LetterNeedsResearch>It will appear in the bill menu once this research is done:</WBS_LetterNeedsResearch>
+  <WBS_REAlreadyKnown>The colony already knows the {WEAPON}; it was not taken apart.</WBS_REAlreadyKnown>
+  <WBS_REFailedDamaged>{PAWN} failed to reverse engineer the {WEAPON} (chance {CHANCE}). The weapon was damaged.</WBS_REFailedDamaged>
+  <WBS_REFailedDestroyed>{PAWN} failed to reverse engineer the {WEAPON} (chance {CHANCE}). The weapon was destroyed.</WBS_REFailedDestroyed>
+  <WBS_OldSaveLabel>HSK Weapon Blueprints</WBS_OldSaveLabel>
+  <WBS_OldSaveText>This save was started without HSK Weapon Blueprints. {COUNT} weapons now need a blueprint or reverse engineering before they can be crafted, including weapons your colony could make before.\n\nBlueprints are not in your existing reading policies. Open the Assign tab's reading policies and allow "weapon blueprints" so colonists read them in their free time. Studying them as Research work works either way.\n\nThe mod is meant for new colonies.</WBS_OldSaveText>
+
+  <!-- Settings -->
+  <WBS_SettingsCategory>HSK Weapon Blueprints</WBS_SettingsCategory>
+  <WBS_Settings_RestartHeader>Need a game restart</WBS_Settings_RestartHeader>
+  <WBS_Settings_Threshold>Weapons from this tech level up need a blueprint</WBS_Settings_Threshold>
+  <WBS_Settings_GateGrenades>Grenades and other throwables need a blueprint</WBS_Settings_GateGrenades>
+  <WBS_Settings_GateTools>Survival tools (knives, cleavers, work tools) need a blueprint</WBS_Settings_GateTools>
+  <WBS_Settings_StudyFirst>Study blueprints before research-bench work</WBS_Settings_StudyFirst>
+  <WBS_Settings_StudyFirstTip>Order of jobs inside the Research work type. Off: colonists only study blueprints when there is no research bench work.</WBS_Settings_StudyFirstTip>
+  <WBS_Settings_Price>Blueprint price</WBS_Settings_Price>
+  <WBS_Settings_BlueprintHeader>Blueprints</WBS_Settings_BlueprintHeader>
+  <WBS_Settings_StudySpeed>Study speed</WBS_Settings_StudySpeed>
+  <WBS_Settings_Traders>Traders sell blueprints</WBS_Settings_Traders>
+  <WBS_Settings_TraderMin>Blueprints per caravan/settlement trader, minimum</WBS_Settings_TraderMin>
+  <WBS_Settings_TraderMax>Blueprints per caravan/settlement trader, maximum</WBS_Settings_TraderMax>
+  <WBS_Settings_OrbitalMin>Blueprints per orbital trader, minimum</WBS_Settings_OrbitalMin>
+  <WBS_Settings_OrbitalMax>Blueprints per orbital trader, maximum</WBS_Settings_OrbitalMax>
+  <WBS_Settings_Rewards>Blueprints in quest rewards, item stashes and ancient ruins</WBS_Settings_Rewards>
+  <WBS_Settings_REHeader>Reverse engineering</WBS_Settings_REHeader>
+  <WBS_Settings_REWork>Work amount</WBS_Settings_REWork>
+  <WBS_Settings_REBase>Base chance</WBS_Settings_REBase>
+  <WBS_Settings_REPerSkill>Chance per Crafting + Intellectual level</WBS_Settings_REPerSkill>
+  <WBS_Settings_REMin>Minimum chance</WBS_Settings_REMin>
+  <WBS_Settings_REMax>Maximum chance</WBS_Settings_REMax>
+  <WBS_Settings_REPenaltySpacer>Chance penalty, spacer weapons</WBS_Settings_REPenaltySpacer>
+  <WBS_Settings_REPenaltyUltra>Chance penalty, ultratech weapons</WBS_Settings_REPenaltyUltra>
+  <WBS_Settings_REPenaltyArchotech>Chance penalty, archotech weapons</WBS_Settings_REPenaltyArchotech>
+  <WBS_Settings_REDamageMin>Damage on failure, minimum (share of max HP)</WBS_Settings_REDamageMin>
+  <WBS_Settings_REDamageMax>Damage on failure, maximum (share of max HP)</WBS_Settings_REDamageMax>
+  <WBS_Settings_Reset>Reset to defaults</WBS_Settings_Reset>
+
+</LanguageData>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+
+  <!-- Traders that sell the whole Books category would otherwise pick uniformly from 100+ blueprints.
+       Blueprints are sold through their own weighted stock generator instead (added in code). -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/TraderKindDef/stockGenerators/li[@Class="StockGenerator_Category"][categoryDef="Books"][not(excludedCategories)]</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/TraderKindDef/stockGenerators/li[@Class="StockGenerator_Category"][categoryDef="Books"][not(excludedCategories)]</xpath>
+      <value>
+        <excludedCategories>
+          <li>WBS_Blueprints</li>
+        </excludedCategories>
+      </value>
+    </match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/TraderKindDef/stockGenerators/li[@Class="StockGenerator_Category"][categoryDef="Books"]/excludedCategories[not(li="WBS_Blueprints")]</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/TraderKindDef/stockGenerators/li[@Class="StockGenerator_Category"][categoryDef="Books"]/excludedCategories[not(li="WBS_Blueprints")]</xpath>
+      <value>
+        <li>WBS_Blueprints</li>
+      </value>
+    </match>
+  </Operation>
+
+  <!-- Quest rewards (Reward_Items, item stashes, peace talks...): ~5-6% of item rolls. -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingSetMakerDef[defName="Reward_ItemsStandard"]/root/options/li[maxMarketValue]/thingSetMaker/options</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/ThingSetMakerDef[defName="Reward_ItemsStandard"]/root/options/li[maxMarketValue]/thingSetMaker/options</xpath>
+      <value>
+        <li>
+          <weight>0.55</weight>
+          <thingSetMaker Class="WeaponBlueprints.ThingSetMaker_Blueprints" />
+        </li>
+      </value>
+    </match>
+  </Operation>
+
+  <!-- Item stash quests. -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingSetMakerDef[defName="Reward_Incidents_ItemStashQuestContents"]/root/options</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/ThingSetMakerDef[defName="Reward_Incidents_ItemStashQuestContents"]/root/options</xpath>
+      <value>
+        <li>
+          <weight>1.5</weight>
+          <thingSetMaker Class="WeaponBlueprints.ThingSetMaker_Blueprints">
+            <count>1~2</count>
+          </thingSetMaker>
+        </li>
+      </value>
+    </match>
+  </Operation>
+
+  <!-- Ancient complex loot crates (books are 0.7 here). -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingSetMakerDef[defName="MapGen_AncientComplexRoomLoot_Better"]/root/options</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/ThingSetMakerDef[defName="MapGen_AncientComplexRoomLoot_Better"]/root/options</xpath>
+      <value>
+        <li>
+          <weight>0.4</weight>
+          <thingSetMaker Class="WeaponBlueprints.ThingSetMaker_Blueprints" />
+        </li>
+      </value>
+    </match>
+  </Operation>
+
+</Patch>

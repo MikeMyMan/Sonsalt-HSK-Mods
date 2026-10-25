@@ -3,7 +3,7 @@
 param([string]$ModsFolder = 'D:\SteamLibrary\steamapps\common\RimWorld\Mods')
 if (Get-Process RimWorld -ErrorAction SilentlyContinue) { throw 'Close RimWorld first.' }
 $repo = Split-Path $PSScriptRoot -Parent
-foreach ($mod in 'HSK Fortifications Rebalance', 'HSK Outposts', 'HSK Zero Research Start', 'HSK 1.7 Compatibility Fixes', 'HSK Tactical AI') {
+foreach ($mod in 'HSK Fortifications Rebalance', 'HSK Outposts', 'HSK Zero Research Start', 'HSK 1.7 Compatibility Fixes', 'HSK Tactical AI', 'HSK Weapon Blueprints') {
   robocopy (Join-Path $repo $mod) (Join-Path $ModsFolder $mod) /MIR /XD Source obj bin /XF .gitignore /NFL /NDL /NJH /NJS /NP | Out-Null
   if ($LASTEXITCODE -ge 8) { throw "robocopy failed for $mod (exit $LASTEXITCODE)" }
   "synced $mod"

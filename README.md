@@ -1,18 +1,22 @@
 # Sonsalt's HSK mods
 
-Five mods for [Hardcore SK](https://github.com/HardcoreSK/Hardcore-SK) on RimWorld 1.7 (`1.7-super-unstable` branch).
+Six mods for [Hardcore SK](https://github.com/HardcoreSK/Hardcore-SK) on RimWorld 1.7 (`1.7-super-unstable` branch).
 Each mod is one folder; copy the folders you want into your `RimWorld\Mods` folder.
 
-| Mod | packageId | Needs |
-|---|---|---|
-| [HSK Tactical AI](#hsk-tactical-ai) (0.1, test release) | `sonsalt.hsk.tacticalai` | HSK, Harmony (Combat Extended recommended) |
-| [HSK Fortifications Rebalance](#hsk-fortifications-rebalance) | `sonsalt.hsk.fortifications` | HSK + Aoba's Fortifications - Medieval and/or - Industrial |
-| [HSK Outposts](#hsk-outposts) | `sonsalt.hsk.outposts` | HSK, Vanilla Expanded Framework, Vanilla Outposts Expanded (VOE: Additional Outposts optional) |
-| [HSK Zero Research Start](#hsk-zero-research-start) | `sonsalt.hsk.zeroresearch` | HSK |
-| [HSK 1.7 Compatibility Fixes](#hsk-17-compatibility-fixes) | `sonsalt.hsk.compatfixes` | HSK (each fix only acts if its target mod is active) |
+| Mod | packageId | Game version | Needs |
+|---|---|---|---|
+| [HSK Tactical AI](#hsk-tactical-ai) (0.1, test release) | `sonsalt.hsk.tacticalai` | 1.7 | HSK, Harmony (Combat Extended recommended) |
+| [HSK Weapon Blueprints](#hsk-weapon-blueprints) (0.1, test release) | `sonsalt.hsk.weaponblueprints` | 1.7 | Harmony; built for HSK and Combat Extended. New colony only |
+| [HSK Fortifications Rebalance](#hsk-fortifications-rebalance) | `sonsalt.hsk.fortifications` | 1.7 | HSK + Aoba's Fortifications - Medieval and/or - Industrial |
+| [HSK Outposts](#hsk-outposts) | `sonsalt.hsk.outposts` | 1.7 | HSK, Vanilla Expanded Framework, Vanilla Outposts Expanded (VOE: Additional Outposts optional) |
+| [HSK Zero Research Start](#hsk-zero-research-start) | `sonsalt.hsk.zeroresearch` | 1.7 | HSK |
+| [HSK 1.7 Compatibility Fixes](#hsk-17-compatibility-fixes) | `sonsalt.hsk.compatfixes` | 1.7 | HSK (each fix only acts if its target mod is active) |
 
 **Status:** tested on RimWorld 1.7.4985 (Steam unstable) with HSK `1.7-super-unstable` and ~200 mods: every mod loads
 with zero errors. Gameplay testing is still light. HSK 1.7 itself is a dev sandbox, so expect changes.
+
+**Game version:** the mods are made for RimWorld 1.7 and HSK 1.7 and are only tested there. Tactical AI and Weapon
+Blueprints contain code built for the 1.7 runtime and won't load on 1.6. The XML mods patch HSK 1.7's defs.
 
 **Load order:** after HSK and after the mods each one patches (the `loadAfter` lists in About.xml handle this if you use
 the game's auto-sort). Put the compatibility fixes near the end.
@@ -34,6 +38,26 @@ Raiders plan their attack instead of walking into your guns:
 Every behaviour has a switch in the mod settings; the threat map overlay is the crosshair button in the bottom-right
 bar. Works with Combat Extended, Smarter Raid AI, Enemy Self Preservation and RunAndGun; not with CAI 5000 or Raid Tactics. Load after HSK and
 Combat Extended.
+
+## HSK Weapon Blueprints
+
+Weapons have to be learned before they can be crafted (0.1 is a test release; balance will change). Research no longer
+unlocks every gun at once: each Industrial or higher weapon (guns, melee weapons, grenades) needs a **blueprint** or a
+successful **reverse engineering** before its crafting bill appears. Unlocks are permanent and colony-wide. Workbench
+menus only list the weapons you know, which keeps big weapon packs tidy.
+
+- **Blueprints:** one per weapon, sold by traders (not by tribal traders) and found in quest rewards, item stashes and
+  ancient complexes. Rarer and pricier for valuable and high-tech weapons. Pawns study them while reading for recreation
+  or as Research work; Intellectual speeds this up. Study progress is shared by the colony; once a weapon is learned the
+  blueprint can be sold.
+- **Reverse engineering:** a "Reverse engineer weapon" bill at the benches that craft weapons. The chance comes from
+  Crafting and Intellectual and is lower for high-tech weapons. Success teaches the weapon and uses it up; failure
+  damages or destroys it.
+- Works with weapon mods automatically, by tech level (116 weapons gated with the HSK list). Non-combat items such as
+  fire extinguishers, flare guns and smoke grenades stay free.
+
+**Start a new colony.** Adding it to an existing save locks every gated weapon in that save. Load after HSK and Combat
+Extended.
 
 ## HSK Fortifications Rebalance
 

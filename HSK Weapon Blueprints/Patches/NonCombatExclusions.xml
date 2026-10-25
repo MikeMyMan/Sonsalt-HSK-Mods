@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+
+  <!--
+    Items that count as weapons in-game but aren't really combat weapons. They stay craftable right
+    after research, with no blueprint. To exclude another item, copy one block and change the defName.
+    To force an item to need a blueprint, use <mode>Always</mode>.
+    Each block only applies if the item exists in the current mod list.
+  -->
+
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="Gun_BinocularsRadio"]</xpath>
+    <match Class="PatchOperationAddModExtension">
+      <xpath>Defs/ThingDef[defName="Gun_BinocularsRadio"]</xpath>
+      <value><li Class="WeaponBlueprints.WBS_GatingOverride"><mode>Never</mode></li></value>
+    </match>
+  </Operation>
+
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="Gun_FireExtinguisher"]</xpath>
+    <match Class="PatchOperationAddModExtension">
+      <xpath>Defs/ThingDef[defName="Gun_FireExtinguisher"]</xpath>
+      <value><li Class="WeaponBlueprints.WBS_GatingOverride"><mode>Never</mode></li></value>
+    </match>
+  </Operation>
+
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="CE_FlareGun"]</xpath>
+    <match Class="PatchOperationAddModExtension">
+      <xpath>Defs/ThingDef[defName="CE_FlareGun"]</xpath>
+      <value><li Class="WeaponBlueprints.WBS_GatingOverride"><mode>Never</mode></li></value>
+    </match>
+  </Operation>
+
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="CE_Weapon_GrenadeSmoke"]</xpath>
+    <match Class="PatchOperationAddModExtension">
+      <xpath>Defs/ThingDef[defName="CE_Weapon_GrenadeSmoke"]</xpath>
+      <value><li Class="WeaponBlueprints.WBS_GatingOverride"><mode>Never</mode></li></value>
+    </match>
+  </Operation>
+
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="CE_Weapon_GrenadeFirefoam"]</xpath>
+    <match Class="PatchOperationAddModExtension">
+      <xpath>Defs/ThingDef[defName="CE_Weapon_GrenadeFirefoam"]</xpath>
+      <value><li Class="WeaponBlueprints.WBS_GatingOverride"><mode>Never</mode></li></value>
+    </match>
+  </Operation>
+
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="GrenadeInsecticide"]</xpath>
+    <match Class="PatchOperationAddModExtension">
+      <xpath>Defs/ThingDef[defName="GrenadeInsecticide"]</xpath>
+      <value><li Class="WeaponBlueprints.WBS_GatingOverride"><mode>Never</mode></li></value>
+    </match>
+  </Operation>
+
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="CE_Weapon_GrenadeFlashbang"]</xpath>
+    <match Class="PatchOperationAddModExtension">
+      <xpath>Defs/ThingDef[defName="CE_Weapon_GrenadeFlashbang"]</xpath>
+      <value><li Class="WeaponBlueprints.WBS_GatingOverride"><mode>Never</mode></li></value>
+    </match>
+  </Operation>
+
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="PEMC_Grenade_Lubricant"]</xpath>
+    <match Class="PatchOperationAddModExtension">
+      <xpath>Defs/ThingDef[defName="PEMC_Grenade_Lubricant"]</xpath>
+      <value><li Class="WeaponBlueprints.WBS_GatingOverride"><mode>Never</mode></li></value>
+    </match>
+  </Operation>
+
+</Patch>

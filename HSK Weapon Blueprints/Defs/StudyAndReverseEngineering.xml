@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!-- Research work: study blueprints of weapons the colony doesn't know yet.
+       priorityInType is recalculated at load (above or below the research benches, see mod settings). -->
+  <WorkGiverDef>
+    <defName>WBS_StudyBlueprint</defName>
+    <label>study weapon blueprints</label>
+    <giverClass>WeaponBlueprints.WorkGiver_StudyBlueprint</giverClass>
+    <workType>Research</workType>
+    <verb>study</verb>
+    <gerund>studying</gerund>
+    <priorityInType>105</priorityInType>
+    <requiredCapacities>
+      <li>Manipulation</li>
+      <li>Sight</li>
+    </requiredCapacities>
+  </WorkGiverDef>
+
+  <JobDef>
+    <defName>WBS_StudyBlueprint</defName>
+    <driverClass>WeaponBlueprints.JobDriver_StudyBlueprint</driverClass>
+    <casualInterruptible>false</casualInterruptible>
+    <joyDuration>5000</joyDuration>
+    <reportString>studying TargetA.</reportString>
+  </JobDef>
+
+  <!-- Bill at every bench that crafts a gated weapon. recipeUsers and the ingredient list
+       (exactly the gated weapons) are filled in at load. -->
+  <RecipeDef>
+    <defName>WBS_ReverseEngineerWeapon</defName>
+    <label>reverse engineer weapon</label>
+    <description>Take apart a weapon the colony doesn't know yet to learn how to make it. The chance depends on Crafting and Intellectual skill and is lower for high-tech weapons. Success teaches the weapon and uses it up. Failure damages the weapon, or destroys it if it has too little left.</description>
+    <jobString>Reverse engineering a weapon.</jobString>
+    <workerClass>WeaponBlueprints.RecipeWorker_ReverseEngineer</workerClass>
+    <workAmount>4000</workAmount>
+    <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+    <workSkill>Crafting</workSkill>
+    <workSkillLearnFactor>0.5</workSkillLearnFactor>
+    <effectWorking>Smith</effectWorking>
+    <soundWorking>Recipe_Smith</soundWorking>
+    <fixedIngredientFilter>
+      <specialFiltersToDisallow>
+        <li>WBS_NotReverseEngineerable</li>
+      </specialFiltersToDisallow>
+    </fixedIngredientFilter>
+  </RecipeDef>
+
+  <!-- Must stay allowedByDefault/not configurable: a default-false special filter would be disallowed
+       in every filter in the game (smelting, stockpiles, ...). -->
+  <SpecialThingFilterDef>
+    <defName>WBS_NotReverseEngineerable</defName>
+    <label>not reverse engineerable</label>
+    <description>Weapons that are not gated or are already known.</description>
+    <parentCategory>Weapons</parentCategory>
+    <allowedByDefault>true</allowedByDefault>
+    <configurable>false</configurable>
+    <saveKey>wbsNotReverseEngineerable</saveKey>
+    <workerClass>WeaponBlueprints.SpecialThingFilterWorker_NotReverseEngineerable</workerClass>
+  </SpecialThingFilterDef>
+
+</Defs>

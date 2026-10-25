@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.2.0 (2026-10-25)
+
+- **HSK Weapon Blueprints 0.1.0** joins the release (`sonsalt.hsk.weaponblueprints`, test release): Industrial and
+  higher weapons have to be learned from a blueprint or by reverse engineering before they can be crafted. Blueprints
+  come from traders, quest rewards, item stashes and ancient complexes; pawns study them while reading or as Research
+  work. Workbench menus only list known weapons. New colony only. Tested in game with the full HSK list (219 mods): 97
+  automated checks pass (gating, blueprint generation and distribution, reading and study work, reverse engineering
+  odds, trading incl. Dynamic Trade Interface, save/load) and the mod logs no errors. Preview image and mod icon in the
+  style of the other five. Source in `HSK Weapon Blueprints/Source/`.
+- README: game version per mod (all six are for RimWorld 1.7 only).
+
 ## 1.1.0 (2026-10-25)
 
 - **HSK Tactical AI 0.1.0** joins the release (test release, see below).

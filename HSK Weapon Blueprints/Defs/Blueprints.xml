@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <ThingCategoryDef>
+    <defName>WBS_Blueprints</defName>
+    <label>weapon blueprints</label>
+    <parent>Books</parent>
+  </ThingCategoryDef>
+
+  <!--
+    Template for the generated per-weapon blueprints (WBS_<weapon>_Blueprint). The C# generator copies
+    its fields, so anything HSK/CE patch into BookBase carries over. The template itself is never
+    generated, traded or rewarded.
+  -->
+  <ThingDef ParentName="BookBase">
+    <defName>WBS_BlueprintTemplate</defName>
+    <label>weapon blueprint</label>
+    <description>Template for the generated weapon blueprints. Not used in game.</description>
+    <graphicData>
+      <texPath>Things/Item/Book/Schematic/Schematic</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>0.8</drawSize>
+      <color>(0.50, 0.70, 1.00)</color>
+    </graphicData>
+    <uiIconPath>Things/Item/Book/Schematic/Schematic</uiIconPath>
+    <tradeability>None</tradeability>
+    <thingCategories Inherit="False" />
+    <thingSetMakerTags Inherit="False" />
+    <statBases>
+      <MarketValue>100</MarketValue>
+    </statBases>
+    <comps>
+      <li Class="CompProperties_Book">
+        <nameMaker>WBS_Namer_Blueprint</nameMaker>
+        <descriptionMaker>WBS_Description_Blueprint</descriptionMaker>
+        <pickWeight>0</pickWeight>
+        <ageYearsRange>2~60</ageYearsRange>
+        <openGraphic>
+          <texPath>Things/Item/Book/Schematic/Schematic_Open</texPath>
+          <graphicClass>Graphic_Multi</graphicClass>
+          <drawSize>0.7</drawSize>
+          <color>(0.50, 0.70, 1.00)</color>
+        </openGraphic>
+        <verticalGraphic>
+          <texPath>Things/Item/Book/Schematic/Schematic_Vertical</texPath>
+          <graphicClass>Graphic_Multi</graphicClass>
+          <addTopAltitudeBias>true</addTopAltitudeBias>
+          <color>(0.50, 0.70, 1.00)</color>
+        </verticalGraphic>
+        <doers>
+          <li Class="WeaponBlueprints.BookOutcomeProperties_Blueprint" />
+        </doers>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <RulePackDef>
+    <defName>WBS_Namer_Blueprint</defName>
+    <rulePack>
+      <rulesStrings>
+        <li>title->[weapon_label] blueprint</li>
+        <li>title->[weapon_label] technical drawings</li>
+        <li>title->[weapon_label] assembly manual</li>
+        <li>title->[weapon_label] armorer's handbook</li>
+        <li>title->[weapon_label] field manufacturing guide</li>
+        <li>title->Schematics of the [weapon_label]</li>
+        <li>title->The [weapon_label]: parts and tolerances</li>
+        <li>title->Building the [weapon_label]</li>
+      </rulesStrings>
+    </rulePack>
+  </RulePackDef>
+
+  <RulePackDef>
+    <defName>WBS_Description_Blueprint</defName>
+    <rulePack>
+      <rulesStrings>
+        <li>desc->[intro] [content] [outro]</li>
+
+        <li>intro->A bundle of [paper] covered in [drawing] of the [weapon_label].</li>
+        <li>intro->A worn [binder] holding [drawing] of the [weapon_label], a [weapon_tech] [weapon_kind].</li>
+        <li>intro->[drawing_cap] of the [weapon_label], kept in a [binder].</li>
+
+        <li>content->It lists every part, its tolerances and the order of assembly.</li>
+        <li>content->Margin notes by [ANYPAWN_nameFull] explain which steps can be done with simple tools.</li>
+        <li>content->Exploded views show how the [weapon_label] comes apart and goes back together.</li>
+        <li>content->It covers materials, machining steps and the final test firing.</li>
+
+        <li>outro->It was last revised on [date].</li>
+        <li>outro->Oil stains and burn marks suggest it saw heavy use on a workshop floor.</li>
+        <li>outro->Several pages are stamped with the mark of a long-gone arms maker.</li>
+        <li>outro-></li>
+
+        <li>paper->yellowed paper</li>
+        <li>paper->waterproof sheets</li>
+        <li>paper->microfilm prints</li>
+        <li>paper->datapad printouts</li>
+
+        <li>drawing->precise technical drawings</li>
+        <li>drawing->exploded diagrams</li>
+        <li>drawing->hand-drawn sketches</li>
+        <li>drawing_cap->Precise technical drawings</li>
+        <li>drawing_cap->Exploded diagrams</li>
+        <li>drawing_cap->Hand-drawn sketches</li>
+
+        <li>binder->ring binder</li>
+        <li>binder->leather folder</li>
+        <li>binder->plastic sleeve</li>
+      </rulesStrings>
+    </rulePack>
+  </RulePackDef>
+
+</Defs>
