@@ -25,9 +25,22 @@ namespace HSKTacticalAI
         public float hitTurret, hitTrap, hitExplosion, hitMelee, hitLongRange, hitShot;   // raiders downed, by cause
         public float defArmour;                                      // colonists' mean sharp armour (last seen)
         public string lastLesson = "";
+        // how the last raid went - known even when nobody came back (the faction counts who didn't)
+        public int lastStrength, lastLosses, lastEscaped = -1, informants;
+        public bool lastReached, lastSuccess;
+        public float escalation;                                     // 0..1: anger after beatings (bigger raids), fades
+        public int lastInformantTick = -1;
 
         public void ExposeData()
         {
+            Scribe_Values.Look(ref lastStrength, "lastStrength");
+            Scribe_Values.Look(ref lastLosses, "lastLosses");
+            Scribe_Values.Look(ref lastEscaped, "lastEscaped", -1);
+            Scribe_Values.Look(ref lastReached, "lastReached");
+            Scribe_Values.Look(ref lastSuccess, "lastSuccess");
+            Scribe_Values.Look(ref escalation, "escalation");
+            Scribe_Values.Look(ref informants, "informants");
+            Scribe_Values.Look(ref lastInformantTick, "lastInformantTick", -1);
             Scribe_Values.Look(ref raids, "raids");
             Scribe_Values.Look(ref lastRaidTick, "lastRaidTick", -1);
             Scribe_Values.Look(ref lastDecayTick, "lastDecayTick", -1);
@@ -53,7 +66,7 @@ namespace HSKTacticalAI
             float days = (now - lastDecayTick) / (float)GenDate.TicksPerDay;
             if (days <= 0f) return;
             float f = Mathf.Pow(0.5f, days / Mathf.Max(1f, TacticalAIMod.Settings.memoryHalfLifeDays));
-            intel *= f; failWalk *= f; failBreach *= f; failSiege *= f; failStandoff *= f;
+            intel *= f; failWalk *= f; failBreach *= f; failSiege *= f; failStandoff *= f; escalation *= f;
             hitTurret *= f; hitTrap *= f; hitExplosion *= f; hitMelee *= f; hitLongRange *= f; hitShot *= f;
             lastDecayTick = now;
         }
@@ -77,6 +90,8 @@ namespace HSKTacticalAI
             + ", siege " + failSiege.ToString("0.00") + ", standoff " + failStandoff.ToString("0.00") + "] downedBy[turret " + hitTurret.ToString("0.#")
             + ", trap " + hitTrap.ToString("0.#") + ", explosion " + hitExplosion.ToString("0.#") + ", melee " + hitMelee.ToString("0.#")
             + ", longRange " + hitLongRange.ToString("0.#") + ", shot " + hitShot.ToString("0.#") + "] armour " + defArmour.ToString("0.0")
+            + " escalation " + escalation.ToString("0.00") + " last " + lastLosses + "/" + lastStrength + " lost, " + lastEscaped + " escaped"
+            + (informants > 0 ? " informants " + informants : "")
             + (lastLesson.NullOrEmpty() ? "" : " | " + lastLesson);
     }
 
@@ -162,6 +177,15 @@ namespace HSKTacticalAI
             mem.lastRaidTick = Find.TickManager.TicksGame;
             plan.memoryOutcome = (success ? "success" : failed ? "failed" : "inconclusive") + ", " + plan.mode + ", lost " + lost + "/" + n + ", escaped " + escaped
                                  + ", defenders down " + Mathf.RoundToInt(defDown * 100f) + "%";
+            // what the faction knows even with no survivors: how many went, how many didn't come back, and anger (escalation:
+            // bigger raids for a while after a beating, relaxing after a raid that went their way - Raid Tactics idea)
+            mem.lastStrength = n;
+            mem.lastLosses = lost;
+            mem.lastEscaped = escaped;
+            mem.lastSuccess = success;
+            mem.lastReached = plan.hHourTick >= 0 || defDown > 0f;
+            if (plan.mode != PlanMode.Scout)
+                mem.escalation = Mathf.Clamp01(mem.escalation + (success ? -0.3f : failed ? 0.15f + 0.35f * lost / Mathf.Max(1f, n) : 0.05f));
             if (escaped == 0)
             {
                 NothingLearned++;
