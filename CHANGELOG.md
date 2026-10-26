@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased: HSK 1.7 Compatibility Fixes 1.0.2
+
+- **HSK meal textures moved:** HSK moved its meal and canned-food textures from `Things/Item/...` to `Things/Food/...`
+  ("Meals textures path update"). Addons that still used the old paths got "Collection cannot init: No textures found"
+  and an invisible item. Seen with HSK Watcher Fallout3 (mashed potatoes). Any def that still points at one of the ten
+  removed paths now gets the new one; nothing changes if no mod uses them. Tested with a full 1.7 HSK modlist
+  (219 mods, Fallout3 included): 0 new errors.
+- About: load after New 130 mm Rocket Missiles and HSK Watcher Fallout3; the description lists the 130 mm smoke fix too.
+
 ## 1.6.0 (2026-10-26): HSK Tactical AI 0.2.2
 
 - **The 1.7 builds catch up:** Tactical AI and Weapon Blueprints for 1.7 are rebuilt against RimWorld 1.7.4985, so the

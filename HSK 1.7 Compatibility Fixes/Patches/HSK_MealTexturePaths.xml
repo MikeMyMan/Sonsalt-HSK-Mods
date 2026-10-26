@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!--
+    HSK moved its meal and canned-food textures from Things/Item/... to Things/Food/... (Hardcore-SK c32617a2, "Meals
+    textures path update", October 2026). Addons that borrowed the old paths now get "Collection cannot init: No textures
+    found" and an invisible item. Seen: HSK Watcher Fallout3 (MashedPotatoes uses Things/Item/Meal/Scramble). Every def
+    that still points at one of the removed paths is pointed at the new one; nothing happens if no def uses them. Remove
+    once the addons update their paths.
+  -->
+  <Operation Class="PatchOperationSequence">
+    <success>Always</success>
+    <operations>
+      <li Class="PatchOperationConditional">
+        <xpath>Defs//texPath[text()="Things/Item/Meal/Scramble"]</xpath>
+        <match Class="PatchOperationReplace"><xpath>Defs//texPath[text()="Things/Item/Meal/Scramble"]</xpath><value><texPath>Things/Food/ScrambledEggs</texPath></value></match>
+      </li>
+      <li Class="PatchOperationConditional">
+        <xpath>Defs//texPath[text()="Things/Item/Meal/Grilledsteak"]</xpath>
+        <match Class="PatchOperationReplace"><xpath>Defs//texPath[text()="Things/Item/Meal/Grilledsteak"]</xpath><value><texPath>Things/Food/GrilledSteak</texPath></value></match>
+      </li>
+      <li Class="PatchOperationConditional">
+        <xpath>Defs//texPath[text()="Things/Item/Meal/FriedVegetables"]</xpath>
+        <match Class="PatchOperationReplace"><xpath>Defs//texPath[text()="Things/Item/Meal/FriedVegetables"]</xpath><value><texPath>Things/Food/FriedVegetables</texPath></value></match>
+      </li>
+      <li Class="PatchOperationConditional">
+        <xpath>Defs//texPath[text()="Things/Item/Meal/SaltedMeat"]</xpath>
+        <match Class="PatchOperationReplace"><xpath>Defs//texPath[text()="Things/Item/Meal/SaltedMeat"]</xpath><value><texPath>Things/Food/SaltedMeat</texPath></value></match>
+      </li>
+      <li Class="PatchOperationConditional">
+        <xpath>Defs//texPath[text()="Things/Item/Meal/PickleVeg"]</xpath>
+        <match Class="PatchOperationReplace"><xpath>Defs//texPath[text()="Things/Item/Meal/PickleVeg"]</xpath><value><texPath>Things/Food/PickledVegetables</texPath></value></match>
+      </li>
+      <li Class="PatchOperationConditional">
+        <xpath>Defs//texPath[text()="Things/Item/canveg"]</xpath>
+        <match Class="PatchOperationReplace"><xpath>Defs//texPath[text()="Things/Item/canveg"]</xpath><value><texPath>Things/Food/CannedFoodVeg</texPath></value></match>
+      </li>
+      <li Class="PatchOperationConditional">
+        <xpath>Defs//texPath[text()="Things/Item/canmeat_prime"]</xpath>
+        <match Class="PatchOperationReplace"><xpath>Defs//texPath[text()="Things/Item/canmeat_prime"]</xpath><value><texPath>Things/Food/CannedFoodMeatPrime</texPath></value></match>
+      </li>
+      <li Class="PatchOperationConditional">
+        <xpath>Defs//texPath[text()="Things/Item/canmeat_raw"]</xpath>
+        <match Class="PatchOperationReplace"><xpath>Defs//texPath[text()="Things/Item/canmeat_raw"]</xpath><value><texPath>Things/Food/CannedFoodMeatRaw</texPath></value></match>
+      </li>
+      <li Class="PatchOperationConditional">
+        <xpath>Defs//texPath[text()="Things/Item/Meal/Meal_Driedfruit"]</xpath>
+        <match Class="PatchOperationReplace"><xpath>Defs//texPath[text()="Things/Item/Meal/Meal_Driedfruit"]</xpath><value><texPath>Things/Food/Driedfruit</texPath></value></match>
+      </li>
+      <li Class="PatchOperationConditional">
+        <xpath>Defs//texPath[text()="Things/Item/Meal/grilledmeat"]</xpath>
+        <match Class="PatchOperationReplace"><xpath>Defs//texPath[text()="Things/Item/Meal/grilledmeat"]</xpath><value><texPath>Things/Food/GrilledMeat</texPath></value></match>
+      </li>
+    </operations>
+  </Operation>
+</Patch>
