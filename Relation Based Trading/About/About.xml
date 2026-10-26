@@ -3,7 +3,7 @@
   <name>Relation Based Trading</name>
   <author>TheLoneTec, Sonsalt</author>
   <packageId>thelonetec.relationbasedtrading</packageId>
-  <modVersion>2.1.0</modVersion>
+  <modVersion>2.1.1</modVersion>
   <url>https://github.com/MikeMyMan/Sonsalt-HSK-Mods</url>
   <supportedVersions>
     <li>1.4</li>
@@ -32,6 +32,7 @@ There are no fixed steps; every point of goodwill opens a little more:
 - Tech: relative to the faction's own tech level (two below at -75, one above from 50). Archotech only from spacer factions, at Ally.
 Food, raw materials, animals and plants are always available. Below -75 traders sell nothing. Orbital traders and traders without a faction are not filtered. When goodwill drops, settlement stock above the new limits is removed; when it rises by 15 or more, the stock is regenerated. Every limit can be changed in the mod settings. Safe to add to or remove from a running save.
 
+2.1.1: RimWorld 1.6 tested; exact tech steps; trader books are priced without being rebuilt.
 2.1.0: gradual limits by value, quality, danger and tech instead of fixed tech tiers. Full list in CHANGELOG.md.
 
 Original mod by TheLoneTec. Updated by Sonsalt, with help from Lightwave.</description>

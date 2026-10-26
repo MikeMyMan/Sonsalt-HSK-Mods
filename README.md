@@ -1,25 +1,31 @@
 # Sonsalt's HSK mods
 
-Seven mods for [Hardcore SK](https://github.com/HardcoreSK/Hardcore-SK) on RimWorld 1.7 (`1.7-super-unstable` branch).
-Each mod is one folder; copy the folders you want into your `RimWorld\Mods` folder.
+Seven mods for [Hardcore SK](https://github.com/HardcoreSK/Hardcore-SK) on RimWorld 1.6 (HSK `alpha` branch) and
+RimWorld 1.7 (`1.7-super-unstable` branch). Each mod is one folder; copy the folders you want into your
+`RimWorld\Mods` folder. The game loads the right build by itself.
 
 | Mod | packageId | Game version | Needs |
 |---|---|---|---|
-| [HSK Tactical AI](#hsk-tactical-ai) (0.2, test release) | `sonsalt.hsk.tacticalai` | 1.7 | HSK, Harmony (Combat Extended recommended) |
-| [HSK Weapon Blueprints](#hsk-weapon-blueprints) (0.1, test release) | `sonsalt.hsk.weaponblueprints` | 1.7 | Harmony; built for HSK and Combat Extended. New colony only |
-| [Relation Based Trading](#relation-based-trading) (2.1, by TheLoneTec) | `thelonetec.relationbasedtrading` | 1.7 (also contains 1.4-1.6 builds, untested) | Harmony |
-| [HSK Fortifications Rebalance](#hsk-fortifications-rebalance) | `sonsalt.hsk.fortifications` | 1.7 | HSK + Aoba's Fortifications - Medieval and/or - Industrial |
-| [HSK Outposts](#hsk-outposts) | `sonsalt.hsk.outposts` | 1.7 | HSK, Vanilla Expanded Framework, Vanilla Outposts Expanded (VOE: Additional Outposts optional) |
-| [HSK Zero Research Start](#hsk-zero-research-start) | `sonsalt.hsk.zeroresearch` | 1.7 | HSK |
-| [HSK 1.7 Compatibility Fixes](#hsk-17-compatibility-fixes) | `sonsalt.hsk.compatfixes` | 1.7 | HSK (each fix only acts if its target mod is active) |
+| [HSK Tactical AI](#hsk-tactical-ai) (0.2, test release) | `sonsalt.hsk.tacticalai` | 1.6, 1.7 | HSK, Harmony (Combat Extended recommended) |
+| [HSK Weapon Blueprints](#hsk-weapon-blueprints) (0.1, test release) | `sonsalt.hsk.weaponblueprints` | 1.6, 1.7 | Harmony; built for HSK and Combat Extended. New colony only |
+| [Relation Based Trading](#relation-based-trading) (2.1, by TheLoneTec) | `thelonetec.relationbasedtrading` | 1.6, 1.7 (also contains 1.4-1.5 builds, untested) | Harmony |
+| [HSK Fortifications Rebalance](#hsk-fortifications-rebalance) | `sonsalt.hsk.fortifications` | 1.6, 1.7 | HSK + Aoba's Fortifications - Medieval and/or - Industrial |
+| [HSK Outposts](#hsk-outposts) | `sonsalt.hsk.outposts` | 1.6, 1.7 | HSK, Vanilla Expanded Framework, Vanilla Outposts Expanded (VOE: Additional Outposts optional) |
+| [HSK Zero Research Start](#hsk-zero-research-start) | `sonsalt.hsk.zeroresearch` | 1.6, 1.7 | HSK |
+| [HSK 1.7 Compatibility Fixes](#hsk-17-compatibility-fixes) | `sonsalt.hsk.compatfixes` | 1.6, 1.7 | HSK (each fix only acts if its target mod is active) |
 
-**Status:** tested on RimWorld 1.7.4985 (Steam unstable) with HSK `1.7-super-unstable` and ~200 mods: every mod loads
-with zero errors. Gameplay testing is still light. HSK 1.7 itself is a dev sandbox, so expect changes.
+**Status:**
+- RimWorld 1.7.4985 (Steam unstable) with HSK `1.7-super-unstable` and ~200 mods: every mod loads with zero errors.
+- RimWorld 1.6.4871 with HSK `alpha` (1.6) and its full 163-mod list: every mod loads with zero errors from our mods.
+  Tactical AI was run through the AI Lab scenarios, and Weapon Blueprints and Relation Based Trading through their test
+  harnesses.
 
-**Game version:** the mods are made for RimWorld 1.7 and HSK 1.7 and are only tested there. Tactical AI and Weapon
-Blueprints contain code built for the 1.7 runtime and won't load on 1.6. The XML mods patch HSK 1.7's defs. Relation
-Based Trading also contains builds for 1.4-1.6: the 1.5 and 1.6 builds compile from the same source but have not been
-tested in game, and the 1.4 build is the old 1.x version.
+Gameplay testing is still light, and HSK 1.7 itself is a dev sandbox, so expect changes.
+
+**Game version:** Tactical AI and Weapon Blueprints have one build per game version (`1.6/Assemblies` and
+`1.7/Assemblies`); `LoadFolders.xml` picks the right one. The XML mods work on both HSK versions.
+Relation Based Trading also contains builds for 1.4 and 1.5: the 1.5 build compiles from the same source but has not
+been tested in game, and the 1.4 build is the old 1.x version.
 
 **Load order:** after HSK and after the mods each one patches (the `loadAfter` lists in About.xml handle this if you use
 the game's auto-sort). Put the compatibility fixes near the end.

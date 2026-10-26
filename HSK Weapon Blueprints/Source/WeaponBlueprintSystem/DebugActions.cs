@@ -84,7 +84,7 @@ namespace WeaponBlueprints
         {
             WBSGameComponent comp = WBSGameComponent.Instance;
             IEnumerable<string> lines = WeaponGate.GatedWeaponsList.Select(w =>
-                $"{w.defName} [{w.techLevel}] value {w.BaseMarketValue:0} -> blueprint {WeaponGate.BlueprintOf.GetValueOrDefault(w)?.BaseMarketValue:0}, " +
+                $"{w.defName} [{w.techLevel}] value {w.BaseMarketValue:0} -> blueprint {(WeaponGate.BlueprintOf.TryGetValue(w, out var bpd) && bpd != null ? bpd.BaseMarketValue : 0f):0}, " +
                 $"study {StudyBalance.RequiredStudy(w) / StudyBalance.TicksPerHour:0.#} h, benches {string.Join(",", WeaponGate.BenchesOf[w].Select(b => b.defName))}" +
                 (comp != null ? (comp.IsUnlocked(w) ? " UNLOCKED" : $" {comp.GetProgressFraction(w):P0}") : ""));
             Log.Message("[Weapon Blueprints] Gated weapons:\n" + string.Join("\n", lines));

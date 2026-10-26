@@ -3,10 +3,11 @@
   <name>HSK Fortifications Rebalance</name>
   <author>Sonsalt</author>
   <packageId>sonsalt.hsk.fortifications</packageId>
-  <modVersion>1.0.0</modVersion>
+  <modVersion>1.0.1</modVersion>
   <url>https://github.com/MikeMyMan/Sonsalt-HSK-Mods</url>
   <supportedVersions>
-    <li>1.7</li>
+    <li>1.6</li>
+		<li>1.7</li>
   </supportedVersions>
   <modDependencies>
     <li>

@@ -16,7 +16,7 @@ namespace HSKTacticalAI
         public ThingDef turretDef;
         public IntVec3 post = IntVec3.Invalid;
         public Building_Turret gun;
-        public int setupTick = -1;
+        public int setupTick = -1, bearerWaitTicks;
         public bool deployed, abandoned;
         public readonly List<IntVec3> route = new List<IntVec3>();
         public bool Has(Pawn p) => p == gunner || bearers.Contains(p);
@@ -289,14 +289,22 @@ namespace HSKTacticalAI
                 while (t.route.Count > 0 && pawn.Position.DistanceTo(t.route[0]) <= 4f) t.route.RemoveAt(0);
                 IntVec3 next = t.route.Count > 0 ? t.route[0] : t.post;
                 if (!pawn.CanReach(next, PathEndMode.OnCell, Danger.Deadly)) next = t.post;
-                // keep the bearers close: wait for them if they fall behind
-                if (t.bearers.Any(b => b.Spawned && !b.Downed && b.Position.DistanceTo(pawn.Position) > 12f)) return JobMaker.MakeJob(JobDefOf.Wait, 60);
+                // keep the bearers close: wait for them if they fall behind - 15 s at most, then on alone (1.6 Lab: a
+                // bearer with no covered spot stood still, the gunner waited for him and the gun was never set up)
+                if (t.bearerWaitTicks < 900 && t.bearers.Any(b => b.Spawned && !b.Downed && b.Position.DistanceTo(pawn.Position) > 12f))
+                {
+                    t.bearerWaitTicks += 60;
+                    return JobMaker.MakeJob(JobDefOf.Wait, 60);
+                }
                 return Go(next, LocomotionUrgency.Jog);
             }
-            // bearer: keeps up with the gunner, spread out to his side and back, in cover where there is some
+            // bearer: keeps up with the gunner, spread out to his side and back, in cover where there is some - else just
+            // close behind him
             var g = t.gunner;
             if (g == null || !g.Spawned || g.Downed) return null;
             IntVec3 bp = CoverPost(pawn, t, g.Position, plan.objective, map);
+            if (!bp.IsValid && pawn.Position.DistanceTo(g.Position) > 5f)
+                bp = CellFinder.StandableCellNear(g.Position, map, 4f, x => x != g.Position && x.DistanceTo(g.Position) >= 2f && pawn.CanReach(x, PathEndMode.OnCell, Danger.Deadly));
             if (bp.IsValid && pawn.Position.DistanceTo(bp) > 1.5f) return Go(bp, LocomotionUrgency.Jog);
             return JobMaker.MakeJob(JobDefOf.Wait_Combat, 60, true);
         }

@@ -3,10 +3,11 @@
   <name>HSK Tactical AI</name>
   <author>Sonsalt</author>
   <packageId>sonsalt.hsk.tacticalai</packageId>
-  <modVersion>0.2.0</modVersion>
+  <modVersion>0.2.1</modVersion>
   <url>https://github.com/MikeMyMan/Sonsalt-HSK-Mods</url>
   <supportedVersions>
-    <li>1.7</li>
+    <li>1.6</li>
+		<li>1.7</li>
   </supportedVersions>
   <modDependencies>
     <li>

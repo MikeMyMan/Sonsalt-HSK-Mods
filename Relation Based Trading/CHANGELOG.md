@@ -1,5 +1,15 @@
 # Relation Based Trading changelog
 
+## 2.1.1 (2026-10-26)
+
+- Tested on RimWorld 1.6 with HSK `alpha` (its full 163-mod list): the test harness passes, with no errors from the mod.
+- The tech limit steps at goodwill -50, 0 and 50 are now exact whole-number steps. Before, float rounding at exactly 50
+  could differ between builds (a Neolithic tribe at 50 could show "Neolithic" but sell Medieval goods).
+- Pricing a book at the quality limit no longer rebuilds it. Vanilla rebuilds a book (new title and a randomly generated
+  author pawn) whenever its quality is set, so every book in a trader's stock generated an extra pawn. That was slow,
+  and in a big modlist it could throw errors.
+- Rebuilt for 1.5, 1.6 and 1.7.
+
 ## 2.1.0 (2026-10-25)
 
 New system: goodwill unlocks better goods gradually instead of fixed tech tiers. Factions advance in different ways,

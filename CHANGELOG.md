@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.5.0 (2026-10-26): RimWorld 1.6 support
+
+All seven mods now also run on **RimWorld 1.6 with HSK `alpha`** (the HSK 1.6 branch). Tested with HSK alpha's full
+163-mod list: every mod loads with no errors from our mods. Tactical AI ran through the AI Lab raids (fortress, village,
+sally, sabotage, scouting, stripped breach gear, gun teams). Weapon Blueprints and Relation Based Trading ran through
+their test harnesses.
+- **HSK Tactical AI 0.2.1:** a 1.6 build next to the 1.7 one (`LoadFolders.xml` picks it).
+  - Gun teams: when a bearer found no covered spot he stood still, and the gunner waited for him forever, so the gun was
+    never set up (seen on 1.6). The bearer now stays close behind the gunner, and the gunner waits at most 15 s.
+  - The 1.7 build still has the 0.2.0 code (it can only be rebuilt and tested with the game on 1.7).
+- **HSK Weapon Blueprints 0.1.1:** a 1.6 build next to the 1.7 one. No gameplay change.
+- **Relation Based Trading 2.1.1:**
+  - The tech limit steps at goodwill -50, 0 and 50 are now exact. Before, float rounding at exactly 50 could differ
+    between builds and between the limit shown and the limit applied.
+  - Pricing a book at the quality limit no longer rebuilds the book. Rebuilding generated a random author pawn for
+    every book in a trader's stock, which was slow and in a big modlist could throw errors.
+  - Rebuilt for 1.5, 1.6 and 1.7.
+- **HSK Fortifications Rebalance 1.0.1:** the removed Aoba research projects are now also taken out of other projects'
+  prerequisites. On HSK 1.6 (without XML Extensions) Aoba's patches still added FT_Chemistry as a prerequisite of
+  Medicine Production, which left a broken research link.
+- **HSK Outposts, HSK Zero Research Start, HSK 1.7 Compatibility Fixes:** 1.6 added to the supported versions; no other
+  change.
+- README: game version table and test status for 1.6.
+
 ## 1.4.0 (2026-10-25)
 
 - **HSK Tactical AI 0.2.0** (test release, details below). Highlights:

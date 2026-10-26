@@ -4,7 +4,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+#if !RW16
 using System.Text.Json;
+#endif
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
@@ -59,7 +61,11 @@ namespace HSKTacticalAI
             try
             {
                 if (!GenCommandLine.CommandLineArgPassed("quicktest") || !File.Exists(ConfigPath)) return;
+#if RW16
+                Config = LabJson.ReadConfig(File.ReadAllText(ConfigPath));
+#else
                 Config = JsonSerializer.Deserialize<LabConfig>(File.ReadAllText(ConfigPath), new JsonSerializerOptions { IncludeFields = true, PropertyNameCaseInsensitive = true });
+#endif
                 if (Config != null && string.IsNullOrEmpty(Config.outDir)) Config.outDir = Path.Combine(GenFilePaths.ConfigFolderPath, "HSKTacticalAI_LabResults");
             }
             catch (Exception e)
@@ -1636,7 +1642,11 @@ namespace HSKTacticalAI
             {
                 Directory.CreateDirectory(cfg.outDir);
                 string path = Path.Combine(cfg.outDir, cfg.runId + ".json");
+#if RW16
+                File.WriteAllText(path, LabJson.Write(r));
+#else
                 File.WriteAllText(path, JsonSerializer.Serialize(r, new JsonSerializerOptions { WriteIndented = true }));
+#endif
                 Log.Message("[HSK Tactical AI] AI Lab result written: " + path + " outcome=" + outcome);
             }
             catch (Exception e)

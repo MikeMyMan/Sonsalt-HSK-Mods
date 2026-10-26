@@ -55,9 +55,10 @@ Out-File2 'About\About.xml' @'
   <name>HSK Fortifications Rebalance</name>
   <author>Sonsalt</author>
   <packageId>sonsalt.hsk.fortifications</packageId>
-  <modVersion>1.0.0</modVersion>
+  <modVersion>1.0.1</modVersion>
   <url>https://github.com/MikeMyMan/Sonsalt-HSK-Mods</url>
   <supportedVersions>
+    <li>1.6</li>
     <li>1.7</li>
   </supportedVersions>
   <modDependencies>
@@ -238,6 +239,14 @@ foreach ($t in 'RecipeDef','ResearchProjectDef','TerrainDef','CombatExtended.Amm
 RemoveIf 'Defs/RecipeDef[@Name="MakeConcreteBase"]'
 Comment 'Research-bench facility links to the removed ENIAC'
 RemoveIf 'Defs/ThingDef/comps/li[@Class="CompProperties_AffectedByFacilities"]/linkableFacilities/li[text()="FT_ENIAC"]'
+# Without XML Extensions (HSK alpha on 1.6) Industrial's Patches\Vanilla.xml adds FT_Chemistry to MedicineProduction's
+# prerequisites; the removed research projects must not stay behind in anyone's prerequisites
+$removedResearch = $rows | ? { $_.Type -eq 'ResearchProjectDef' -and $_.Name -notlike 'ABSTRACT:*' } | % Name | Sort-Object -Unique
+if ($removedResearch) {
+  Comment 'Prerequisites that point at the removed research projects (MedicineProduction gets FT_Chemistry without XML Extensions)'
+  RemoveIf ('Defs/ResearchProjectDef/prerequisites/li[' + (Or $removedResearch 'text()') + ']')
+  RemoveIf ('Defs/ResearchProjectDef/hiddenPrerequisites/li[' + (Or $removedResearch 'text()') + ']')
+}
 Comment 'Framework (AOBA.Framework) visual comps on the kept guns'
 RemoveIf 'Defs/ThingDef/comps/li[@Class="Fortified.CompProperties_CastFlecker" or @Class="Fortified.CompProperties_CastPushHeat"]'
 Comment 'Difficulty cost variants that need the removed reinforced barrel'
