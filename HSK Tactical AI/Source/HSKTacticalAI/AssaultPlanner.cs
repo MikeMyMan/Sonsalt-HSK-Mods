@@ -386,17 +386,33 @@ namespace HSKTacticalAI
 
         // ---------------- breach / siege / standoff ----------------
 
+        // HSK renamed its tools in Hardcore-SK ee8bc72 ("Primitive Tools", alpha 2026-10-26): TFJ_Tool_Mining_Pickaxe ->
+        // Tool_Mining_Pickaxe, TFJ_Tool_Paxe -> Tool_Paxe. Both names are kept (HSK 1.7 still has the old ones until it
+        // merges alpha), plus the new stone-age pickaxe and hammer.
         private static readonly HashSet<string> BreachTools = new HashSet<string>
         {
             "MeleeWeapon_BreachAxe", "MeleeWeapon_Sledgehammer", "MeleeWeapon_Warhammer", "HSK_GordonCrowbar",
-            "PEMC_Tool_Jackhammer", "TFJ_Tool_Mining_Pickaxe", "TFJ_Tool_Paxe", "MeleeWeapon_Zeushammer"
+            "PEMC_Tool_Jackhammer", "TFJ_Tool_Mining_Pickaxe", "TFJ_Tool_Paxe", "Tool_Mining_Pickaxe", "Tool_Paxe",
+            "MeleeWeapon_Zeushammer", "Tool_PrimitivePickaxe", "Tool_PrimitiveHammer"
         };
+
+        /// <summary>Stone-age tools (HSK primitive pickaxe and hammer, ~3 wall dps): a tenth of the breach axe's budget, and on
+        /// their own they don't count as the raid's means of breaching (BreachKit still brings the kit).</summary>
+        private static readonly HashSet<string> PrimitiveBreachTools = new HashSet<string> { "Tool_PrimitivePickaxe", "Tool_PrimitiveHammer" };
 
         public static bool HasBreachTool(Pawn p) => p.equipment?.Primary != null && BreachTools.Contains(p.equipment.Primary.def.defName);
 
-        /// <summary>Wall HP one tool user takes down in reasonable time: breach axe full budget, other tools a fifth.</summary>
-        public static float ToolBudget(Pawn p) =>
-            !HasBreachTool(p) ? 0f : p.equipment.Primary.def.defName == "MeleeWeapon_BreachAxe" ? TacticalAIMod.Settings.toolHpBudget : TacticalAIMod.Settings.toolHpBudget * 0.2f;
+        public static bool HasPrimitiveBreachTool(Pawn p) => p.equipment?.Primary != null && PrimitiveBreachTools.Contains(p.equipment.Primary.def.defName);
+
+        /// <summary>Wall HP one tool user takes down in reasonable time: breach axe full budget, other tools a fifth,
+        /// stone-age tools a tenth.</summary>
+        public static float ToolBudget(Pawn p)
+        {
+            if (!HasBreachTool(p)) return 0f;
+            float full = TacticalAIMod.Settings.toolHpBudget;
+            string d = p.equipment.Primary.def.defName;
+            return d == "MeleeWeapon_BreachAxe" ? full : PrimitiveBreachTools.Contains(d) ? full * 0.1f : full * 0.2f;
+        }
 
         public static Verb DestructiveRangedVerb(Pawn p)
         {

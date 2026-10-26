@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased: HSK Tactical AI 0.3.1
+
+- **HSK primitive tools** (Hardcore-SK ee8bc72, on HSK `alpha` and coming to 1.7 with its next merge): the new
+  stone-age pickaxe and hammer count as breach tools. At about 3 wall damage per second they get a tenth of the breach
+  axe's budget. On their own they don't count as the raid's means of breaching, so a tribal raid with only those still
+  brings its breach kit, and the tools help on the wall. The primitive pickaxe digs no faster than a steel one, so it
+  doesn't make a raid tunnel.
+- **HSK renamed its tools** in the same commit (`TFJ_Tool_Mining_Pickaxe` -> `Tool_Mining_Pickaxe`, `TFJ_Tool_Paxe` ->
+  `Tool_Paxe`). Both names are recognised, so pickaxes and paxes keep working as breach tools on either HSK version.
+- AI Lab on 1.7 (the tools aren't in HSK 1.7 yet): tribal and medieval fortress raids still bring their kit and breach,
+  no errors.
+
 ## 1.7.0 (2026-10-26): HSK Tactical AI 0.3.0 (ideas from Raid Tactics)
 
 Raid Tactics (Funstab) does most of its work before a raid arrives. Tactical AI is marked incompatible with it, so its
