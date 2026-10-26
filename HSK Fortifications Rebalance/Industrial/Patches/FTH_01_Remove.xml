@@ -93,6 +93,16 @@
     <match Class="PatchOperationRemove"><xpath>Defs/ThingDef/comps/li[@Class="CompProperties_AffectedByFacilities"]/linkableFacilities/li[text()="FT_ENIAC"]</xpath></match>
   </Operation>
 
+  <!-- Prerequisites that point at the removed research projects (MedicineProduction gets FT_Chemistry without XML Extensions) -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ResearchProjectDef/prerequisites/li[text()="FT_Chemistry" or text()="FT_Concrete" or text()="FT_ENIAC" or text()="FT_HeavyArtillery" or text()="FT_IndustrialCannon" or text()="FT_Lathe"]</xpath>
+    <match Class="PatchOperationRemove"><xpath>Defs/ResearchProjectDef/prerequisites/li[text()="FT_Chemistry" or text()="FT_Concrete" or text()="FT_ENIAC" or text()="FT_HeavyArtillery" or text()="FT_IndustrialCannon" or text()="FT_Lathe"]</xpath></match>
+  </Operation>
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ResearchProjectDef/hiddenPrerequisites/li[text()="FT_Chemistry" or text()="FT_Concrete" or text()="FT_ENIAC" or text()="FT_HeavyArtillery" or text()="FT_IndustrialCannon" or text()="FT_Lathe"]</xpath>
+    <match Class="PatchOperationRemove"><xpath>Defs/ResearchProjectDef/hiddenPrerequisites/li[text()="FT_Chemistry" or text()="FT_Concrete" or text()="FT_ENIAC" or text()="FT_HeavyArtillery" or text()="FT_IndustrialCannon" or text()="FT_Lathe"]</xpath></match>
+  </Operation>
+
   <!-- Framework (AOBA.Framework) visual comps on the kept guns -->
   <Operation Class="PatchOperationConditional">
     <xpath>Defs/ThingDef/comps/li[@Class="Fortified.CompProperties_CastFlecker" or @Class="Fortified.CompProperties_CastPushHeat"]</xpath>

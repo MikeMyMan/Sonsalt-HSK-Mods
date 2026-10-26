@@ -19,7 +19,7 @@
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
     <OutputPath>..\$(RimVersion)\Assemblies\</OutputPath>
-    <Version>2.1.0</Version>
+    <Version>2.1.1</Version>
     <GenerateDependencyFile>false</GenerateDependencyFile>
   </PropertyGroup>
 

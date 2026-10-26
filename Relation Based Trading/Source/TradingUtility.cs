@@ -42,6 +42,9 @@ namespace RelationBasedTrading
 
         public static bool HSKActive = false;
 
+        private static readonly HarmonyLib.AccessTools.FieldRef<CompQuality, QualityCategory> QualityField =
+            HarmonyLib.AccessTools.FieldRefAccess<CompQuality, QualityCategory>("qualityInt");
+
         public const int HostileBelow = -75;
         public const int AllyAt = 75;
 
@@ -50,6 +53,17 @@ namespace RelationBasedTrading
         // ------------------------------------------------------------------ limits
 
         public static float T(int goodwill) => Mathf.Clamp01((goodwill - HostileBelow) / (float)(AllyAt - HostileBelow));
+
+        /// <summary>
+        /// Round(steps * T(goodwill)) in whole numbers. Some goodwill values sit exactly on a step (tech steps at -50, 0
+        /// and 50), and float rounding there differed between builds.
+        /// </summary>
+        public static int Step(int goodwill, int steps)
+        {
+            int span = AllyAt - HostileBelow;
+            int g = Mathf.Clamp(goodwill - HostileBelow, 0, span);
+            return (2 * steps * g + span) / (2 * span);
+        }
 
         public static TechLevel FactionTechOf(Faction faction)
         {
@@ -67,9 +81,9 @@ namespace RelationBasedTrading
             l.DangerAllowed = goodwill >= s.weaponGoodwill;
             l.DangerFactor = Mathf.Max(1f, s.weaponValueFactor);
             l.LimitQuality = s.limitQuality;
-            l.MaxQuality = (QualityCategory)Mathf.Clamp((int)QualityCategory.Normal + Mathf.FloorToInt(4f * t + 0.5f), 0, (int)QualityCategory.Legendary);
+            l.MaxQuality = (QualityCategory)Mathf.Clamp((int)QualityCategory.Normal + Step(goodwill, 4), 0, (int)QualityCategory.Legendary);
             l.LimitTech = s.limitTech;
-            int tech = Mathf.Clamp((int)factionTech - 2 + Mathf.FloorToInt(3f * t + 0.5f), (int)TechLevel.Undefined, (int)TechLevel.Ultra);
+            int tech = Mathf.Clamp((int)factionTech - 2 + Step(goodwill, 3), (int)TechLevel.Undefined, (int)TechLevel.Ultra);
             if (tech == (int)TechLevel.Animal)
                 tech = (int)TechLevel.Undefined; // same effect (only goods without research), clearer in the settings preview
             if (goodwill >= AllyAt && factionTech >= TechLevel.Spacer)
@@ -149,7 +163,14 @@ namespace RelationBasedTrading
                     if (cq == null)
                         return false;
                     if (q != l.MaxQuality)
-                        cq.SetQuality(l.MaxQuality, ArtGenerationContext.Outsider);
+                    {
+                        // SetQuality on a book rebuilds it and generates a random author pawn, which is slow and can
+                        // throw in big modlists. The trader reroll rebuilds it anyway, so only set the value here.
+                        if (inner is Book)
+                            QualityField(cq) = l.MaxQuality;
+                        else
+                            cq.SetQuality(l.MaxQuality, ArtGenerationContext.Outsider);
+                    }
                 }
             }
             if (float.IsPositiveInfinity(l.MaxValue))

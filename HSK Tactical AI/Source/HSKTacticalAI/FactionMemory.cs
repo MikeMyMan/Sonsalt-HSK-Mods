@@ -120,7 +120,8 @@ namespace HSKTacticalAI
         public static void RecordCasualty(Pawn p, DamageInfo dinfo)
         {
             AssaultPlan plan = AssaultPlanner.PlanOf(p) ?? AssaultPlanner.Plans.Values.FirstOrDefault(pl => pl.members.Contains(p));
-            if (plan == null || plan.memoryDone || !plan.downedBy.TryAdd(p, Cause(p, dinfo))) return;
+            if (plan == null || plan.memoryDone || plan.downedBy.ContainsKey(p)) return;
+            plan.downedBy[p] = Cause(p, dinfo);   // (no Dictionary.TryAdd on .NET Framework: the 1.6 build)
         }
 
         private static string Cause(Pawn p, DamageInfo dinfo)
