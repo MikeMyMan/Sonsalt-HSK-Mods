@@ -1,5 +1,41 @@
 # Changelog
 
+## 1.6.0 (2026-10-26): HSK Tactical AI 0.2.2
+
+- **The 1.7 builds catch up:** Tactical AI and Weapon Blueprints for 1.7 are rebuilt against RimWorld 1.7.4985, so the
+  gun-team fix from 0.2.1 (bearers stay with the gunner, the gunner waits 15 s at most) is in the 1.7 build too. AI Lab
+  on 1.7: both gun teams set up their guns in the patrol and hold raids that used to stall on 1.6.
+- **Crew-served guns aren't left behind** (playtest): when the raid leaves - a planned withdrawal, the game's own "leave"
+  after enough damage or losses, or our switch to a plain exit - the nearest able crew member packs the set-up gun up
+  (4 s) and carries it out. If it stands in heavy fire he wrecks it instead (1.5 s, within 15 cells). Only when nobody
+  can reach it, or the raid flees in panic, does it stay behind as loot. A gun still packed leaves with its gunner.
+- **Covering fire for the wounded** (playtest): a raider carrying a downed comrade in the defenders' fire or sight gets up
+  to two unhurt raiders with guns from within 25 cells, at once (they drop what they were doing). They take cover 3-8
+  cells off him on the side toward the defence and fire at whoever threatens him until he is out of fire. No One Left Behind rescues into fire, blocked since 0.2.0,
+  now go ahead when two such riflemen are there and the fire isn't extreme. Part of the overwatch doctrine (dull raids
+  don't); switch "Cover the wounded".
+- **Reacting to contact** (playtest: raiders kept walking, or went to pick up a wounded man, while a defender stepped into
+  sight and opened fire): every second, a raider with a gun who gets a defender newly in sight within his range while
+  walking, waiting or going for a downed comrade breaks it off, takes cover close by and fires back. Sharp commands react
+  at once, dull ones up to 2 s late. A rescue into a defender's sight only goes ahead when two riflemen can cover it;
+  the No One Left Behind block now also counts a defender's sight, not only the threat map (which lags behind a defender
+  who just stepped out). Carriers keep carrying; breachers at their charges, gun crews, shield bearers and raiders
+  already fighting keep at their task. Switch "React to contact".
+- **Siege supplies by pack animal** (playtest): vanilla drops every siege's building material, shells and meals by drop
+  pod, medieval kingdoms and tribes included. Tribal and medieval sieges now get them on pack animals (the faction's
+  caravan carriers, else muffalo) from the map edge nearest the camp; the animals unload at the camp and leave.
+  Industrial and later factions keep their drop pods. Switch "Siege supplies by pack animal".
+- **Full range for guns** (playtest):
+  - crew-served guns set up at up to 95 % of their range (was 55-80 %, at most 55 cells), the longest post out of fire
+    preferred;
+  - siege camps go as far out as their guns reach: 90 % of the shortest reach among the siege guns the faction can get,
+    plus the 10 cells the guns may stand forward in the camp (35-110 cells; was a fixed 75), and need sight of a wall
+    within that reach.
+- The 1.6 build projects compile against the Krafs.Rimworld.Ref 1.6 reference package, so 1.6 builds work whichever
+  game version is installed.
+- AI Lab: `labDownRaiderTick` downs the most exposed raider at a set time (rescue and covering-fire tests); new counters
+  for packed/wrecked guns, covering fire, covered rescues, siege caravans, siege reach and camp distance.
+
 ## 1.5.0 (2026-10-26): RimWorld 1.6 support
 
 All seven mods now also run on **RimWorld 1.6 with HSK `alpha`** (the HSK 1.6 branch). Tested with HSK alpha's full

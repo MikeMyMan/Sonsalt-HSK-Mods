@@ -102,6 +102,7 @@ namespace HSKTacticalAI
             plan.movingElement = 0;
             plan.boundTick = plan.withdrawTick;
             Grenades.OrderScreen(map, plan, alive);
+            if (plan.csw.Count > 0) CrewWeapons.OnWithdraw(map, plan);   // pack the guns up or wreck them
             Started++;
             if (Prefs.DevMode) Verse.Log.Message("[HSK Tactical AI] withdrawal: " + why + " exit=" + plan.exitCell + " route=" + plan.withdrawRoute.Count);
         }
@@ -300,7 +301,7 @@ namespace HSKTacticalAI
     [HarmonyPatch]
     public static class Patch_NOLBNoRescueIntoFire
     {
-        public static int Blocked;
+        public static int Blocked, Covered;
 
         public static bool Prepare() => AccessTools.TypeByName("CM_No_Pawn_Left_Behind.JobGiver_Rescue") != null;
 
@@ -310,8 +311,12 @@ namespace HSKTacticalAI
         public static void Postfix(Pawn pawn, ref Job __result)
         {
             if (__result == null || pawn?.Map == null || !pawn.Map.IsPlayerHome || pawn.Faction == null || !pawn.Faction.HostileTo(Faction.OfPlayer)) return;
-            if (!(__result.targetA.Thing is Pawn ally) || !Withdrawal.InOpenFire(pawn.Map, ally.Position)) return;
+            // in the threat map's fire, or (contact reaction) in a defender's sight - the threat map lags behind a defender who
+            // just stepped out
+            if (!(__result.targetA.Thing is Pawn ally)) return;
+            if (!Withdrawal.InOpenFire(pawn.Map, ally.Position) && !(TacticalAIMod.Settings.contactReaction && CoverCarry.InFire(pawn.Map, ally.Position))) return;
             if (Suppression.Defenders(pawn.Map, ally.Position, 60f).Count == 0) return;
+            if (CoverCarry.CoveredRescue(pawn, ally)) { Covered++; return; }   // two riflemen cover him (CoverCarry)
             __result = null;
             Blocked++;
         }

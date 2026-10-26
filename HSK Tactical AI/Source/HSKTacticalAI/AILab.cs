@@ -1156,10 +1156,49 @@ namespace HSKTacticalAI
 
         // ---------------- run & metrics ----------------
 
+        private bool labDownDone, labCarryDone;
+        private int labCarryAt = int.MaxValue;
+        private Pawn labDowned;
+
         private void RunTick(int now)
         {
             ticksRun++;
             if (now % 60 == 0) LabDefenders.Tick(map, center, defenders, raiders, now);
+            // rescue / covering-fire tests: down the raider most in the defenders' fire, nearest the base (no bleeding)
+            int downAt = TacticalAIMod.Settings.labDownRaiderTick;
+            if (downAt > 0 && !labDownDone && now - raidStartTick >= downAt && now % 30 == 0)
+            {
+                // the first raider from then on who is in a defender's fire or sight (waits up to 50 s for one)
+                Pawn victim = raiders.Where(r => r.Spawned && !r.Downed && !r.Dead && CoverCarry.InFire(map, r.Position))
+                                     .OrderBy(r => r.Position.DistanceToSquared(center)).FirstOrDefault();
+                if (victim != null || now - raidStartTick >= downAt + 3000) { labDownDone = true; downAt = now - raidStartTick; labCarryAt = now + 60; }
+                if (victim != null)
+                {
+                    HealthUtility.DamageUntilDowned(victim, false);
+                    notes += "labDowned=" + victim.LabelShort + "@" + victim.Position + " ";
+                    labDowned = victim;
+                }
+            }
+            // ... and a second later the nearest healthy raider carries him off toward the raid's edge (as a withdrawal
+            // carrier does), so the covering fire has something to cover
+            if (labDowned != null && !labCarryDone && now >= labCarryAt)
+            {
+                labCarryDone = true;
+                if (labDowned.Spawned && labDowned.Downed)
+                {
+                    Pawn carrier = raiders.Where(r => r != labDowned && r.Spawned && !r.Downed && !r.Dead && !r.InMentalState && r.carryTracker?.CarriedThing == null
+                                                      && r.CanReserveAndReach(labDowned, PathEndMode.Touch, Danger.Deadly))
+                                          .OrderBy(r => r.Position.DistanceToSquared(labDowned.Position)).FirstOrDefault();
+                    IntVec3 edge = EastEntryCell();
+                    if (carrier != null && edge.IsValid)
+                    {
+                        Job carry = JobMaker.MakeJob(JobDefOf.Kidnap, labDowned, edge);
+                        carry.count = 1;
+                        carrier.jobs.StartJob(carry, JobCondition.InterruptForced);
+                        notes += "labCarrier=" + carrier.LabelShort + " ";
+                    }
+                }
+            }
             var tm = MapComponent_TacticalAI.For(map)?.Threat;
             if (tm != null)
             {
@@ -1423,6 +1462,8 @@ namespace HSKTacticalAI
                 ["siegeDirectFireNoSpot"] = Patch_DirectFireArtySpot.NoSpot,
                 ["siegeCampWithSight"] = SiegeGuards.SpotsWithSight,
                 ["siegeCampBlind"] = SiegeGuards.SpotsBlind,
+                ["siegeReach"] = SiegeGuards.LastReach,
+                ["siegeCampDist"] = SiegeGuards.LastCampDist,
                 ["siegeMarks"] = SiegeGuards.Marks,
                 ["cornerPosts"] = CornerFire.Posts,
                 ["siegeGunStructurePicks"] = Patch_SiegeGunStructureTarget.Picks,
@@ -1478,6 +1519,14 @@ namespace HSKTacticalAI
                 ["cswCoverPosts"] = JobGiver_HSKTAI_CSW.CoverPosts,
                 ["cswDeployed"] = CrewWeapons.Deployed,
                 ["cswAbandoned"] = CrewWeapons.Abandoned,
+                ["cswPackedUp"] = CrewWeapons.PackedUp,
+                ["cswWrecked"] = CrewWeapons.Wrecked,
+                ["coverCarryCovers"] = CoverCarry.Covers,
+                ["coverCarryShots"] = CoverCarry.Shots,
+                ["coverCarryMoves"] = CoverCarry.Moves,
+                ["siegeCaravans"] = SiegeCaravan.Deliveries,
+                ["siegeCaravanAnimals"] = SiegeCaravan.Animals,
+                ["siegeCaravanUnloads"] = SiegeCaravan.Unloaded,
                 ["cswWaits"] = CrewWeapons.Waits,
                 ["cswGuns"] = CrewWeapons.Seen,
                 ["cswPlan"] = AssaultPlanner.LastPlan != null ? string.Join("; ", AssaultPlanner.LastPlan.csw.Select(t => t.Describe())) : "",
@@ -1565,6 +1614,10 @@ namespace HSKTacticalAI
                 ["unarmedKept"] = JobGiver_HSKTAI_Unarmed.Kept,
                 ["unarmedReserveMoves"] = JobGiver_HSKTAI_Unarmed.ReserveMoves,
                 ["nolbRescuesBlocked"] = Patch_NOLBNoRescueIntoFire.Blocked,
+                ["nolbRescuesCovered"] = Patch_NOLBNoRescueIntoFire.Covered,
+                ["contacts"] = Contact.Contacts,
+                ["contactReactions"] = Contact.Reactions,
+                ["contactRescuesAborted"] = Contact.RescuesAborted,
                 ["satisfiedHeldTicks"] = SatisfiedHold.HeldTicks,
                 ["satisfiedReleases"] = SatisfiedHold.Releases,
                 ["satisfiedRelease"] = SatisfiedHold.LastRelease,

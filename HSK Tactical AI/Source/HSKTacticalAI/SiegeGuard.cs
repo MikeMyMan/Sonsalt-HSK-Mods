@@ -34,6 +34,7 @@ namespace HSKTacticalAI
     {
         public static int PlacementJobs, Rotations, Shots, Guards;
         public static int SpotsWithSight, SpotsBlind;
+        public static float LastReach = -1f, LastCampDist = -1f;
 
         public class Post
         {
@@ -139,19 +140,44 @@ namespace HSKTacticalAI
         }
 
         /// <summary>
+        /// How far the siege's guns reach: vanilla builds a random "Artillery_BaseDestroyer" gun (HSK keeps them to the
+        /// faction's tech), so the camp is planned for the shortest reach among the ones this faction can get - whichever is
+        /// built still hits from the camp's front edge (playtest 2026-10-26: "use full range of ... guns for sieges").
+        /// </summary>
+        public static float SiegeReach(Faction f)
+        {
+            var defs = DefDatabase<ThingDef>.AllDefs.Where(d => d.building?.buildingTags != null && d.building.turretGunDef != null
+                                                              && d.building.buildingTags.Contains("Artillery_BaseDestroyer")).ToList();
+            var mine = f == null ? defs : defs.Where(d => d.techLevel <= f.def.techLevel).ToList();
+            if (mine.Count == 0) mine = defs;
+            float reach = float.MaxValue;
+            foreach (var d in mine)
+            {
+                var vp = d.building.turretGunDef.Verbs?.FirstOrDefault(v => !v.IsMeleeAttack);
+                if (vp != null && vp.range > 10f) reach = Mathf.Min(reach, Mathf.Min(vp.range, 120f));
+            }
+            return reach == float.MaxValue ? 80f : reach;
+        }
+
+        /// <summary>
         /// Where our raid sets up its siege camp: vanilla looks within 60 cells of the raid's position (often 100+ cells from the
-        /// base: guns out of range, nobody in contact). We hand it a point about 75 cells from the objective on the raid's side,
-        /// so the camp stays out of the defenders' fire but its guns reach.
+        /// base: guns out of range, nobody in contact). We hand it a point as far from the objective as its guns reach (90 % of
+        /// the shortest reach, plus the 10 cells the guns may stand forward in the camp; 35-110 cells), on the raid's side, so
+        /// the camp stays as far out of the defenders' fire as its guns allow.
         /// </summary>
         public static IntVec3 SiegeSpot(AssaultPlan plan, Map map)
         {
             IntVec3 from = plan.gather;
+            float reach = SiegeReach(plan.members.FirstOrDefault(p => p.Faction != null)?.Faction);
+            float campDist = Mathf.Clamp(reach * 0.9f + 10f, 35f, 110f);
+            LastReach = reach;
+            LastCampDist = campDist;
             if (TacticalAIMod.Settings.siegeGuards && plan.objective.IsValid)
             {
                 float d = plan.gather.DistanceTo(plan.objective);
-                if (d > 80f)
+                if (d > campDist + 5f)
                 {
-                    float k = 75f / d;
+                    float k = campDist / d;
                     var c = new IntVec3(plan.objective.x + Mathf.RoundToInt((plan.gather.x - plan.objective.x) * k), 0, plan.objective.z + Mathf.RoundToInt((plan.gather.z - plan.objective.z) * k));
                     c = CellFinder.StandableCellNear(c, map, 6f);
                     if (c.IsValid && map.reachability.CanReach(c, plan.gather, PathEndMode.OnCell, TraverseMode.NoPassClosedDoors, Danger.Deadly)) from = c;
@@ -169,7 +195,8 @@ namespace HSKTacticalAI
             if (TacticalAIMod.Settings.siegeGuards && wall != null)
             {
                 IntVec3 w = wall.Position;
-                bool Sees(IntVec3 c) => c.DistanceTo(w) <= 80f && GenSight.LineOfSight(c, w, map, true);   // guns in the camp reach the wall (90 mm: 92)
+                float sightRange = reach * 0.9f + 12f;
+                bool Sees(IntVec3 c) => c.DistanceTo(w) <= sightRange && GenSight.LineOfSight(c, w, map, true);   // guns in the camp reach the wall
                 IntVec3 seen = RCellFinder.FindSiegePositionFrom(from, map, errorOnFail: false, validator: Sees);
                 if (seen.IsValid && Sees(seen)) { SpotsWithSight++; return seen; }
                 SpotsBlind++;

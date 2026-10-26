@@ -27,6 +27,9 @@ namespace HSKTacticalAI
             if (map.IsHashIntervalTick(60)) { t = Perf.Start(); AssaultPlanner.Tick(map); Perf.Stop("tick.planner", t); }
             if (map.IsHashIntervalTick(30 * Adaptive.Load)) { t = Perf.Start(); Posture.Tick(map); Perf.Stop("tick.posture", t); }
             if (map.IsHashIntervalTick(60)) RunAndGunCompat.Tick(map);
+            if (map.IsHashIntervalTick(60)) SiegeCaravan.Tick(map);
+            if (map.IsHashIntervalTick(60)) CoverCarry.Tick(map);
+            if (map.IsHashIntervalTick(60)) { t = Perf.Start(); Contact.Tick(map); Perf.Stop("tick.contact", t); }
             // raid memory: a raid whose members are all dead, downed or gone writes what its faction learned
             if (map.IsHashIntervalTick(250))
                 foreach (var plan in AssaultPlanner.Plans.Values)

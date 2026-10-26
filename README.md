@@ -42,11 +42,13 @@ Raiders plan their attack instead of walking into your guns:
 - they adapt when the situation changes: defenders who come out are fought where they are (from cover at each weapon's
   range, with flankers), a defence beaten in the field is stormed at once, the objective follows the defence;
 - grenadiers lob explosive rounds over your walls, and bigger raids bring a crew-served gun (M240B, AGS ...) that a
-  team carries, sets up at range and mans before the assault;
+  team carries, sets up near its full range and mans before the assault, and packs up (or wrecks) when the raid leaves;
+- sieges camp as far out as their guns reach; tribal and medieval sieges get their supplies by pack animal, not drop pod;
 - not every raid comes to take the colony: scouts watch from cover and leave, saboteurs set fires, kill livestock,
   pick off a colonist alone outside and leave before your defence turns out;
 - they cross open ground only in cover, behind smoke, with 3:1 odds or by fire and movement;
 - they fight as combined arms: base of fire, overwatch, shield bearers, medics, flanking, fire discipline by range;
+  riflemen cover comrades who carry the wounded out of your fire, and raiders react when you step into sight;
 - under realistic suppression they go prone (drawn lying down, labelled "prone");
 - they plunder instead of chasing you through your corridors, and withdraw when the attack fails;
 - factions remember earlier raids (only through survivors) and adapt their approach and loadout within budget;

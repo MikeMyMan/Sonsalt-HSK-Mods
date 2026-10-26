@@ -29,4 +29,19 @@
     <casualInterruptible>false</casualInterruptible>
   </JobDef>
 
+  <!-- Crew-served guns when the raid withdraws: packed up and carried out, or wrecked under fire. -->
+  <JobDef>
+    <defName>HSKTAI_PackCSW</defName>
+    <driverClass>HSKTacticalAI.JobDriver_HSKTAI_PackCSW</driverClass>
+    <reportString>packing up TargetA.</reportString>
+    <casualInterruptible>false</casualInterruptible>
+  </JobDef>
+
+  <JobDef>
+    <defName>HSKTAI_WreckCSW</defName>
+    <driverClass>HSKTacticalAI.JobDriver_HSKTAI_WreckCSW</driverClass>
+    <reportString>wrecking TargetA.</reportString>
+    <casualInterruptible>false</casualInterruptible>
+  </JobDef>
+
 </Defs>

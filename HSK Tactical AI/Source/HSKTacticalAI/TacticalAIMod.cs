@@ -171,6 +171,9 @@ namespace HSKTacticalAI
         public bool evasion = true;                  // raiders leave gas, fire and the landing area of the defenders' explosives
         public bool duckWhenAimed = true;            // a raider in the open that a defender is aiming at takes cover or goes prone             // grenades may be lobbed over one wall into an unroofed area
         public bool medics = true;                   // the raid medic smokes, pulls the wounded out of fire and tends them
+        public bool coverCarry = true;               // healthy gunners cover raiders who carry a downed comrade out of fire
+        public bool siegePackAnimals = true;         // pre-industrial sieges get their supplies by pack animal instead of drop pod
+        public bool contactReaction = true;          // a defender newly in sight: gunners break off walking / rescues, take cover, fire
         public float medicReach = 30f;           // open-ground approach failed: try a breach before leaving
         public float suppressionArmorFloor = 0.6f;    // near misses against armour the round cannot penetrate (x2 pen) still count this much
         public float suppressionAuto = 1.5f;         // machine guns (bursts of 8+); automatic weapons x1.2
@@ -222,6 +225,7 @@ namespace HSKTacticalAI
         public int sabotageTicks = 6000;             // a sabotage raid leaves after this long at the latest
         public int sabotageIdleTicks = 1500;         // ... or once it has found nothing to wreck for this long
         public string raidGoalOverride = "";        // AI Lab only (not saved): assault | scout | sabotage
+        public int labDownRaiderTick = -1;           // AI Lab only (not saved): this many ticks into the raid, down the most exposed raider (rescue / covering-fire tests)
         public int cornerHoldTicks = 1800;           // ... and clearing the gap by fire before entry: at most this long after H-hour
 
         public override void ExposeData()
@@ -364,6 +368,9 @@ namespace HSKTacticalAI
             Scribe_Values.Look(ref threatAdvance, "threatAdvance", true);
             Scribe_Values.Look(ref duckWhenAimed, "duckWhenAimed", true);
             Scribe_Values.Look(ref medics, "medics", true);
+            Scribe_Values.Look(ref coverCarry, "coverCarry", true);
+            Scribe_Values.Look(ref siegePackAnimals, "siegePackAnimals", true);
+            Scribe_Values.Look(ref contactReaction, "contactReaction", true);
             Scribe_Values.Look(ref medicReach, "medicReach", 30f);
             Scribe_Values.Look(ref suppressionArmorFloor, "suppressionArmorFloor", 0.6f);
             Scribe_Values.Look(ref suppressionAuto, "suppressionAuto", 1.5f);
@@ -504,7 +511,7 @@ namespace HSKTacticalAI
             l.CheckboxLabeled("Burn wooden walls", ref fireBreaching, "Raiders set wooden walls on fire instead of blowing them.");
             l.CheckboxLabeled("Explosive rounds instead of gas", ref gasAmmoSwap, "Raiders whose launcher carries only gas rounds (the waster heavies' 40 mm tox grenades) swap three quarters of them for the explosive round of the same calibre - one for one, no extra gear. Gas only works in an enclosed room; they keep a quarter for that.");
             l.CheckboxLabeled("Keep the weapon's range", ref keepRange, "Each raider fights at its weapon's distance: bowmen and long guns (rifles, more so snipers) step back when you get too close, pistols and SMGs close in before they shoot, melee raiders go for anyone near them in the open. Part of tactical competence: a dull raid fights from wherever it stands.");
-            l.CheckboxLabeled("Crew-served weapons", ref crewWeapons, "Industrial and later raids of 8 or more bring a light crew-served gun (16 or more: two) - a manned turret of up to 40 kg from your modlist (M240B, AGS-17, ...). The gunner carries it packed, one or two raiders carry its ammo. The team sets it up at range in cover with a line of fire, the gunner mans it, the bearers reload it; the assault waits until the guns fire. If the crew falls or the raid withdraws, the gun stays behind as loot.");
+            l.CheckboxLabeled("Crew-served weapons", ref crewWeapons, "Industrial and later raids of 8 or more bring a light crew-served gun (16 or more: two) - a manned turret of up to 40 kg from your modlist (M240B, AGS-17, ...). The gunner carries it packed, one or two raiders carry its ammo. The team sets it up at range in cover with a line of fire, the gunner mans it, the bearers reload it; the assault waits until the guns fire. When the raid leaves, a crew member packs the gun up and carries it out, or wrecks it if it stands in your fire; only if the crew is down, or the raid flees in panic, does it stay behind as loot.");
             l.CheckboxLabeled("Fight defenders who come out", ref fieldFight, "When your colonists leave the base to meet the raid, the raid turns on them: shooters take cover at their weapon's distance and fire, melee raiders charge, a sharp command sends men round their side. When they are back inside, the raid returns to its plan. Part of tactical competence: a dull raid only fires back when hit.");
             l.CheckboxLabeled("Grenade launchers fire over walls", ref indirectFire, "A grenadier with an explosive round and no direct shot lobs it over the wall: at your colonists, turrets and workshops under open sky, spread over the base, never near his own men. One real round per shot; scatter by distance and skill. Part of tactical competence.");
             l.CheckboxLabeled("Grenade launchers stay out of the breach", ref launchersStayOut, "Once their wall is open, raiders with an explosive launcher (M79 and the like) don't follow the assault through the hole: they stay outside as base of fire and shell whatever shows itself, over the walls too. They shoot at the wall from further out, from cover if there is any.");
@@ -536,6 +543,9 @@ namespace HSKTacticalAI
             l.CheckboxLabeled("Raiding party", ref raidingParty, "In raids of 10 or more, a sixth of the raiders go for your valuables, livestock and crops from the start, out of your fire, while the rest attack.");
             l.CheckboxLabeled("Evade and duck", ref evasion, "Raiders get out of your tox gas, away from fire and from where your grenades and launched rounds will land; a raider in the open that you are aiming at ducks into cover or drops flat.");
             l.CheckboxLabeled("Combat medics", ref medics, "The raid's medic throws smoke on a comrade down in your field of fire, carries him to cover and tends him there.");
+            l.CheckboxLabeled("Cover the wounded", ref coverCarry, "When a raider carries a downed comrade out through your fire (the medic, a withdrawal, No One Left Behind), up to two unhurt raiders with guns nearby take cover beside him on your side and fire at whoever threatens him, until he is out of fire. Part of tactical competence: a dull raid lets its carriers run alone.");
+            l.CheckboxLabeled("React to contact", ref contactReaction, "When one of your colonists comes into sight within a raider's range while he is walking, waiting or going for a downed comrade, he breaks it off, takes cover close by and fires back - at once under a sharp command, up to 2 s late under a dull one. A rescue into your sight only goes ahead when two riflemen can cover it. Breachers at their charges, gun crews and raiders carrying the wounded keep at their task.");
+            l.CheckboxLabeled("Siege supplies by pack animal", ref siegePackAnimals, "Tribal and medieval factions that lay a siege get their building material, ammunition and food brought in on pack animals (their caravans' carriers, else muffalo) from the map edge nearest the camp, instead of by drop pod. The animals unload at the camp and leave. Industrial and later factions keep their drop pods.");
             l.CheckboxLabeled("Coordinated assault", ref syncedAssault, "Walk-in assaults from several directions arrive together (groups on shorter routes start later), and inside each group half moves while the other half stops and fires, so the defenders are never without fire on them.");
             l.CheckboxLabeled("Strength check before the assault", ref forceRatioCheck,
                 "Raids compare their strength with your defenders (weapons, skill, armour, health, turrets). " +
