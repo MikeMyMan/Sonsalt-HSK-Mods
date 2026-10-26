@@ -180,6 +180,9 @@ namespace HSKTacticalAI
                         break;
                     case State.Settling:
                         if (now - stateTick < 300) return;
+                        // arrival tests: the threat map must have read the defence before the raid is sent (max 50 s)
+                        if (!string.IsNullOrEmpty(TacticalAIMod.Settings.arrivalOverride) && now - stateTick < 3000
+                            && (MapComponent_TacticalAI.For(map)?.Threat?.CompletedCycles ?? 0) == 0) return;
                         SpawnRaid();
                         state = raiders.Count > 0 ? State.Running : State.Done;
                         if (raiders.Count == 0) { outcome = "noRaid"; WriteResults(); }
@@ -847,6 +850,7 @@ namespace HSKTacticalAI
         {
             var cfg = AILab.Config;
             raidFaction = faction;
+            SeedMemory(raidFaction);   // before the incident too: escalation, intent and the raid letter read it there
             var before = new HashSet<Pawn>(map.mapPawns.SpawnedPawnsInFaction(raidFaction));
             var parms = new IncidentParms
             {
@@ -1157,6 +1161,7 @@ namespace HSKTacticalAI
         // ---------------- run & metrics ----------------
 
         private bool labDownDone, labCarryDone;
+        private int defendersDownSince = -1;
         private int labCarryAt = int.MaxValue;
         private Pawn labDowned;
 
@@ -1260,7 +1265,13 @@ namespace HSKTacticalAI
                         : Withdrawal.Started > 0 ? "raidWithdrew"
                         : "raidDefeated";
             }
-            else if (defendersActive == 0) outcome = "defendersDown";
+            else if (defendersActive == 0)
+            {
+                // slaving / punitive tests: what the raid does after the defence is down is the point - run on up to 60 s
+                if (defendersDownSince < 0) defendersDownSince = now;
+                bool watchAfter = plan != null && plan.intent != RaidIntent.Plunder && now - defendersDownSince < 3600;
+                if (!watchAfter) outcome = "defendersDown";
+            }
             else if (now - raidStartTick > AILab.Config.maxTicks)
                 outcome = AssaultPlanner.LastPlan != null && AssaultPlanner.LastPlan.mode == PlanMode.Siege ? "siege" : "timeout";
             if (outcome.Length > 0)
@@ -1618,6 +1629,28 @@ namespace HSKTacticalAI
                 ["contacts"] = Contact.Contacts,
                 ["contactReactions"] = Contact.Reactions,
                 ["contactRescuesAborted"] = Contact.RescuesAborted,
+                ["raidIntent"] = AssaultPlanner.LastPlan != null ? AssaultPlanner.LastPlan.intent.ToString() : "",
+                ["intentCaptives"] = RaidIntel.Captives,
+                ["intentKidnapJobs"] = RaidIntel.KidnapJobs,
+                ["intentPunitiveExits"] = RaidIntel.PunitiveExits,
+                ["intentPunitiveTransitionsRemoved"] = RaidIntel.PunitiveTransitionsRemoved,
+                ["intentSlavingTransitionsRemoved"] = RaidIntel.SlavingTransitionsRemoved,
+                ["kidnapNoExit"] = RaidIntel.KidnapNoExit,
+                ["kidnapNoVictim"] = RaidIntel.KidnapNoVictim,
+                ["kidnapInFire"] = RaidIntel.KidnapInFire,
+                ["raidsEscalated"] = RaidIntel.Escalated,
+                ["raidLetterLine"] = RaidIntel.LastLetterLine,
+                ["informants"] = RaidIntel.Informants,
+                ["arrivalQuietSides"] = RaidArrival.QuietSides,
+                ["arrivalDropPods"] = RaidArrival.DropPods,
+                ["arrivalWhy"] = RaidArrival.LastWhy,
+                ["opHammers"] = Operations.Hammers,
+                ["opHammerSplits"] = Operations.HammerSplits,
+                ["opHammerHolds"] = Operations.HammerHolds,
+                ["opVanguards"] = Operations.Vanguards,
+                ["opVanguardReleases"] = Operations.VanguardReleases,
+                ["opWhy"] = Operations.LastWhy,
+                ["plannerPodWaits"] = AssaultPlanner.PodWaits,
                 ["satisfiedHeldTicks"] = SatisfiedHold.HeldTicks,
                 ["satisfiedReleases"] = SatisfiedHold.Releases,
                 ["satisfiedRelease"] = SatisfiedHold.LastRelease,

@@ -6,7 +6,7 @@ RimWorld 1.7 (`1.7-super-unstable` branch). Each mod is one folder; copy the fol
 
 | Mod | packageId | Game version | Needs |
 |---|---|---|---|
-| [HSK Tactical AI](#hsk-tactical-ai) (0.2, test release) | `sonsalt.hsk.tacticalai` | 1.6, 1.7 | HSK, Harmony (Combat Extended recommended) |
+| [HSK Tactical AI](#hsk-tactical-ai) (0.3, test release) | `sonsalt.hsk.tacticalai` | 1.6, 1.7 | HSK, Harmony (Combat Extended recommended) |
 | [HSK Weapon Blueprints](#hsk-weapon-blueprints) (0.1, test release) | `sonsalt.hsk.weaponblueprints` | 1.6, 1.7 | Harmony; built for HSK and Combat Extended. New colony only |
 | [Relation Based Trading](#relation-based-trading) (2.1, by TheLoneTec) | `thelonetec.relationbasedtrading` | 1.6, 1.7 (also contains 1.4-1.5 builds, untested) | Harmony |
 | [HSK Fortifications Rebalance](#hsk-fortifications-rebalance) | `sonsalt.hsk.fortifications` | 1.6, 1.7 | HSK + Aoba's Fortifications - Medieval and/or - Industrial |
@@ -34,7 +34,7 @@ the game's auto-sort). Put the compatibility fixes near the end.
 
 ## HSK Tactical AI
 
-A custom raid AI for HSK (0.2 is a test release for the dev team; see the [changelog](CHANGELOG.md) for the full list).
+A custom raid AI for HSK (0.3 is a test release for the dev team; see the [changelog](CHANGELOG.md) for the full list).
 Raiders plan their attack instead of walking into your guns:
 - they read where your guns can shoot (threat map) and avoid killboxes and funnels;
 - they breach several walls at once with what they carry (launchers, explosives, tools, fire, tunnels), and a raid
@@ -51,7 +51,11 @@ Raiders plan their attack instead of walking into your guns:
   riflemen cover comrades who carry the wounded out of your fire, and raiders react when you step into sight;
 - under realistic suppression they go prone (drawn lying down, labelled "prone");
 - they plunder instead of chasing you through your corridors, and withdraw when the attack fails;
-- factions remember earlier raids (only through survivors) and adapt their approach and loadout within budget;
+- factions remember earlier raids (through survivors and prisoners who got away) and adapt their approach, loadout and
+  arrival (the quiet side, drop pods for spacers); beaten factions come back bigger, sometimes for revenge, and the raid
+  letter says why;
+- some assaults come for people (slavers grab a downed colonist and leave) and sharp commands run operations: hammer
+  and anvil (a siege group shells while the rest waits) or an armoured spearhead;
 - how smart a raid acts depends on its leader's intelligence and its faction's tech level (tactical competence): a
   sharp spacer commander uses every tactic and walks around your traps, a dull tribal chief walks into your killbox;
   losing the leader costs the raid its edge.

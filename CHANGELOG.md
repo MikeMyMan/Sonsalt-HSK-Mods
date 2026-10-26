@@ -1,5 +1,45 @@
 # Changelog
 
+## 1.7.0 (2026-10-26): HSK Tactical AI 0.3.0 (ideas from Raid Tactics)
+
+Raid Tactics (Funstab) does most of its work before a raid arrives. Tactical AI is marked incompatible with it, so its
+best ideas now live here, built on our raid memory and tactical competence:
+- **The raid letter says why:** a line on how the faction's last raid here went and what it does about it ("The last
+  group they sent here, all 12 of them, never came back." / "This group is not using your entrance; it is coming
+  through a wall." / "They are after people, not goods.").
+- **Escalation:** a faction you beat here is angry for a while and sends a bigger raid (up to 30 % more points at full
+  anger). A raid that goes its way calms it down; the anger fades with the memory. The raid now knows its own last
+  result even when nobody came back (how many went, how many didn't return).
+- **Slaving and punitive raids:** an assault now comes for goods (as before), for people or for revenge.
+  - Slavers burn and loot nothing and aren't satisfied by damage done (the game's "leave after enough colony damage"
+    goes; heavy losses still send them home). They grab a downed colonist within 25 cells (into your fire only when
+    two riflemen can cover it, or when he lies right next to a slaver) and leave once one of them carries a captive.
+  - A punitive raid only comes after a bad beating its faction knows the reason for. It takes nothing, does not
+    withdraw and has its own break-off triggers removed; it leaves only when nobody of yours has stood for 40 s, or
+    after a day.
+- **Choosing the arrival:** a faction that knows your layout and failed to walk in comes from the map edge whose way to
+  your base crosses the least of your fire. A spacer faction that failed both walking in and breaching drops in by pod
+  at the edge, when its raid type allows pods.
+- **Coordinated operations** (sharp commands, 20 % of raids, twice as likely after a failed raid here):
+  - hammer and anvil: a third of the raid (factions that lay sieges) digs in at the siege spot and shells you; the rest
+    waits out of range and goes in once the guns have been firing about 25 s (counted from the first gun standing; at
+    most 50 s after the assault is otherwise ready);
+  - armoured spearhead: the best-armoured quarter (2-6) goes in first; the rest fight from where they stand and follow
+    once the spearhead is inside, down, or after 20 s.
+- **Released prisoners report back:** a prisoner you release, or one who escapes over the map edge, tells his faction
+  about your defences like a raider who got away (+30 % intel). Not tested in the AI Lab yet.
+- **Drop-pod raids are planned:** the planner waits until the pods have opened (at most 10 s) instead of planning with
+  raiders still inside, which made it fall back to vanilla.
+- Tested in the AI Lab on RimWorld 1.7.4985: slavers took a captive and left with nothing looted; a punitive raid had
+  12 break-off triggers removed and left only when nobody of ours stood; a quiet side was chosen in the village (no fire
+  on the way vs 0.24 on the worst edge); spacers dropped in by pod and were planned once the pods opened; hammer and
+  anvil split 5 into a siege camp with 2 mortars and the assault went in after the shelling; the spearhead went in first
+  and the rest followed once it was inside; the raid letter and escalation (16 instead of 13 raiders) showed; one raid
+  with the full 219-mod list (Fallout 3 included). No errors from the mod.
+- Each has a switch (and weights) in the mod settings. AI Lab: `raidIntentOverride`, `arrivalOverride`,
+  `operationOverride`; memory is seeded before the raid is sent; slaving and punitive runs go on 60 s after the defence
+  is down; new counters.
+
 ## 1.6.0 (2026-10-26): HSK Tactical AI 0.2.2
 
 - **The 1.7 builds catch up:** Tactical AI and Weapon Blueprints for 1.7 are rebuilt against RimWorld 1.7.4985, so the

@@ -41,6 +41,7 @@ namespace HSKTacticalAI
             why = null;
             // a dull command doesn't plan a withdrawal: vanilla's panic run (Patch_NoPanicWhilePlanned lets it through)
             if (!Competence.PlannedWithdrawal(plan) || plan.members.Count == 0) return false;
+            if (plan.intent == RaidIntent.Punitive) return false;   // revenge doesn't break off (RaidIntel)
             float lost = plan.members.Count(p => p.Dead || p.Downed || p.Destroyed) / (float)plan.members.Count;
             int defNow = Suppression.Defenders(lord.Map, plan.objective, 40f).Count;
             float defLost = plan.defendersAtStart > 0 ? 1f - defNow / (float)plan.defendersAtStart : 0f;

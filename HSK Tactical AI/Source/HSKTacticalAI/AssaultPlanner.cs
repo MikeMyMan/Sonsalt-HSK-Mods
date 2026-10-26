@@ -44,6 +44,14 @@ namespace HSKTacticalAI
 
         // raid goal (0.2): assault, scout or sabotage (RaidGoals); breach gear brought for an assault (BreachKit.EnsureMeans)
         public RaidGoal goal = RaidGoal.Assault;
+        public RaidIntent intent = RaidIntent.Plunder;   // what an assault is after (RaidIntel): goods, people, revenge
+        public bool captiveTaken;
+        // coordinated operation (Operations): hammer and anvil, armoured spearhead
+        public RaidOp op = RaidOp.None;
+        public bool hammerPending, vanguardIn;
+        public int hammerLordId = -1, hammerGunTick = -1, hammerReadyTick = -1;
+        public IntVec3 hammerSpot = IntVec3.Invalid;
+        public readonly HashSet<Pawn> vanguard = new HashSet<Pawn>();
         public string goalWhy = "", goalLeaveWhy = "", breachGear = "";
         public int goalEndTick = -1, lastGoalJobTick = -1, observedTicks, scoutPostsWithSight;
         public Pawn ambushTarget;
@@ -172,9 +180,20 @@ namespace HSKTacticalAI
                    && lord.faction.HostileTo(Faction.OfPlayer) && lord.Map != null && lord.Map.IsPlayerHome;
         }
 
+        private static readonly Dictionary<int, int> podWaitSince = new Dictionary<int, int>();
+        public static int PodWaits;
+
         public static AssaultPlan GetOrCreate(Lord lord)
         {
             if (Plans.TryGetValue(lord.loadID, out var p)) return p;
+            // drop pods: raiders still inside their pods are not on the map yet (rt2: OverwatchCell NRE, vanilla took over);
+            // plan once the pods have opened, at most 10 s after the raid appeared
+            int nowT = Find.TickManager.TicksGame;
+            if (lord.ownedPawns.Any(x => !x.Spawned && !x.Dead && !x.Destroyed && x.MapHeld == lord.Map))
+            {
+                if (!podWaitSince.TryGetValue(lord.loadID, out int since)) podWaitSince[lord.loadID] = since = nowT;
+                if (nowT - since < 600) { PodWaits++; return null; }
+            }
             // planning hands out gear and changes loadouts: should that ever update the lord's duties and land here again,
             // one plan per raid (a safety net; not seen in the Lab - ReentryBlocked stayed 0)
             if (!creating.Add(lord.loadID)) { ReentryBlocked++; return null; }
@@ -200,6 +219,11 @@ namespace HSKTacticalAI
             plan.gather = new IntVec3(sx / pawns.Count, 0, sz / pawns.Count);
             if (!plan.gather.Standable(map)) plan.gather = pawns[0].Position;
             plan.goal = RaidGoals.Roll(lord, plan, pawns, out plan.goalWhy);
+            if (plan.goal == RaidGoal.Assault)
+            {
+                plan.intent = RaidIntel.IntentFor(lord);
+                if (plan.intent != RaidIntent.Plunder) { plan.goalWhy += " intent=" + plan.intent; RaidIntel.ApplyIntent(lord, plan); }
+            }
             // every route this raid plans reads the threat map as far and as well as its command can
             using (Competence.Perceive(plan, plan.gather)) return Build(lord, plan, pawns, map);
         }
@@ -281,6 +305,7 @@ namespace HSKTacticalAI
             FactionMemory.AdaptLoadouts(lord, plan, pawns);   // after the roles: medics and breachers keep their kit
             ShieldWall.Assign(plan, pawns);
             CrewWeapons.Plan(lord, plan, pawns);   // after the roles: gunner and bearers from the riflemen and base of fire
+            Operations.Plan(lord, plan, pawns);    // after the gun teams: hammer and anvil, armoured spearhead
             Grenades.EquipOnce(lord, plan, pawns);
             GasRaid.Plan(lord, plan, pawns);
             JobGiver_HSKTAI_RaidingParty.Assign(plan, pawns);
@@ -1534,6 +1559,10 @@ namespace HSKTacticalAI
         /// <summary>Every 60 ticks: synchronise the breach teams, and start the assault (H-hour) at the right moment.</summary>
         public static void Tick(Map map)
         {
+            // raids waiting for their drop pods to open: ask for duties again, which plans them once everyone is out
+            if (podWaitSince.Count > 0)
+                foreach (Lord l in map.lordManager.lords.ToList())
+                    if (podWaitSince.ContainsKey(l.loadID) && !Plans.ContainsKey(l.loadID) && Applies(l)) l.CurLordToil?.UpdateAllDuties();
             if (Plans.Count == 0) return;
             int now = Find.TickManager.TicksGame;
             var s = TacticalAIMod.Settings;
@@ -1550,6 +1579,8 @@ namespace HSKTacticalAI
                 {
 
                 if (plan.csw.Count > 0) CrewWeapons.Tick(map, lord, plan, now);
+                if (plan.intent != RaidIntent.Plunder) { RaidIntel.Tick(map, lord, plan, alive, now); if (plan.phase == PlanPhase.Converted) continue; }
+                if (plan.op != RaidOp.None) { Operations.Tick(map, lord, plan, alive, now); alive = lord.ownedPawns.Where(p => p.Spawned && !p.Downed).ToList(); if (alive.Count == 0) continue; }
                 if (plan.phase == PlanPhase.Withdraw) { Withdrawal.Tick(plan, now); continue; }
                 if ((plan.phase == PlanPhase.Approach || plan.phase == PlanPhase.Assault) && (plan.mode == PlanMode.Breach || plan.mode == PlanMode.Walk)
                     && Withdrawal.ShouldWithdraw(lord, plan, out string wwhy))
@@ -1655,6 +1686,7 @@ namespace HSKTacticalAI
                 }
                 if (reason == null) continue;
                 if (CrewWeapons.Holding(plan, now)) continue;   // the team attacks when the guns are firing
+                if (Operations.Holding(map, plan, now, ref reason)) continue;   // hammer and anvil: after the shelling
 
                 // last look before committing: still strong enough to storm the position?
                 if (s.forceRatioCheck && Competence.Knows(plan, Doctrine.ForceCheck))
