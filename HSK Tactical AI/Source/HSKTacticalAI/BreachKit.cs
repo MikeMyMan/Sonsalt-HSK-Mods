@@ -96,9 +96,12 @@ namespace HSKTacticalAI
         private static readonly HashSet<int> meansChecked = new HashSet<int>();
         private static readonly Dictionary<int, string> gearOf = new Dictionary<int, string>();   // lord -> what it brought (a re-made plan keeps the note)
 
-        /// <summary>Anything of its own that opens a wall: a charge, a wall-breaking launcher round, thrown explosives, a breach or digging tool.</summary>
+        /// <summary>Anything of its own that opens a wall: a charge, a wall-breaking launcher round, thrown explosives, a breach or
+        /// digging tool. A stone-age pickaxe or hammer alone is too slow to count (the raid still brings its kit; the tools
+        /// still help on the wall).</summary>
         public static bool OwnMeans(Pawn p) =>
-            CarriedCharge(p) != null || CarriedMiningCharge(p) != null || AssaultPlanner.DestructiveRangedVerb(p) != null || AssaultPlanner.HasBreachTool(p)
+            CarriedCharge(p) != null || CarriedMiningCharge(p) != null || AssaultPlanner.DestructiveRangedVerb(p) != null
+            || (AssaultPlanner.HasBreachTool(p) && !AssaultPlanner.HasPrimitiveBreachTool(p))
             || OwnMiningGain(p) >= 1.3f || Grenades.CarriedFrag(p) != null || (p.equipment?.Primary != null && Grenades.IsFrag(p.equipment.Primary.def));
 
         /// <summary>
