@@ -1537,6 +1537,7 @@ namespace HSKTacticalAI
             if (Plans.Count == 0) return;
             int now = Find.TickManager.TicksGame;
             var s = TacticalAIMod.Settings;
+            CrewWeapons.TickLeaving(map);   // raids leaving the map (any way): pack up or wreck their set-up guns
             foreach (Lord lord in map.lordManager.lords.ToList())
             {
                 if (!Plans.TryGetValue(lord.loadID, out var plan)) continue;

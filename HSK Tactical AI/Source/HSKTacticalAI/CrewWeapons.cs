@@ -16,12 +16,14 @@ namespace HSKTacticalAI
         public ThingDef turretDef;
         public IntVec3 post = IntVec3.Invalid;
         public Building_Turret gun;
-        public int setupTick = -1, bearerWaitTicks;
-        public bool deployed, abandoned;
+        public int setupTick = -1, bearerWaitTicks, recoverTries;
+        public bool deployed, abandoned, packedUp, wrecked, carriedOut;
+        public Pawn recoverer;
         public readonly List<IntVec3> route = new List<IntVec3>();
         public bool Has(Pawn p) => p == gunner || bearers.Contains(p);
         public IEnumerable<Pawn> Crew => bearers.Prepend(gunner);
-        public string Describe() => turretDef?.label + (deployed ? " firing" : abandoned ? " abandoned" : " carried") + " at " + post;
+        public string Describe() => turretDef?.label + (packedUp ? " packed up" : wrecked ? " wrecked" : carriedOut ? " carried out (never set up)"
+                                    : deployed && !abandoned ? " firing" : abandoned ? " abandoned" : " carried") + " at " + post;
     }
 
     /// <summary>
@@ -31,15 +33,18 @@ namespace HSKTacticalAI
     /// - Industrial+ assault raids of 8+ bring one (16+: two): a manned, minifiable turret of at most 40 kg and at most
     ///   the faction's tech level (HSK: M240B, AGS-17, M2 ... whatever the modlist has), packed in the gunner's pack;
     ///   1-2 bearers carry three magazines of its CE ammo.
-    /// - The team walks a covered route together to a post at 60-75 % of the gun's range from the defence, out of fire,
+    /// - The team walks a covered route together to a post at up to 95 % of the gun's range from the defence, out of fire,
     ///   in cover, with a line of fire; sets it up (4 s), the gunner mans it, the bearers reload it from their packs.
     /// - H-hour waits until every team that still lives is firing (at most 50 s).
-    /// - When the crew falls, or the raid withdraws, the gun stays where it stands, unowned: loot.
+    /// - When the raid withdraws in order (a planned withdrawal), a crew member packs the gun up and carries it out; under
+    ///   heavy fire he wrecks it if he is close, so it isn't left as loot (playtest 2026-10-26: "when giving up AI should
+    ///   destroy or take CSW weapons with them if they can"). When the crew falls with nobody near enough, or the raid
+    ///   flees in panic, the gun stays where it stands, unowned: loot.
     /// Part of the base of fire (doctrine SupportFire).
     /// </summary>
     public static class CrewWeapons
     {
-        public static int Teams, Deployed, Abandoned, Waits, Faced, CrewBehind;
+        public static int Teams, Deployed, Abandoned, Waits, Faced, CrewBehind, PackedUp, Wrecked;
         public static string Seen = "";
         private static List<ThingDef> candidates;
 
@@ -149,16 +154,19 @@ namespace HSKTacticalAI
             // first out of fire, then (nothing found) in light fire
             foreach (float maxFire in new[] { s.safeFire * 4f, 0.5f })
             {
-                for (float frac = 0.55f; frac <= 0.8f; frac += 0.08f)
+                // the gun's full reach (playtest 2026-10-26: "use full range of CSW"): 95 % of its range down to 60 %, the
+                // longest preferred, so it outranges the defence
+                for (float frac = 0.95f; frac >= 0.6f; frac -= 0.07f)
                     for (int a = -75; a <= 75; a += 15)
                     {
-                        float rad = (from + a) * Mathf.Deg2Rad, r = Mathf.Min(range * frac, 55f);
+                        float rad = (from + a) * Mathf.Deg2Rad, r = Mathf.Min(range * frac, 90f);
                         var c = new IntVec3(plan.objective.x + Mathf.RoundToInt(Mathf.Cos(rad) * r), 0, plan.objective.z + Mathf.RoundToInt(Mathf.Sin(rad) * r));
                         if (!c.InBounds(map)) continue;
                         c = CellFinder.StandableCellNear(c, map, 3f, x => x.GetEdifice(map) == null && !plan.csw.Any(t => t.post.DistanceTo(x) < 8f));
                         if (!c.IsValid || (haveThreat && tm.FireAt(c) > maxFire)) continue;
                         if (!gunner.CanReach(c, PathEndMode.OnCell, Danger.Deadly) || !Sees(c)) continue;
-                        float score = Mathf.Abs(a) * 0.05f + (JobGiver_HSKTAI_Support.HasCover(c, plan.objective, map) ? 0f : 6f) + (haveThreat ? tm.FireAt(c) * 20f : 0f);
+                        float score = Mathf.Abs(a) * 0.05f + (JobGiver_HSKTAI_Support.HasCover(c, plan.objective, map) ? 0f : 6f) + (haveThreat ? tm.FireAt(c) * 20f : 0f)
+                                      + (0.95f - frac) * 10f;
                         if (score < bs) { bs = score; best = c; }
                     }
                 if (best.IsValid) break;
@@ -183,8 +191,11 @@ namespace HSKTacticalAI
             foreach (var t in plan.csw)
             {
                 if (t.abandoned) continue;
+                // giving up in order: pack the gun up or wreck it (retried here if the man doing it went down)
+                if (plan.phase == PlanPhase.Withdraw) { Recover(map, plan, t); continue; }
                 bool crewAlive = t.Crew.Any(c => c != null && c.Spawned && !c.Downed && !c.Dead && c.GetLord() == lord);
-                if (!crewAlive || plan.phase == PlanPhase.Withdraw || plan.phase == PlanPhase.Converted) { Abandon(t); continue; }
+                if (t.recoverer != null) continue;   // being packed up or wrecked (TickLeaving)
+                if (!crewAlive || plan.phase == PlanPhase.Converted) { Abandon(t); continue; }
                 if (t.deployed)
                 {
                     // an idle gun points where the trouble is (playtest 2026-10-25: "not facing the target"): the nearest
@@ -257,6 +268,130 @@ namespace HSKTacticalAI
         {
             t.abandoned = true;
             if (t.gun != null && t.gun.Spawned) { t.gun.SetFaction(null); Abandoned++; }
+        }
+
+        /// <summary>The raid gives up in order (Withdrawal.Begin): every gun that is set up gets packed up or wrecked.</summary>
+        public static void OnWithdraw(Map map, AssaultPlan plan)
+        {
+            foreach (var t in plan.csw) if (!t.abandoned) Recover(map, plan, t);
+        }
+
+        /// <summary>
+        /// Every 60 ticks: raids that leave the map without a planned withdrawal - the game's own "leave" step after enough
+        /// damage or losses (rw17 Lab: "AssaultColonyBreaching -> ExitMap", both guns left behind), our switch to a plain
+        /// exit - still pack up or wreck the guns they set up. A raid fleeing in panic can't (panicking pawns take no jobs).
+        /// </summary>
+        public static void TickLeaving(Map map)
+        {
+            foreach (var plan in AssaultPlanner.Plans.Values)
+            {
+                if (plan.map != map || plan.csw.Count == 0 || plan.phase == PlanPhase.Withdraw) continue;   // Withdraw: Tick does it
+                foreach (var t in plan.csw)
+                {
+                    if (t.abandoned || !t.deployed || t.gun == null || !t.gun.Spawned) continue;
+                    if (plan.members.Any(p => p.Spawned && !p.Downed && !p.Dead && Leaving(p))) Recover(map, plan, t);
+                }
+            }
+        }
+
+        private static bool Leaving(Pawn p)
+        {
+            var d = p.mindState?.duty?.def;
+            return p.GetLord()?.CurLordToil is LordToil_ExitMap || d == DutyDefOf.ExitMapBest || d == DutyDefOf.ExitMapBestAndDefendSelf || d == DutyDefOf.ExitMapRandom;
+        }
+
+        /// <summary>
+        /// A gun still packed leaves with its gunner. A set-up gun: the nearest able crew member (else another raider within
+        /// 15 cells) packs it up (4 s) if it stands out of heavy fire and he is within 30 cells; under fire, if he is within
+        /// 15, he wrecks it (1.5 s). Nobody near enough, or three tries failed: it stays behind as loot.
+        /// </summary>
+        private static void Recover(Map map, AssaultPlan plan, CswTeam t)
+        {
+            if (!t.deployed) { t.abandoned = true; t.carriedOut = t.gunner != null && t.gunner.Spawned && !t.gunner.Dead; return; }
+            if (t.gun == null || !t.gun.Spawned) { t.abandoned = true; return; }
+            var r = t.recoverer;
+            if (r != null && r.Spawned && !r.Downed && r.CurJob != null && r.CurJob.targetA.Thing == t.gun
+                && (r.CurJobDef == TAI_DefOf.HSKTAI_PackCSW || r.CurJobDef == TAI_DefOf.HSKTAI_WreckCSW)) return;   // under way
+            if (t.recoverTries >= 3) { Abandon(t); return; }
+            bool Able(Pawn p) => p != null && p.Spawned && !p.Downed && !p.Dead && !p.InMentalState && p.Map == map
+                                 && plan.members.Contains(p) && p.CanReach(t.gun, PathEndMode.Touch, Danger.Deadly);
+            IntVec3 at = t.gun.Position;
+            Pawn who = t.Crew.Where(Able).OrderBy(p => p == t.gunner ? 0 : 1).ThenBy(p => p.Position.DistanceToSquared(at)).FirstOrDefault()
+                       ?? plan.members.Where(p => Able(p) && p.Position.DistanceTo(at) <= 15f).OrderBy(p => p.Position.DistanceToSquared(at)).FirstOrDefault();
+            if (who == null) { Abandon(t); return; }
+            var tm = MapComponent_TacticalAI.For(map)?.Threat;
+            float fire = tm != null && tm.CompletedCycles > 0 ? tm.FireAt(at) : 0f;
+            float dist = who.Position.DistanceTo(at);
+            JobDef jd = fire <= TacticalAIMod.Settings.safeFire * 4f && dist <= 30f ? TAI_DefOf.HSKTAI_PackCSW
+                      : dist <= 15f ? TAI_DefOf.HSKTAI_WreckCSW : null;
+            if (jd == null) { Abandon(t); return; }
+            t.recoverTries++;
+            t.recoverer = who;
+            Job j = JobMaker.MakeJob(jd, t.gun);
+            j.locomotionUrgency = LocomotionUrgency.Jog;
+            who.jobs.StartJob(j, JobCondition.InterruptForced, null, false, true);
+        }
+
+        private static CswTeam TeamWithGun(Pawn p, Thing gun) => AssaultPlanner.PlanOf(p)?.csw.FirstOrDefault(t => t.gun == gun);
+
+        public static void PackDone(Pawn p, Thing gun)
+        {
+            if (gun == null || !gun.Spawned) return;
+            var t = TeamWithGun(p, gun);
+            Map map = gun.Map;
+            Thing packed = gun.TryMakeMinified();
+            if (!(packed is MinifiedThing)) { WreckDone(p, gun); return; }
+            if (!p.inventory.innerContainer.TryAdd(packed)) GenPlace.TryPlaceThing(packed, p.Position, map, ThingPlaceMode.Near);
+            PackedUp++;
+            if (t != null) { t.packedUp = true; t.abandoned = true; }
+        }
+
+        public static void WreckDone(Pawn p, Thing gun)
+        {
+            if (gun == null || !gun.Spawned) return;
+            var t = TeamWithGun(p, gun);
+            FleckMaker.ThrowMicroSparks(gun.DrawPos, gun.Map);
+            gun.Destroy(DestroyMode.KillFinalize);
+            Wrecked++;
+            if (t != null) { t.wrecked = true; t.abandoned = true; }
+        }
+    }
+
+    /// <summary>Withdrawal: to the gun, take it down (as long as setting it up), into the pack.</summary>
+    public class JobDriver_HSKTAI_PackCSW : JobDriver
+    {
+        public override bool TryMakePreToilReservations(bool errorOnFailed) => pawn.Reserve(job.targetA, job, 1, -1, null, errorOnFailed);
+
+        protected override IEnumerable<Toil> MakeNewToils()
+        {
+            this.FailOnDespawnedOrNull(TargetIndex.A);
+            yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.Touch);
+            Toil work = Toils_General.Wait(240, TargetIndex.A);
+            work.WithProgressBarToilDelay(TargetIndex.A);
+            yield return work;
+            Toil done = ToilMaker.MakeToil("HSKTAI_PackCSW");
+            done.initAction = () => CrewWeapons.PackDone(pawn, job.targetA.Thing);
+            done.defaultCompleteMode = ToilCompleteMode.Instant;
+            yield return done;
+        }
+    }
+
+    /// <summary>Withdrawal under fire: to the gun, wreck it so it isn't left behind as loot.</summary>
+    public class JobDriver_HSKTAI_WreckCSW : JobDriver
+    {
+        public override bool TryMakePreToilReservations(bool errorOnFailed) => true;
+
+        protected override IEnumerable<Toil> MakeNewToils()
+        {
+            this.FailOnDespawnedOrNull(TargetIndex.A);
+            yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.Touch);
+            Toil work = Toils_General.Wait(90, TargetIndex.A);
+            work.WithProgressBarToilDelay(TargetIndex.A);
+            yield return work;
+            Toil done = ToilMaker.MakeToil("HSKTAI_WreckCSW");
+            done.initAction = () => CrewWeapons.WreckDone(pawn, job.targetA.Thing);
+            done.defaultCompleteMode = ToilCompleteMode.Instant;
+            yield return done;
         }
     }
 

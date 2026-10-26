@@ -3,7 +3,7 @@
   <name>HSK Tactical AI</name>
   <author>Sonsalt</author>
   <packageId>sonsalt.hsk.tacticalai</packageId>
-  <modVersion>0.2.1</modVersion>
+  <modVersion>0.2.2</modVersion>
   <url>https://github.com/MikeMyMan/Sonsalt-HSK-Mods</url>
   <supportedVersions>
     <li>1.6</li>
@@ -44,7 +44,7 @@ Raiders plan their attack instead of walking into your guns:
 - Gas and fire against bunkers, arson, plunder (loot, livestock, wrecking) instead of chasing you into your corridors, planned withdrawals carrying the wounded, going prone under fire.
 - Tactical competence: how smart a raid acts depends on its leader's intelligence (Intellectual skill, traits like too smart or slow learner) and its faction's tech level. A sharp spacer commander uses every tactic and walks around your traps and IEDs; a dull tribal chief walks straight into your killbox and traps. Kill the leader and the raid loses its edge.
 - Raid goals: a raid out to break in always brings breaching gear of its tech level (breach axe, stick bombs, charges). Some raids only scout your base from cover, others sabotage: fires, livestock, a colonist alone outside - and leave before your defence turns out.
-- Adapting: defenders who come out are fought where they are, a defence beaten in the field is stormed at once. Grenadiers lob explosive rounds over your walls; bigger raids carry a crew-served gun, set it up at range and man it before the assault - left behind as loot if the crew falls.
+- Adapting: defenders who come out are fought where they are, a defence beaten in the field is stormed at once. Grenadiers lob explosive rounds over your walls; bigger raids carry a crew-served gun, set it up near its full range and man it before the assault, and pack it up or wreck it when they leave - loot only if the crew falls. Riflemen cover comrades who carry the wounded out of your fire, and raiders react when a colonist steps into sight. Tribal and medieval sieges get their supplies by pack animal.
 
 Every behaviour can be switched off in the mod settings.
 

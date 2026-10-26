@@ -9,6 +9,8 @@
       <subNodes>
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Evade" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Retreat" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_CoverCarry" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_Contact" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Unarmed" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_KeepRange" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_FieldFight" />
@@ -45,6 +47,8 @@
       <subNodes>
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Evade" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Retreat" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_CoverCarry" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_Contact" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Throw" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Medic" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_FieldFight" />
@@ -65,6 +69,7 @@
     <thinkNode Class="ThinkNode_Priority">
       <subNodes>
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Throw" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_CoverCarry" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Withdraw" />
       </subNodes>
     </thinkNode>
@@ -124,6 +129,8 @@
       <subNodes>
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Evade" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Retreat" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_CoverCarry" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_Contact" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Unarmed" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_RaidingParty" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Throw" />
