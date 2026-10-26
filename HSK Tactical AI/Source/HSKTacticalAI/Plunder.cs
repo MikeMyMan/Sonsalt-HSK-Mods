@@ -173,12 +173,14 @@ namespace HSKTacticalAI
         public static Job TryPlunder(Pawn p, AssaultPlan plan, IntVec3 anchor, float radius, int maxLooters)
         {
             var s = TacticalAIMod.Settings;
+            if (plan?.intent == RaidIntent.Slaving) return null;   // after people, not goods (RaidIntel): no plunder from any caller
             Task first = TaskOf(plan, p);
             var order = new List<Task> { first };
             foreach (Task t in new[] { Task.Kill, Task.Loot, Task.Wreck, Task.Burn })
                 if (t != first) order.Add(t);
             foreach (var t in order)
             {
+                if (t == Task.Loot && plan.intent == RaidIntent.Punitive) continue;   // revenge takes nothing
                 Job j = t == Task.Kill ? KillJob(p, anchor, radius)
                       : t == Task.Loot ? LootJob(p, plan, maxLooters, anchor, radius)
                       : t == Task.Burn ? (s.arson ? BurnJob(p, anchor, radius) : null)
@@ -250,6 +252,7 @@ namespace HSKTacticalAI
             var s = TacticalAIMod.Settings;
             AssaultPlan plan = AssaultPlanner.PlanOf(pawn);
             if (!s.plunder || plan == null || plan.phase != PlanPhase.Assault) return null;
+            if (plan.intent == RaidIntent.Slaving) return null;   // after people, not goods: no looting, no burning
             if (ShieldWall.IsBearer(plan, pawn) || ShieldWall.BearerOf(plan, pawn) != null) return null;
             if (plan.funnelHoldOf.ContainsKey(pawn)) return null;   // watching a funnel mouth
             Pawn enemy = ShieldWall.NearestEnemy(pawn, 80f);
@@ -269,7 +272,7 @@ namespace HSKTacticalAI
             // nothing left to take and the defenders stay holed up: leave with what we have
             // (cp3 killbox: nothing to plunder at all left the raid waiting out the whole run - idle counts from the start)
             int lastActive = Mathf.Max(plan.lastPlunderJobTick, plan.plunderStartTick);
-            if (now - lastActive > s.plunderIdleWithdrawTicks)
+            if (now - lastActive > s.plunderIdleWithdrawTicks && plan.intent != RaidIntent.Punitive)
             {
                 Lord lord = pawn.GetLord();
                 var live = lord?.ownedPawns.Where(x => x.Spawned && !x.Downed).ToList();

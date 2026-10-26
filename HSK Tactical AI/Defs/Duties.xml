@@ -131,6 +131,8 @@
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Retreat" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_CoverCarry" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Contact" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_Vanguard" />
+        <li Class="HSKTacticalAI.JobGiver_HSKTAI_Kidnap" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Unarmed" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_RaidingParty" />
         <li Class="HSKTacticalAI.JobGiver_HSKTAI_Throw" />

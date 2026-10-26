@@ -219,6 +219,19 @@ namespace HSKTacticalAI
         public bool indirectFire = true;             // grenade launchers lob explosive rounds over walls at targets they can't hit directly
         public bool breachGear = true;               // a raid out to breach that has nothing of its own: 1-3 raiders carry the tech level's breaching kit
         public bool raidGoals = true;                // some raids come to scout or to sabotage instead of to assault
+        public bool raidIntents = true;              // an assault comes for goods, for people (slaving) or for revenge (punitive)
+        public float slavingShare = 0.15f;           // weight of a slaving raid (plunder = 1)
+        public float punitiveShare = 0.5f;           // weight of a punitive raid after a bad beating they know the reason for
+        public string raidIntentOverride = "";       // AI Lab only (not saved): plunder | slaving | punitive
+        public bool escalation = true;               // a faction beaten here sends bigger raids for a while
+        public float escalationSize = 0.3f;          // ... up to this much more raid points at full anger
+        public bool raidLetters = true;              // the raid letter says why the raid comes as it does
+        public bool prisonersReport = true;          // a prisoner you release, or one who escapes, reports to his faction
+        public bool arrivalChoice = true;            // a faction that knows you picks its arrival: the quiet side, or drop pods (spacers)
+        public string arrivalOverride = "";          // AI Lab only (not saved): quiet | droppods
+        public bool operations = true;               // coordinated operations: hammer and anvil, armoured spearhead (sharp commands)
+        public float operationChance = 0.2f;         // ... chance per raid (twice as likely after a failed raid here)
+        public string operationOverride = "";        // AI Lab only (not saved): hammer | vanguard
         public float scoutShare = 0.10f;             // base weight of a scouting raid (assault = 1)
         public float sabotageShare = 0.15f;          // base weight of a sabotage raid
         public int scoutObserveTicks = 2500;         // a scouting party watches this long, then leaves
@@ -411,6 +424,16 @@ namespace HSKTacticalAI
             Scribe_Values.Look(ref indirectFire, "indirectFire", true);
             Scribe_Values.Look(ref breachGear, "breachGear", true);
             Scribe_Values.Look(ref raidGoals, "raidGoals", true);
+            Scribe_Values.Look(ref raidIntents, "raidIntents", true);
+            Scribe_Values.Look(ref slavingShare, "slavingShare", 0.15f);
+            Scribe_Values.Look(ref punitiveShare, "punitiveShare", 0.5f);
+            Scribe_Values.Look(ref escalation, "escalation", true);
+            Scribe_Values.Look(ref escalationSize, "escalationSize", 0.3f);
+            Scribe_Values.Look(ref raidLetters, "raidLetters", true);
+            Scribe_Values.Look(ref prisonersReport, "prisonersReport", true);
+            Scribe_Values.Look(ref arrivalChoice, "arrivalChoice", true);
+            Scribe_Values.Look(ref operations, "operations", true);
+            Scribe_Values.Look(ref operationChance, "operationChance", 0.2f);
             Scribe_Values.Look(ref scoutShare, "scoutShare", 0.10f);
             Scribe_Values.Look(ref sabotageShare, "sabotageShare", 0.15f);
             Scribe_Values.Look(ref scoutObserveTicks, "scoutObserveTicks", 2500);
@@ -524,6 +547,29 @@ namespace HSKTacticalAI
                 l.Label("Sabotage raids (weight vs 1 for an assault): " + sabotageShare.ToString("0.00"));
                 sabotageShare = l.Slider(sabotageShare, 0f, 1f);
             }
+            l.CheckboxLabeled("Slaving and punitive raids", ref raidIntents, "An assault comes for goods (as before), for people or for revenge. Slavers burn and loot nothing, grab a downed colonist and leave with him. A punitive raid only comes after a bad beating its faction knows the reason for: it takes nothing and does not break off until nobody of yours is left standing. The raid letter says which.");
+            if (raidIntents)
+            {
+                l.Label("Slaving raids (weight vs 1 for plunder): " + slavingShare.ToString("0.00"));
+                slavingShare = l.Slider(slavingShare, 0f, 1f);
+                l.Label("Punitive raids after a bad beating (weight): " + punitiveShare.ToString("0.00"));
+                punitiveShare = l.Slider(punitiveShare, 0f, 2f);
+            }
+            l.CheckboxLabeled("Beaten factions send bigger raids", ref escalation, "A faction you beat here is angry for a while and sends more people (up to the share below at full anger). A raid that goes its way calms it down; the anger fades with its memory.");
+            if (escalation)
+            {
+                l.Label("Bigger at most by: " + escalationSize.ToStringPercent());
+                escalationSize = l.Slider(escalationSize, 0f, 1f);
+            }
+            l.CheckboxLabeled("Raid letter says why", ref raidLetters, "The raid letter adds a line on how the faction's last raid here went and what it does about it: \"the last group never came back\", \"this group is coming through a wall\", \"they are after people, not goods\".");
+            l.CheckboxLabeled("Coordinated operations", ref operations, "Now and then a sharp command runs an operation. Hammer and anvil (factions that lay sieges): a third of the raid digs in and shells you while the rest waits out of range and goes in once the guns have been firing a while. Armoured spearhead: the best-armoured raiders go in first, the rest fight from where they stand and follow once the spearhead is inside.");
+            if (operations)
+            {
+                l.Label("Chance per raid (twice after a failed raid here): " + operationChance.ToStringPercent());
+                operationChance = l.Slider(operationChance, 0f, 1f);
+            }
+            l.CheckboxLabeled("Raiders choose how they arrive", ref arrivalChoice, "A faction that knows your layout and failed to walk in comes from the map edge whose way to your base crosses the least of your fire. A spacer faction that failed both walking in and breaching drops in by pod at the edge (if its raid type allows pods). Raids whose arrival a quest or another mod already set are left alone.");
+            l.CheckboxLabeled("Released prisoners report back", ref prisonersReport, "A prisoner you release, or one who escapes over the map edge, tells his faction about your defences, just like a raider who got away.");
             l.CheckboxLabeled("Corner fire at the breach", ref cornerFire, "When a wall opens, gunners take the corners beside the hole on their side of the wall and lean out to fire through it at the defenders inside - covered by the wall - before they go in (at most about 10 s).");
             l.CheckboxLabeled("Shield wall", ref shieldTactics, "Raiders with ballistic or body shields lead the assault straight at the defenders; two gunners follow behind each shield and shoot past it. Through a breach the shield goes first.");
             l.CheckboxLabeled("Fire discipline", ref fireDoctrine, "Raiders choose aimed or snap shots and single, burst or full-auto fire by range and situation: aimed single shots at long range, aimed bursts at medium range, snap bursts up close, full auto in close quarters and to suppress defenders in cover. Marksmen always take aimed single shots; machine guns fire bursts.");
