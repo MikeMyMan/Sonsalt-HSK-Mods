@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Two farm chemicals the Gas Pack never had, on their own def names (not Gas Pack slots):
+
+  PGR_HerbicideGas  -> agent orange kills grass, bushes and crops in seconds; trees only defoliate
+  PGR_PesticideGas  -> verminbane   dose scales with body size: vermin and small insects die fast,
+                                    people and dogs only sicken over minutes, large animals barely notice
+
+  Both are breathed in, so a gas mask stops them. Both are mildly toxic over long exposure. No gasDamageInfos, so the framework damages nothing on its own.
+-->
+<Defs>
+
+  <!-- ==================== Agent Orange (herbicide) ==================== -->
+  <GasFrameWork.GasTypeDef>
+    <defName>PGR_HerbicideGas</defName>
+    <label>agent orange</label>
+    <description>A defoliant herbicide. Grass, bushes and crops wither in seconds; trees drop their leaves and die only after minutes. Mildly toxic to people and animals; a gas mask stops it.</description>
+    <gasColor>(0.60, 0.42, 0.24, 1)</gasColor>
+    <dissipationRate>2</dissipationRate>
+    <effects>
+      <li Class="PalverZGasRework.GasEffect_Herbicide">
+        <minDensity>15</minDensity>
+        <plantDamagePerSecond>25~35</plantDamagePerSecond>
+        <treeFactor>0.05</treeFactor>
+      </li>
+      <li Class="PalverZGasRework.GasEffect_Hediff">
+        <targets>Biological</targets>
+        <hediff>ToxicBuildup</hediff>
+        <severityPerHit>0.0015~0.0015</severityPerHit>
+        <bodySizeExponent>0.5</bodySizeExponent>
+      </li>
+    </effects>
+    <modExtensions>
+      <li Class="PalverZGasRework.GasVisualExtension">
+        <opacity>0.95</opacity>
+        <puffScale>1.4~2.4</puffScale>
+        <wispScale>1.8~3.0</wispScale>
+        <wispSpeed>0.14</wispSpeed>
+      </li>
+    </modExtensions>
+  </GasFrameWork.GasTypeDef>
+
+  <!-- ==================== Verminbane (pesticide) ==================== -->
+  <GasFrameWork.GasTypeDef>
+    <defName>PGR_PesticideGas</defName>
+    <label>verminbane</label>
+    <description>An insecticide and rodenticide fog. Rats and small insects die in seconds; dogs and people only sicken over minutes. Its blood thinner makes wounds bleed harder, and a heavy dose bleeds inside hours later unless treated. Insect hives in it slowly die. A gas mask stops it.</description>
+    <gasColor>(0.20, 0.72, 0.48, 1)</gasColor>
+    <dissipationRate>1</dissipationRate>
+    <effects>
+      <li Class="PalverZGasRework.GasEffect_Hediff">
+        <targets>Biological</targets>
+        <hediff>PGR_PesticidePoisoning</hediff>
+        <severityPerHit>0.0035~0.0035</severityPerHit>
+        <bodySizeExponent>2</bodySizeExponent>
+        <maxBodySizeFactor>60</maxBodySizeFactor>
+        <insectoidFactor>4</insectoidFactor>
+        <!-- A targeted nerve poison: general toxin resistance (HSK gives rats 99%) doesn't help. Masks do. -->
+        <toxicResistanceReduces>false</toxicResistanceReduces>
+      </li>
+      <!-- The rat-poison blood thinner: same dose scaling; heavy doses bleed inside hours later. -->
+      <li Class="PalverZGasRework.GasEffect_Hediff">
+        <targets>Biological</targets>
+        <hediff>PGR_Anticoagulant</hediff>
+        <severityPerHit>0.0035~0.0035</severityPerHit>
+        <bodySizeExponent>2</bodySizeExponent>
+        <maxBodySizeFactor>60</maxBodySizeFactor>
+        <toxicResistanceReduces>false</toxicResistanceReduces>
+      </li>
+      <li Class="PalverZGasRework.GasEffect_Pesticide">
+        <hiveFractionPerSecond>0.015~0.025</hiveFractionPerSecond>
+      </li>
+    </effects>
+    <modExtensions>
+      <li Class="PalverZGasRework.GasVisualExtension">
+        <opacity>0.9</opacity>
+        <glintFleck>PGR_GasGlint</glintFleck>
+        <glintChance>0.06</glintChance>
+        <glintColor>(0.85, 1.0, 0.9)</glintColor>
+        <wispSpeed>0.16</wispSpeed>
+      </li>
+    </modExtensions>
+  </GasFrameWork.GasTypeDef>
+
+</Defs>

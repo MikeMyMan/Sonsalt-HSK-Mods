@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Build: dotnet build -c Release   (output goes to ..\..\Common\Assemblies)
+       Set RimWorldDir / WorkshopDir if your install differs: dotnet build -c Release -p:RimWorldDir="C:\...\RimWorld" -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>PalverZGasRework</AssemblyName>
+    <RootNamespace>PalverZGasRework</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <OutputPath>..\..\Common\Assemblies\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <DebugType>none</DebugType>
+    <NoWarn>$(NoWarn);MSB3277;CS0618</NoWarn>
+    <Version>0.1.0</Version>
+    <RimWorldDir Condition="'$(RimWorldDir)' == ''">D:\SteamLibrary\steamapps\common\RimWorld</RimWorldDir>
+    <WorkshopDir Condition="'$(WorkshopDir)' == ''">D:\SteamLibrary\steamapps\workshop\content\294100</WorkshopDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp"><HintPath>$(RimWorldDir)\Assembly-CSharp.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityStubs"><HintPath>$(RimWorldDir)\UnityStubs.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="0Harmony"><HintPath>$(RimWorldDir)\Mods\Harmony\1.7\Assemblies\0Harmony.dll</HintPath><Private>false</Private></Reference>
+    <!-- PalverZ's Custom Gas Framework (Steam Workshop 3784051935) -->
+    <Reference Include="CustomGasFramework"><HintPath>$(WorkshopDir)\3784051935\Assemblies\CustomGasFramework.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+</Project>

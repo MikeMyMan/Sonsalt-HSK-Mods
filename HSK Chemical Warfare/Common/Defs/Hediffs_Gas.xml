@@ -1,0 +1,873 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Gas hediffs. The gas hits a pawn twice per second; each hit adds severityPerHit x (cell density / 255),
+  reduced by toxic resistance for inhaled agents. Stage thresholds below are tuned so a pawn standing in
+  full-density gas reaches each stage at the times given in the comments.
+-->
+<Defs>
+
+  <!-- ==================== Deathbreath Fog ==================== -->
+  <!-- 0.10 per hit: collapse at 2 s (0.4), organ failure at 3 s, cardiac and respiratory arrest at ~5 s. -->
+  <HediffDef>
+    <defName>PGR_DeathbreathShock</defName>
+    <label>deathbreath shock</label>
+    <description>Deathbreath fog shuts the body down in stages: the brain first, then the lungs and the heart. A pawn pulled out right after collapsing survives, though usually with lasting scar tissue in the brain or heart. Past organ failure the dose is lethal: it keeps working as deathbreath poisoning after the pawn is out, and only a doctor can stop it.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <defaultLabelColor>(0.55, 0.85, 0.2)</defaultLabelColor>
+    <isBad>true</isBad>
+    <maxSeverity>1</maxSeverity>
+    <lethalSeverity>1</lethalSeverity>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <comps>
+      <li Class="HediffCompProperties_SeverityPerDay">
+        <severityPerDay>-2.5</severityPerDay>
+        <showHoursToRecover>true</showHoursToRecover>
+      </li>
+      <!-- Past organ failure the dose is lethal: it keeps working after the pawn leaves the fog. -->
+      <li Class="PalverZGasRework.HediffCompProperties_AddHediffAtSeverity">
+        <severity>0.6</severity>
+        <hediff>PGR_DeathbreathPoisoning</hediff>
+      </li>
+      <li Class="PalverZGasRework.HediffCompProperties_GasAftermath">
+        <minPeakSeverity>0.4</minPeakSeverity>
+        <messageKey>PGR_AftermathMessage</messageKey>
+        <options>
+          <li>
+            <hediff>PGR_HypoxicBrainScarring</hediff>
+            <part>Brain</part>
+          </li>
+          <li>
+            <hediff>PGR_MyocardialNecrosis</hediff>
+            <part>Heart</part>
+          </li>
+        </options>
+      </li>
+    </comps>
+    <stages>
+      <li>
+        <label>gasping</label>
+        <minSeverity>0.01</minSeverity>
+        <painOffset>0.1</painOffset>
+        <capMods>
+          <li><capacity>Consciousness</capacity><offset>-0.25</offset></li>
+          <li><capacity>Breathing</capacity><offset>-0.2</offset></li>
+        </capMods>
+      </li>
+      <li>
+        <label>collapsed</label>
+        <minSeverity>0.4</minSeverity>
+        <capMods>
+          <li><capacity>Consciousness</capacity><setMax>0.1</setMax></li>
+          <li><capacity>Breathing</capacity><offset>-0.35</offset></li>
+        </capMods>
+      </li>
+      <li>
+        <label>organ failure</label>
+        <minSeverity>0.6</minSeverity>
+        <lifeThreatening>true</lifeThreatening>
+        <capMods>
+          <li><capacity>Consciousness</capacity><setMax>0.1</setMax></li>
+          <li><capacity>Breathing</capacity><setMax>0.5</setMax></li>
+          <li><capacity>BloodPumping</capacity><setMax>0.5</setMax></li>
+        </capMods>
+      </li>
+      <li>
+        <label>terminal</label>
+        <minSeverity>0.8</minSeverity>
+        <lifeThreatening>true</lifeThreatening>
+        <capMods>
+          <li><capacity>Consciousness</capacity><setMax>0.1</setMax></li>
+          <li><capacity>Breathing</capacity><setMax>0.2</setMax></li>
+          <li><capacity>BloodPumping</capacity><setMax>0.2</setMax></li>
+        </capMods>
+      </li>
+      <li>
+        <label>arrest</label>
+        <minSeverity>0.98</minSeverity>
+        <lifeThreatening>true</lifeThreatening>
+        <capMods>
+          <li><capacity>Breathing</capacity><setMax>0</setMax></li>
+          <li><capacity>BloodPumping</capacity><setMax>0</setMax></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <!-- Untreated: 0.3 -> 1.0 in about 5.5 hours. Tended at 75% quality it reverses (-1.5 per day net). -->
+  <HediffDef>
+    <defName>PGR_DeathbreathPoisoning</defName>
+    <label>deathbreath poisoning</label>
+    <description>A lethal dose of deathbreath has reached the organs. It keeps spreading after the pawn is out of the fog and kills within hours unless a doctor treats it. Good treatment turns it around; poor treatment only slows it.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <defaultLabelColor>(0.55, 0.85, 0.2)</defaultLabelColor>
+    <isBad>true</isBad>
+    <tendable>true</tendable>
+    <initialSeverity>0.3</initialSeverity>
+    <maxSeverity>1</maxSeverity>
+    <lethalSeverity>1</lethalSeverity>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <comps>
+      <li Class="HediffCompProperties_TendDuration">
+        <baseTendDurationHours>24</baseTendDurationHours>
+        <severityPerDayTended>-6</severityPerDayTended>
+      </li>
+      <li Class="HediffCompProperties_SeverityPerDay">
+        <severityPerDay>3</severityPerDay>
+      </li>
+    </comps>
+    <stages>
+      <li>
+        <label>spreading</label>
+        <lifeThreatening>true</lifeThreatening>
+        <painOffset>0.1</painOffset>
+        <capMods>
+          <li><capacity>Consciousness</capacity><offset>-0.15</offset></li>
+          <li><capacity>BloodPumping</capacity><offset>-0.1</offset></li>
+        </capMods>
+      </li>
+      <li>
+        <label>organ failure</label>
+        <minSeverity>0.55</minSeverity>
+        <lifeThreatening>true</lifeThreatening>
+        <painOffset>0.2</painOffset>
+        <capMods>
+          <li><capacity>Consciousness</capacity><setMax>0.3</setMax></li>
+          <li><capacity>BloodPumping</capacity><offset>-0.3</offset></li>
+        </capMods>
+      </li>
+      <li>
+        <label>dying</label>
+        <minSeverity>0.8</minSeverity>
+        <lifeThreatening>true</lifeThreatening>
+        <capMods>
+          <li><capacity>Consciousness</capacity><setMax>0.1</setMax></li>
+          <li><capacity>BloodPumping</capacity><offset>-0.4</offset></li>
+          <li><capacity>Breathing</capacity><offset>-0.3</offset></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>PGR_HypoxicBrainScarring</defName>
+    <label>hypoxic brain scarring</label>
+    <labelNoun>hypoxic brain scarring</labelNoun>
+    <description>Dead tissue left in the brain by deathbreath fog. It will not heal by itself. Neural regeneration surgery with glitterworld medicine, a biosculpter or a healer mech serum can repair it.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <defaultLabelColor>(0.8, 0.5, 0.5)</defaultLabelColor>
+    <isBad>true</isBad>
+    <chronic>true</chronic>
+    <tendable>false</tendable>
+    <everCurableByItem>true</everCurableByItem>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <stages>
+      <li>
+        <capMods>
+          <li><capacity>Consciousness</capacity><offset>-0.18</offset></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>PGR_MyocardialNecrosis</defName>
+    <label>myocardial necrosis</label>
+    <labelNoun>myocardial necrosis</labelNoun>
+    <description>A patch of dead heart muscle left by deathbreath fog. The weakened heart starves the brain. Myocardial regeneration surgery with glitterworld medicine, a heart transplant, a biosculpter or a healer mech serum can fix it.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <defaultLabelColor>(0.8, 0.5, 0.5)</defaultLabelColor>
+    <isBad>true</isBad>
+    <chronic>true</chronic>
+    <tendable>false</tendable>
+    <everCurableByItem>true</everCurableByItem>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <stages>
+      <li>
+        <capMods>
+          <li><capacity>BloodPumping</capacity><offset>-0.2</offset></li>
+          <li><capacity>Consciousness</capacity><offset>-0.12</offset></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <!-- ==================== Barbsmoke ==================== -->
+  <!-- 0.35 per hit: stinging on the first hit, agony within a second in a dense cloud. -->
+  <HediffDef>
+    <defName>PGR_BarbsmokeAgony</defName>
+    <label>barbsmoke agony</label>
+    <description>Microscopic barbs lodged in the skin, firing every nerve they touch. The muscles lock in spasms that make walking and holding anything nearly impossible, and pawns with a low pain tolerance black out. Wears off within an hour or two once out of the cloud.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <defaultLabelColor>(0.9, 0.3, 0.35)</defaultLabelColor>
+    <isBad>true</isBad>
+    <maxSeverity>1</maxSeverity>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <comps>
+      <li Class="HediffCompProperties_SeverityPerDay">
+        <severityPerDay>-20</severityPerDay>
+      </li>
+    </comps>
+    <stages>
+      <li>
+        <label>stinging</label>
+        <minSeverity>0.01</minSeverity>
+        <painOffset>0.3</painOffset>
+        <capMods>
+          <li><capacity>Moving</capacity><setMax>0.6</setMax></li>
+          <li><capacity>Manipulation</capacity><setMax>0.5</setMax></li>
+        </capMods>
+      </li>
+      <li>
+        <label>agony</label>
+        <minSeverity>0.35</minSeverity>
+        <painOffset>0.55</painOffset>
+        <capMods>
+          <li><capacity>Moving</capacity><setMax>0.3</setMax></li>
+          <li><capacity>Manipulation</capacity><setMax>0.2</setMax></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <!-- ==================== Hexvein Mist ==================== -->
+  <!-- 0.045-0.05 per hit: tremors at ~3 s, convulsions at ~6 s, pulmonary arrest at 10-11 s. -->
+  <HediffDef>
+    <defName>PGR_HexveinParalysis</defName>
+    <label>hexvein paralysis</label>
+    <description>Hexvein jams the junctions between nerves and muscle in anything with a nervous system. First tremors that ruin aim, then convulsions and vomiting, and finally the breathing muscles stop. Survivors keep weeks of neuro-ataxia; those who went through convulsions keep permanent nerve damage.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <defaultLabelColor>(0.65, 0.35, 0.95)</defaultLabelColor>
+    <isBad>true</isBad>
+    <maxSeverity>1</maxSeverity>
+    <lethalSeverity>1</lethalSeverity>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <comps>
+      <li Class="HediffCompProperties_SeverityPerDay">
+        <severityPerDay>-3</severityPerDay>
+        <showHoursToRecover>true</showHoursToRecover>
+      </li>
+      <li Class="PalverZGasRework.HediffCompProperties_GasAftermath">
+        <minPeakSeverity>0.28</minPeakSeverity>
+        <messageKey>PGR_AftermathMessage</messageKey>
+        <options>
+          <li>
+            <hediff>PGR_NeuroAtaxia</hediff>
+            <group>ataxia</group>
+          </li>
+          <!-- Survived convulsions: the nerve damage stays. -->
+          <li>
+            <hediff>PGR_NerveDamage</hediff>
+            <minPeakSeverity>0.7</minPeakSeverity>
+            <group>permanent</group>
+          </li>
+        </options>
+      </li>
+    </comps>
+    <stages>
+      <li>
+        <label>tingling</label>
+        <minSeverity>0.02</minSeverity>
+        <capMods>
+          <li><capacity>Manipulation</capacity><offset>-0.05</offset></li>
+        </capMods>
+      </li>
+      <li>
+        <label>tremors</label>
+        <minSeverity>0.28</minSeverity>
+        <statOffsets>
+          <AimingDelayFactor>1.5</AimingDelayFactor>
+        </statOffsets>
+        <capMods>
+          <li><capacity>Moving</capacity><offset>-0.4</offset></li>
+          <li><capacity>Manipulation</capacity><offset>-0.1</offset></li>
+        </capMods>
+      </li>
+      <li>
+        <label>convulsions</label>
+        <minSeverity>0.55</minSeverity>
+        <painOffset>0.6</painOffset>
+        <vomitMtbDays>0.04</vomitMtbDays>
+        <lifeThreatening>true</lifeThreatening>
+        <statOffsets>
+          <AimingDelayFactor>1.5</AimingDelayFactor>
+        </statOffsets>
+        <capMods>
+          <li><capacity>Moving</capacity><offset>-0.5</offset></li>
+          <li><capacity>Manipulation</capacity><setMax>0</setMax></li>
+        </capMods>
+      </li>
+      <li>
+        <label>pulmonary arrest</label>
+        <minSeverity>0.95</minSeverity>
+        <lifeThreatening>true</lifeThreatening>
+        <capMods>
+          <li><capacity>Breathing</capacity><setMax>0</setMax></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>PGR_NeuroAtaxia</defName>
+    <label>neuro-ataxia</label>
+    <description>Lingering nerve damage from hexvein mist: clumsy hands and an unsteady gait. Fades on its own after two to four weeks.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <defaultLabelColor>(0.65, 0.35, 0.95)</defaultLabelColor>
+    <isBad>true</isBad>
+    <tendable>false</tendable>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <comps>
+      <li Class="HediffCompProperties_Disappears">
+        <disappearsAfterTicks>900000~1800000</disappearsAfterTicks>
+        <showRemainingTime>true</showRemainingTime>
+      </li>
+    </comps>
+    <stages>
+      <li>
+        <capMods>
+          <li><capacity>Manipulation</capacity><offset>-0.2</offset></li>
+          <li><capacity>Moving</capacity><offset>-0.2</offset></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>PGR_NerveDamage</defName>
+    <label>hexvein nerve damage</label>
+    <labelNoun>hexvein nerve damage</labelNoun>
+    <description>Permanent damage to the nerves from surviving hexvein convulsions: numb, weak hands and a dragging step. It will not heal by itself; a biosculpter or a healer mech serum can repair it.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <defaultLabelColor>(0.65, 0.35, 0.95)</defaultLabelColor>
+    <isBad>true</isBad>
+    <chronic>true</chronic>
+    <tendable>false</tendable>
+    <everCurableByItem>true</everCurableByItem>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <stages>
+      <li>
+        <painOffset>0.05</painOffset>
+        <capMods>
+          <li><capacity>Manipulation</capacity><offset>-0.12</offset></li>
+          <li><capacity>Moving</capacity><offset>-0.08</offset></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <!-- ==================== Slumbercloud ==================== -->
+  <!-- 0.05 per hit: unconscious at 4 s (0.4). Wakes ~5 hours after leaving the cloud. -->
+  <HediffDef>
+    <defName>PGR_SedationStupor</defName>
+    <label>sedation stupor</label>
+    <description>A deep chemical sleep. The pawn cannot be roused until it wears off, usually some hours after leaving the cloud, with no lasting harm. Left in thick slumbercloud, the stupor slides into a deadly anoxic coma.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <defaultLabelColor>(0.35, 0.55, 1.0)</defaultLabelColor>
+    <isBad>true</isBad>
+    <maxSeverity>1</maxSeverity>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <comps>
+      <li Class="HediffCompProperties_SeverityPerDay">
+        <severityPerDay>-3</severityPerDay>
+        <showHoursToRecover>true</showHoursToRecover>
+      </li>
+      <li Class="PalverZGasRework.HediffCompProperties_AddHediffAtSeverity">
+        <severity>0.4</severity>
+        <hediff>PGR_SlumberSleep</hediff>
+      </li>
+    </comps>
+    <stages>
+      <li>
+        <label>drowsy</label>
+        <minSeverity>0.05</minSeverity>
+        <capMods>
+          <li><capacity>Consciousness</capacity><offset>-0.15</offset></li>
+        </capMods>
+      </li>
+      <li>
+        <label>stuporous</label>
+        <minSeverity>0.2</minSeverity>
+        <capMods>
+          <li><capacity>Consciousness</capacity><offset>-0.35</offset></li>
+          <li><capacity>Moving</capacity><offset>-0.15</offset></li>
+        </capMods>
+      </li>
+      <li>
+        <label>unconscious</label>
+        <minSeverity>0.4</minSeverity>
+        <painFactor>0.3</painFactor>
+        <capMods>
+          <li><capacity>Consciousness</capacity><setMax>0.1</setMax></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <!-- Added once the stupor knocks a pawn out: 3-5 hours of sleep, however soon it is carried out. -->
+  <HediffDef>
+    <defName>PGR_SlumberSleep</defName>
+    <label>drugged sleep</label>
+    <description>Slumbercloud has put this pawn into a deep chemical sleep. It cannot be woken and will come round on its own after a few hours, unharmed.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <defaultLabelColor>(0.35, 0.55, 1.0)</defaultLabelColor>
+    <isBad>true</isBad>
+    <tendable>false</tendable>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <comps>
+      <li Class="HediffCompProperties_Disappears">
+        <disappearsAfterTicks>7500~12500</disappearsAfterTicks>
+        <showRemainingTime>true</showRemainingTime>
+      </li>
+    </comps>
+    <stages>
+      <li>
+        <painFactor>0.3</painFactor>
+        <capMods>
+          <li><capacity>Consciousness</capacity><setMax>0.1</setMax></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <!-- Builds only on pawns already deep in stupor (0.8+, i.e. 8 s) standing in density 180+.
+       0.05 per hit = death after 10 continuous seconds. Leaving the thick cloud drains it within seconds. -->
+  <HediffDef>
+    <defName>PGR_AnoxicComa</defName>
+    <label>deep anoxic coma</label>
+    <description>The sedative has depressed breathing so far that the brain is starving for oxygen. Fatal within seconds unless the pawn is pulled out of the thick cloud, and even then the starved brain keeps scars.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <defaultLabelColor>(0.2, 0.3, 0.9)</defaultLabelColor>
+    <isBad>true</isBad>
+    <maxSeverity>1</maxSeverity>
+    <lethalSeverity>1</lethalSeverity>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <comps>
+      <li Class="PalverZGasRework.HediffCompProperties_FadeWithoutExposure">
+        <graceTicks>90</graceTicks>
+        <severityLossPerSecond>0.25</severityLossPerSecond>
+      </li>
+      <!-- Pulled out of the coma alive: the starved brain keeps scars. -->
+      <li Class="PalverZGasRework.HediffCompProperties_GasAftermath">
+        <minPeakSeverity>0.3</minPeakSeverity>
+        <messageKey>PGR_AftermathMessage</messageKey>
+        <options>
+          <li>
+            <hediff>PGR_HypoxicBrainScarring</hediff>
+            <part>Brain</part>
+          </li>
+        </options>
+      </li>
+    </comps>
+    <stages>
+      <li>
+        <label>sinking</label>
+        <minSeverity>0.01</minSeverity>
+        <lifeThreatening>true</lifeThreatening>
+        <capMods>
+          <li><capacity>Consciousness</capacity><setMax>0.01</setMax></li>
+          <li><capacity>Breathing</capacity><offset>-0.3</offset></li>
+        </capMods>
+      </li>
+      <li>
+        <label>respiratory collapse</label>
+        <minSeverity>0.5</minSeverity>
+        <lifeThreatening>true</lifeThreatening>
+        <capMods>
+          <li><capacity>Consciousness</capacity><setMax>0.01</setMax></li>
+          <li><capacity>Breathing</capacity><offset>-0.7</offset></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <!-- ==================== Dreadspore Vapor ==================== -->
+  <!-- 0.10 per hit: accuracy -80% at once, forced break at 6 s (0.6). -->
+  <HediffDef>
+    <defName>PGR_DreadsporeExposure</defName>
+    <label>dreadspore exposure</label>
+    <description>Psychotropic spores flooding the brain with terror. Vision warps and swims, wrecking aim. Past a few breaths the mind snaps regardless of mood: the violent go berserk, everyone else flees.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <defaultLabelColor>(0.9, 0.3, 0.75)</defaultLabelColor>
+    <isBad>true</isBad>
+    <maxSeverity>1</maxSeverity>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <comps>
+      <li Class="HediffCompProperties_SeverityPerDay">
+        <severityPerDay>-12</severityPerDay>
+      </li>
+      <li Class="PalverZGasRework.HediffCompProperties_DreadBreak">
+        <triggerSeverity>0.6</triggerSeverity>
+        <violentTraits>
+          <li>Brawler</li>
+          <li>Bloodlust</li>
+          <li>Psychopath</li>
+        </violentTraits>
+        <violentState>Berserk</violentState>
+        <fearfulState>PanicFlee</fearfulState>
+        <animalState>PanicFlee</animalState>
+      </li>
+    </comps>
+    <stages>
+      <li>
+        <label>disoriented</label>
+        <minSeverity>0.02</minSeverity>
+        <statFactors>
+          <ShootingAccuracyPawn>0.2</ShootingAccuracyPawn>
+        </statFactors>
+      </li>
+      <li>
+        <label>dread</label>
+        <minSeverity>0.6</minSeverity>
+        <statFactors>
+          <ShootingAccuracyPawn>0.2</ShootingAccuracyPawn>
+        </statFactors>
+        <capMods>
+          <li><capacity>Consciousness</capacity><offset>-0.1</offset></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <!-- ==================== Scourge Fog ==================== -->
+  <!-- Inhaled acid. 0.008 per hit (net ~0.014/s with recovery): no edema at 20 s (0.28), edema from ~32 s (0.45). -->
+  <HediffDef>
+    <defName>PGR_AcidInhalation</defName>
+    <label>acid inhalation</label>
+    <description>Scourge fog breathed in without a mask. The acid burns the airways and lungs: coughing, then searing pain and short breath. Heavy exposure floods the lungs with fluid hours later, and badly burned lungs scar for good. A gas mask prevents it.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <defaultLabelColor>(0.92, 0.84, 0.2)</defaultLabelColor>
+    <isBad>true</isBad>
+    <maxSeverity>1</maxSeverity>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <comps>
+      <li Class="HediffCompProperties_SeverityPerDay">
+        <severityPerDay>-2</severityPerDay>
+        <showHoursToRecover>true</showHoursToRecover>
+      </li>
+      <li Class="PalverZGasRework.HediffCompProperties_AddHediffAtSeverity">
+        <severity>0.45</severity>
+        <hediff>PGR_PulmonaryEdema</hediff>
+      </li>
+      <li Class="PalverZGasRework.HediffCompProperties_GasAftermath">
+        <minPeakSeverity>0.6</minPeakSeverity>
+        <messageKey>PGR_AftermathMessage</messageKey>
+        <options>
+          <li>
+            <hediff>PGR_LungScarring</hediff>
+            <part>Lung</part>
+          </li>
+        </options>
+      </li>
+    </comps>
+    <stages>
+      <li>
+        <label>coughing</label>
+        <minSeverity>0.02</minSeverity>
+        <painOffset>0.05</painOffset>
+        <capMods>
+          <li><capacity>Breathing</capacity><offset>-0.05</offset></li>
+        </capMods>
+      </li>
+      <li>
+        <label>burning airways</label>
+        <minSeverity>0.25</minSeverity>
+        <painOffset>0.15</painOffset>
+        <capMods>
+          <li><capacity>Breathing</capacity><offset>-0.2</offset></li>
+          <li><capacity>Consciousness</capacity><offset>-0.05</offset></li>
+        </capMods>
+      </li>
+      <li>
+        <label>seared lungs</label>
+        <minSeverity>0.6</minSeverity>
+        <painOffset>0.25</painOffset>
+        <capMods>
+          <li><capacity>Breathing</capacity><offset>-0.4</offset></li>
+          <li><capacity>Consciousness</capacity><offset>-0.1</offset></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <!-- Untreated: 0.25 -> 1.0 in about 7 hours. Tended at 75% quality it drains (-1.25 per day net). -->
+  <HediffDef>
+    <defName>PGR_PulmonaryEdema</defName>
+    <label>pulmonary edema</label>
+    <description>Acid-burned lungs are filling with fluid. It gets worse for hours after the exposure and drowns the patient unless a doctor treats it; good treatment drains it. Survivors of a bad case keep scarred lungs.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <defaultLabelColor>(0.92, 0.84, 0.2)</defaultLabelColor>
+    <isBad>true</isBad>
+    <tendable>true</tendable>
+    <initialSeverity>0.25</initialSeverity>
+    <maxSeverity>1</maxSeverity>
+    <lethalSeverity>1</lethalSeverity>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <comps>
+      <li Class="HediffCompProperties_TendDuration">
+        <baseTendDurationHours>24</baseTendDurationHours>
+        <severityPerDayTended>-5</severityPerDayTended>
+      </li>
+      <li Class="HediffCompProperties_SeverityPerDay">
+        <severityPerDay>2.5</severityPerDay>
+      </li>
+      <li Class="PalverZGasRework.HediffCompProperties_GasAftermath">
+        <minPeakSeverity>0.6</minPeakSeverity>
+        <messageKey>PGR_AftermathMessage</messageKey>
+        <options>
+          <li>
+            <hediff>PGR_LungScarring</hediff>
+            <part>Lung</part>
+          </li>
+        </options>
+      </li>
+    </comps>
+    <stages>
+      <li>
+        <label>fluid in the lungs</label>
+        <lifeThreatening>true</lifeThreatening>
+        <capMods>
+          <li><capacity>Breathing</capacity><offset>-0.15</offset></li>
+        </capMods>
+      </li>
+      <li>
+        <label>drowning</label>
+        <minSeverity>0.5</minSeverity>
+        <lifeThreatening>true</lifeThreatening>
+        <capMods>
+          <li><capacity>Breathing</capacity><offset>-0.45</offset></li>
+          <li><capacity>Consciousness</capacity><offset>-0.15</offset></li>
+        </capMods>
+      </li>
+      <li>
+        <label>respiratory failure</label>
+        <minSeverity>0.8</minSeverity>
+        <lifeThreatening>true</lifeThreatening>
+        <capMods>
+          <li><capacity>Breathing</capacity><offset>-0.7</offset></li>
+          <li><capacity>Consciousness</capacity><offset>-0.3</offset></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>PGR_LungScarring</defName>
+    <label>acid-scarred lung</label>
+    <labelNoun>an acid-scarred lung</labelNoun>
+    <description>Scar tissue left in a lung by scourge fog. The lung never works fully again. A lung transplant, a biosculpter or a healer mech serum fixes it.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <defaultLabelColor>(0.8, 0.5, 0.5)</defaultLabelColor>
+    <isBad>true</isBad>
+    <chronic>true</chronic>
+    <tendable>false</tendable>
+    <everCurableByItem>true</everCurableByItem>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <stages>
+      <li>
+        <capMods>
+          <li><capacity>Breathing</capacity><offset>-0.15</offset></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <!-- ==================== Aegis Swarm ==================== -->
+  <HediffDef>
+    <defName>PGR_IFFRecognized</defName>
+    <label>IFF recognized</label>
+    <description>The aegis swarm has read this pawn's transponder and marked it as friendly. The drones hold off.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <defaultLabelColor>(0.75, 0.85, 1.0)</defaultLabelColor>
+    <isBad>false</isBad>
+    <maxSeverity>1</maxSeverity>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <comps>
+      <li Class="PalverZGasRework.HediffCompProperties_FadeWithoutExposure">
+        <graceTicks>120</graceTicks>
+        <severityLossPerSecond>0.5</severityLossPerSecond>
+      </li>
+    </comps>
+    <stages>
+      <li>
+        <minSeverity>0.01</minSeverity>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <!-- ==================== Cypherphage Cloud ==================== -->
+  <HediffDef>
+    <defName>PGR_SensorBlind</defName>
+    <label>sensor blind</label>
+    <description>Cypherphage nanites have overwritten this mechanoid's optical processing. Its sensors return noise until the firmware resets.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <defaultLabelColor>(0.2, 0.85, 0.9)</defaultLabelColor>
+    <isBad>true</isBad>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <comps>
+      <li Class="HediffCompProperties_Disappears">
+        <disappearsAfterTicks>900~900</disappearsAfterTicks>
+        <showRemainingTime>true</showRemainingTime>
+      </li>
+    </comps>
+    <stages>
+      <li>
+        <capMods>
+          <li><capacity>Sight</capacity><setMax>0</setMax></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <!-- ==================== Verminbane ==================== -->
+  <!-- The gas scales the dose by body size, so the same stages hit a rat in seconds and a person in minutes. -->
+  <HediffDef>
+    <defName>PGR_PesticidePoisoning</defName>
+    <label>pesticide poisoning</label>
+    <description>Verminbane blocks the enzyme that switches nerve signals off. Small creatures are overwhelmed in seconds; larger ones get nausea, then tremors, then convulsions and failing breath. It wears off within hours once the creature is out of the fog.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <defaultLabelColor>(0.3, 0.8, 0.55)</defaultLabelColor>
+    <isBad>true</isBad>
+    <maxSeverity>1</maxSeverity>
+    <lethalSeverity>1</lethalSeverity>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <comps>
+      <li Class="HediffCompProperties_SeverityPerDay">
+        <severityPerDay>-2.5</severityPerDay>
+        <showHoursToRecover>true</showHoursToRecover>
+      </li>
+    </comps>
+    <stages>
+      <li>
+        <label>nausea</label>
+        <minSeverity>0.04</minSeverity>
+        <vomitMtbDays>0.5</vomitMtbDays>
+        <capMods>
+          <li><capacity>Consciousness</capacity><offset>-0.05</offset></li>
+        </capMods>
+      </li>
+      <li>
+        <label>tremors</label>
+        <minSeverity>0.2</minSeverity>
+        <painOffset>0.05</painOffset>
+        <vomitMtbDays>0.2</vomitMtbDays>
+        <capMods>
+          <li><capacity>Consciousness</capacity><offset>-0.1</offset></li>
+          <li><capacity>Moving</capacity><offset>-0.1</offset></li>
+          <li><capacity>Manipulation</capacity><offset>-0.15</offset></li>
+        </capMods>
+      </li>
+      <li>
+        <label>convulsions</label>
+        <minSeverity>0.45</minSeverity>
+        <painOffset>0.2</painOffset>
+        <vomitMtbDays>0.1</vomitMtbDays>
+        <lifeThreatening>true</lifeThreatening>
+        <capMods>
+          <li><capacity>Consciousness</capacity><offset>-0.3</offset></li>
+          <li><capacity>Moving</capacity><offset>-0.35</offset></li>
+          <li><capacity>Manipulation</capacity><offset>-0.35</offset></li>
+        </capMods>
+      </li>
+      <li>
+        <label>respiratory failure</label>
+        <minSeverity>0.75</minSeverity>
+        <painOffset>0.2</painOffset>
+        <lifeThreatening>true</lifeThreatening>
+        <capMods>
+          <li><capacity>Consciousness</capacity><offset>-0.5</offset></li>
+          <li><capacity>Breathing</capacity><offset>-0.6</offset></li>
+          <li><capacity>Moving</capacity><offset>-0.5</offset></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <!-- The rat-poison half of verminbane. Same dose scaling as the nerve poison. Every wound bleeds harder for days;
+       from 0.25 (about 40 s in thick fog for a person) the body starts bleeding inside 2-4 hours later. -->
+  <HediffDef>
+    <defName>PGR_Anticoagulant</defName>
+    <label>thinned blood</label>
+    <description>Verminbane carries a rat-poison blood thinner. The blood stops clotting: every wound bleeds harder, and after a heavy dose the body starts bleeding inside a few hours later. It clears out over several days.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <defaultLabelColor>(0.8, 0.25, 0.25)</defaultLabelColor>
+    <isBad>true</isBad>
+    <maxSeverity>1</maxSeverity>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <comps>
+      <li Class="HediffCompProperties_SeverityPerDay">
+        <severityPerDay>-0.4</severityPerDay>
+        <showDaysToRecover>true</showDaysToRecover>
+      </li>
+      <li Class="PalverZGasRework.HediffCompProperties_DelayedHediff">
+        <minSeverity>0.25</minSeverity>
+        <delayTicks>5000~10000</delayTicks>
+        <hediff>PGR_InternalBleeding</hediff>
+        <messageKey>PGR_InternalBleedingMessage</messageKey>
+      </li>
+    </comps>
+    <stages>
+      <li>
+        <label>slow clotting</label>
+        <minSeverity>0.02</minSeverity>
+        <totalBleedFactor>1.5</totalBleedFactor>
+      </li>
+      <li>
+        <label>poor clotting</label>
+        <minSeverity>0.25</minSeverity>
+        <totalBleedFactor>2.5</totalBleedFactor>
+      </li>
+      <li>
+        <label>no clotting</label>
+        <minSeverity>0.5</minSeverity>
+        <totalBleedFactor>4</totalBleedFactor>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <!-- Untreated: severity 0.3 -> 1 in about 8 hours, bleeding 45-150% of the blood per day before the thinner
+       multiplies it: death by blood loss within roughly half a day. Tended, it bleeds far less and heals within hours. -->
+  <HediffDef>
+    <defName>PGR_InternalBleeding</defName>
+    <label>internal bleeding</label>
+    <description>Bleeding inside the body with no wound to close, from blood that no longer clots. It gets worse by itself and drains blood until the patient bleeds out. A doctor's treatment slows the bleeding and lets it heal; thinned blood makes it worse.</description>
+    <hediffClass>PalverZGasRework.Hediff_InternalBleeding</hediffClass>
+    <defaultLabelColor>(0.85, 0.15, 0.15)</defaultLabelColor>
+    <isBad>true</isBad>
+    <tendable>true</tendable>
+    <initialSeverity>0.3</initialSeverity>
+    <maxSeverity>1</maxSeverity>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <comps>
+      <li Class="HediffCompProperties_TendDuration">
+        <baseTendDurationHours>24</baseTendDurationHours>
+        <severityPerDayTended>-5</severityPerDayTended>
+      </li>
+      <li Class="HediffCompProperties_SeverityPerDay">
+        <severityPerDay>2</severityPerDay>
+      </li>
+    </comps>
+    <stages>
+      <li>
+        <label>seeping</label>
+        <painOffset>0.1</painOffset>
+        <lifeThreatening>true</lifeThreatening>
+      </li>
+      <li>
+        <label>heavy</label>
+        <minSeverity>0.6</minSeverity>
+        <painOffset>0.25</painOffset>
+        <lifeThreatening>true</lifeThreatening>
+        <capMods>
+          <li><capacity>Consciousness</capacity><offset>-0.1</offset></li>
+        </capMods>
+      </li>
+    </stages>
+    <modExtensions>
+      <li Class="PalverZGasRework.InternalBleedingExtension">
+        <bleedRatePerSeverity>1.5</bleedRatePerSeverity>
+        <tendReduction>0.8</tendReduction>
+      </li>
+    </modExtensions>
+  </HediffDef>
+
+</Defs>

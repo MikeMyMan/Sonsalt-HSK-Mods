@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The framework pieces every gas item hangs off. The def names are the ones PalverZ's Gas Pack used, so a colony
+  can swap the Gas Pack for this mod and keep its canisters, traps, vents, shells and implants. The two mods are
+  marked incompatible in About.xml because both would define these.
+-->
+<Defs>
+
+  <ThingCategoryDef>
+    <defName>PGP_WeaponizedGas</defName>
+    <label>weaponized gases</label>
+    <parent>Drugs</parent>
+  </ThingCategoryDef>
+
+  <DesignationCategoryDef>
+    <defName>PGP_Buildings</defName>
+    <label>gas</label>
+    <description>Gas vents.</description>
+    <order>900</order>
+    <specialDesignatorClasses>
+      <li>Designator_Cancel</li>
+      <li>Designator_Deconstruct</li>
+    </specialDesignatorClasses>
+  </DesignationCategoryDef>
+
+  <!-- Cypherphage component meltdown: the reprocessor leaks chemfuel, burns from inside, and the mech dies in flames. -->
+  <HediffDef>
+    <defName>PGP_MechLeaking</defName>
+    <label>leaking reprocessor</label>
+    <description>Cypherphage nanites have eaten through this mechanoid's fluid reprocessor. It drips chemfuel and burns from the inside until the reprocessor fails, and the mechanoid goes up in flames when it dies.</description>
+    <hediffClass>PalverZGasRework.Hediff_ReprocessorLeak</hediffClass>
+    <defaultLabelColor>(0.6, 0.4, 0.1)</defaultLabelColor>
+    <makesSickThought>false</makesSickThought>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <maxSeverity>1</maxSeverity>
+    <isBad>true</isBad>
+    <comps>
+      <li Class="HediffCompProperties_SeverityPerDay">
+        <severityPerDay>0.25</severityPerDay>
+      </li>
+    </comps>
+    <stages>
+      <li>
+        <label>seeping</label>
+      </li>
+      <li>
+        <label>leaking</label>
+        <minSeverity>0.4</minSeverity>
+      </li>
+      <li>
+        <label>gushing</label>
+        <minSeverity>0.75</minSeverity>
+      </li>
+    </stages>
+    <modExtensions>
+      <li Class="PalverZGasRework.ReprocessorLeakExtension">
+        <damageIntervalTicks>120</damageIntervalTicks>
+        <damageBase>0.2</damageBase>
+        <damagePerSeverity>1.5</damagePerSeverity>
+        <damageDef>Burn</damageDef>
+        <dripBaseTicks>100</dripBaseTicks>
+        <dripPerSeverity>90</dripPerSeverity>
+        <dripMinTicks>10</dripMinTicks>
+        <deathExplosionRadius>3.9</deathExplosionRadius>
+        <deathExplosionDamage>40</deathExplosionDamage>
+        <deathExplosionDamageDef>Flame</deathExplosionDamageDef>
+      </li>
+    </modExtensions>
+  </HediffDef>
+
+</Defs>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!-- Barbsmoke: micro-burns that work through clothing (the effect sets ignoreArmor). -->
+  <DamageDef ParentName="Flame">
+    <defName>PGR_ChemicalBurn</defName>
+    <label>chemical burn</label>
+    <workerClass>DamageWorker_AddInjury</workerClass>
+    <armorCategory>Heat</armorCategory>
+    <hediff>ChemicalBurn</hediff>
+    <deathMessage>{0} has been burned to death by barbsmoke.</deathMessage>
+    <scaleDamageToBuildingsBasedOnFlammability>false</scaleDamageToBuildingsBasedOnFlammability>
+  </DamageDef>
+
+  <!-- Scourge fog: corrodes buildings, loot and skin. -->
+  <DamageDef ParentName="Flame">
+    <defName>PGR_Corrosion</defName>
+    <label>corrosion</label>
+    <workerClass>DamageWorker_AddInjury</workerClass>
+    <armorCategory>Heat</armorCategory>
+    <hediff>AcidBurn</hediff>
+    <deathMessage>{0} has been dissolved by scourge fog.</deathMessage>
+    <scaleDamageToBuildingsBasedOnFlammability>false</scaleDamageToBuildingsBasedOnFlammability>
+  </DamageDef>
+
+  <!-- Cypherphage "subroutine scramble": like vanilla's aggression judgement scramble, but permanent. -->
+  <MentalStateDef ParentName="BaseMentalState">
+    <defName>PGR_SubroutineScramble</defName>
+    <stateClass>MentalState_Berserk</stateClass>
+    <label>subroutine scramble</label>
+    <category>Aggro</category>
+    <nameColor>(0.2,0.85,0.9)</nameColor>
+    <minTicksBeforeRecovery>99999999</minTicksBeforeRecovery>
+    <recoveryMtbDays>99999</recoveryMtbDays>
+    <recoverFromSleep>false</recoverFromSleep>
+    <baseInspectLine>Subroutines scrambled by cypherphage</baseInspectLine>
+    <beginLetterLabel>subroutine scramble</beginLetterLabel>
+    <beginLetter>Cypherphage nanites have scrambled {0}'s target recognition. It now attacks anything near it and will not recover.</beginLetter>
+    <beginLetterDef>NegativeEvent</beginLetterDef>
+    <stateEffecter>Berserk</stateEffecter>
+    <inCaravanCanDo>true</inCaravanCanDo>
+  </MentalStateDef>
+
+  <!-- Glitterworld-grade repair of deathbreath damage. -->
+  <RecipeDef ParentName="SurgeryFlesh">
+    <defName>PGR_NeuralRegeneration</defName>
+    <label>neural regeneration</label>
+    <description>Rebuild the brain tissue destroyed by deathbreath fog, using glitterworld medicine to regrow neurons in place.</description>
+    <workerClass>Recipe_RemoveHediff</workerClass>
+    <jobString>Regenerating brain tissue.</jobString>
+    <workAmount>6000</workAmount>
+    <removesHediff>PGR_HypoxicBrainScarring</removesHediff>
+    <successfullyRemovedHediffMessage>{0} has repaired {1}'s hypoxic brain scarring.</successfullyRemovedHediffMessage>
+    <deathOnFailedSurgeryChance>0.05</deathOnFailedSurgeryChance>
+    <skillRequirements>
+      <Medicine>10</Medicine>
+    </skillRequirements>
+    <ingredients>
+      <li>
+        <filter>
+          <thingDefs>
+            <li>MedicineUltratech</li>
+          </thingDefs>
+        </filter>
+        <count>3</count>
+      </li>
+    </ingredients>
+    <fixedIngredientFilter>
+      <thingDefs>
+        <li>MedicineUltratech</li>
+      </thingDefs>
+    </fixedIngredientFilter>
+  </RecipeDef>
+
+  <RecipeDef ParentName="SurgeryFlesh">
+    <defName>PGR_MyocardialRegeneration</defName>
+    <label>myocardial regeneration</label>
+    <description>Regrow the heart muscle killed by deathbreath fog, using glitterworld medicine.</description>
+    <workerClass>Recipe_RemoveHediff</workerClass>
+    <jobString>Regenerating heart muscle.</jobString>
+    <workAmount>6000</workAmount>
+    <removesHediff>PGR_MyocardialNecrosis</removesHediff>
+    <successfullyRemovedHediffMessage>{0} has repaired {1}'s myocardial necrosis.</successfullyRemovedHediffMessage>
+    <deathOnFailedSurgeryChance>0.05</deathOnFailedSurgeryChance>
+    <skillRequirements>
+      <Medicine>10</Medicine>
+    </skillRequirements>
+    <ingredients>
+      <li>
+        <filter>
+          <thingDefs>
+            <li>MedicineUltratech</li>
+          </thingDefs>
+        </filter>
+        <count>3</count>
+      </li>
+    </ingredients>
+    <fixedIngredientFilter>
+      <thingDefs>
+        <li>MedicineUltratech</li>
+      </thingDefs>
+    </fixedIngredientFilter>
+  </RecipeDef>
+
+</Defs>

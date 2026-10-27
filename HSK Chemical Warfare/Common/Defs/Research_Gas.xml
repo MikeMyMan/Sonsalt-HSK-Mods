@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Research ladder, by lethality and complexity:
+
+  agrochemical aerosols               agent orange, verminbane           lethality 0.5-1, complexity 1
+  └─ (with sedative aerosols) nerve agents: pesticide chemistry is where nerve agents came from
+
+  weaponized gas                      barbsmoke, dreadspore vapor        lethality 1.5-2, complexity 3
+  ├─ sedative aerosols                slumbercloud                       non-lethal if managed
+  │   └─ nerve agents                 hexvein mist                       4.5 / 2
+  │       └─ terminal asphyxiants     deathbreath fog                    5 / 2
+  ├─ corrosive agents                 gear-rot fume, scourge fog         2.5-3 / 4
+  └─ IFF nanite swarms (Spacer)       aegis swarm                        3.5 / 4
+      └─ cypherphage nanites          cypherphage cloud                  4 vs mechs / 5
+
+  Prerequisites marked MayRequire are Hardcore SK nodes and are dropped when HSK is not loaded.
+-->
+<Defs>
+
+  <ResearchProjectDef>
+    <defName>PGR_Agrochemicals</defName>
+    <label>agrochemical aerosols</label>
+    <description>Spray herbicide and pesticide as a fog: clear grass and brush from firing lines, strip fields, and wipe out rats and insects. Long exposure sickens people and livestock too.\n\nUnlocks agent orange and verminbane canisters, traps, vents and shells. Pesticide chemistry is also the road to nerve agents.</description>
+    <baseCost>600</baseCost>
+    <techLevel>Industrial</techLevel>
+    <prerequisites>
+      <li>MedicineProduction</li>
+      <li MayRequire="skyarkhangel.HSK">Chemistry_C2</li>
+    </prerequisites>
+    <researchViewX>13.00</researchViewX>
+    <researchViewY>0.70</researchViewY>
+  </ResearchProjectDef>
+
+  <!-- Tier 1 of the weapons: the two low-lethality agents. Def name kept from PalverZ's Gas Pack. -->
+  <ResearchProjectDef>
+    <defName>PGP_WeaponizedGas</defName>
+    <label>weaponized gas</label>
+    <description>Turn irritants and psychotropics into battlefield weapons, and build the traps, vents and canisters that deliver them.\n\nUnlocks barbsmoke and dreadspore vapor canisters, traps, vents and shells. Opens the research into deadlier agents.</description>
+    <baseCost>1000</baseCost>
+    <techLevel>Industrial</techLevel>
+    <prerequisites>
+      <li>MedicineProduction</li>
+      <li MayRequire="skyarkhangel.HSK">Chemistry_C2</li>
+    </prerequisites>
+    <requiredResearchBuilding>HiTechResearchBench</requiredResearchBuilding>
+    <researchViewX>13.00</researchViewX>
+    <researchViewY>0.00</researchViewY>
+  </ResearchProjectDef>
+
+  <ResearchProjectDef>
+    <defName>PGR_SedativeAerosols</defName>
+    <label>sedative aerosols</label>
+    <description>Turn surgical anesthetics into a breathable cloud that drops a pawn in seconds and lets them wake hours later unharmed.\n\nUnlocks slumbercloud canisters, traps, vents and shells.</description>
+    <baseCost>1400</baseCost>
+    <techLevel>Industrial</techLevel>
+    <prerequisites>
+      <li>PGP_WeaponizedGas</li>
+      <li MayRequire="skyarkhangel.HSK">Drugs_C3</li>
+    </prerequisites>
+    <requiredResearchBuilding>HiTechResearchBench</requiredResearchBuilding>
+    <researchViewX>14.00</researchViewX>
+    <researchViewY>0.70</researchViewY>
+  </ResearchProjectDef>
+
+  <ResearchProjectDef>
+    <defName>PGR_NerveAgents</defName>
+    <label>nerve agents</label>
+    <description>Agents that jam the junctions between nerve and muscle in anything with a nervous system: people, animals and insectoids alike.\n\nUnlocks hexvein mist canisters, traps, vents and shells.</description>
+    <baseCost>2400</baseCost>
+    <techLevel>Industrial</techLevel>
+    <prerequisites>
+      <li>PGR_SedativeAerosols</li>
+      <li>PGR_Agrochemicals</li>
+      <li>MultiAnalyzer</li>
+    </prerequisites>
+    <requiredResearchBuilding>HiTechResearchBench</requiredResearchBuilding>
+    <researchViewX>15.00</researchViewX>
+    <researchViewY>0.70</researchViewY>
+  </ResearchProjectDef>
+
+  <ResearchProjectDef>
+    <defName>PGR_TerminalAsphyxiants</defName>
+    <label>terminal asphyxiants</label>
+    <description>The end point of chemical warfare: a fog that shuts down brain, lungs and heart in about five seconds. No prisoners, no survivors worth recruiting.\n\nUnlocks deathbreath fog canisters, traps, vents and shells.</description>
+    <baseCost>3200</baseCost>
+    <techLevel>Industrial</techLevel>
+    <prerequisites>
+      <li>PGR_NerveAgents</li>
+      <li>VitalsMonitor</li>
+    </prerequisites>
+    <requiredResearchBuilding>HiTechResearchBench</requiredResearchBuilding>
+    <researchViewX>16.00</researchViewX>
+    <researchViewY>0.70</researchViewY>
+  </ResearchProjectDef>
+
+  <ResearchProjectDef>
+    <defName>PGR_CorrosiveAgents</defName>
+    <label>corrosive agents</label>
+    <description>Aerosolized oxidizers that attack materials instead of people: one strips the armor off whoever walks through it, the other rots walls, crops and loot.\n\nUnlocks gear-rot fume and scourge fog canisters, traps, vents and shells.</description>
+    <baseCost>1600</baseCost>
+    <techLevel>Industrial</techLevel>
+    <prerequisites>
+      <li>PGP_WeaponizedGas</li>
+      <li MayRequire="skyarkhangel.HSK">Chemistry_C3</li>
+    </prerequisites>
+    <requiredResearchBuilding>HiTechResearchBench</requiredResearchBuilding>
+    <researchViewX>14.00</researchViewX>
+    <researchViewY>0.00</researchViewY>
+  </ResearchProjectDef>
+
+  <ResearchProjectDef>
+    <defName>PGR_IFFNaniteSwarms</defName>
+    <label>IFF nanite swarms</label>
+    <description>Clouds of micro-drones that read faction transponders, leave friends alone and cut into anything hostile. Safe to vent into your own corridors.\n\nUnlocks aegis swarm canisters, traps, vents and shells.</description>
+    <baseCost>3000</baseCost>
+    <techLevel>Spacer</techLevel>
+    <prerequisites>
+      <li>PGP_WeaponizedGas</li>
+      <li>Fabrication</li>
+      <li MayRequire="skyarkhangel.HSK">Droids_D1</li>
+    </prerequisites>
+    <requiredResearchBuilding>HiTechResearchBench</requiredResearchBuilding>
+    <requiredResearchFacilities>
+      <li>MultiAnalyzer</li>
+    </requiredResearchFacilities>
+    <researchViewX>15.00</researchViewX>
+    <researchViewY>1.40</researchViewY>
+  </ResearchProjectDef>
+
+  <ResearchProjectDef>
+    <defName>PGR_CypherphageNanites</defName>
+    <label>cypherphage nanites</label>
+    <description>Nanites that infect mechanoid logic cores and rewrite them at random: stun loops, meltdowns, blindness, permanent berserk, and now and then a mechanoid that switches sides.\n\nUnlocks cypherphage cloud canisters, traps, vents and shells.</description>
+    <baseCost>4500</baseCost>
+    <techLevel>Spacer</techLevel>
+    <prerequisites>
+      <li>PGR_IFFNaniteSwarms</li>
+      <li>AdvancedFabrication</li>
+      <li MayRequire="skyarkhangel.HSK">Droids_D2</li>
+    </prerequisites>
+    <requiredResearchBuilding>HiTechResearchBench</requiredResearchBuilding>
+    <requiredResearchFacilities>
+      <li>MultiAnalyzer</li>
+    </requiredResearchFacilities>
+    <researchViewX>16.00</researchViewX>
+    <researchViewY>1.40</researchViewY>
+  </ResearchProjectDef>
+
+</Defs>

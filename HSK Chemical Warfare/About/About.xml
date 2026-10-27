@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <name>HSK Chemical Warfare</name>
+  <author>Sonsalt</author>
+  <packageId>sonsalt.hsk.chemicalwarfare</packageId>
+  <modVersion>0.1.0</modVersion>
+  <supportedVersions>
+    <li>1.7</li>
+  </supportedVersions>
+  <modDependencies>
+    <li>
+      <packageId>brrainz.harmony</packageId>
+      <displayName>Harmony</displayName>
+      <steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
+      <downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
+    </li>
+    <li>
+      <packageId>PalverZ.CustomGasFramework</packageId>
+      <displayName>Custom Gas Framework</displayName>
+      <steamWorkshopUrl>https://steamcommunity.com/sharedfiles/filedetails/?id=3784051935</steamWorkshopUrl>
+    </li>
+  </modDependencies>
+  <!-- Defines the Gas Pack's def names itself (so colonies can switch over); running both would clash. -->
+  <incompatibleWith>
+    <li>palverz.gaspack</li>
+  </incompatibleWith>
+  <loadAfter>
+    <li>brrainz.harmony</li>
+    <li>Ludeon.RimWorld</li>
+    <li>Ludeon.RimWorld.Royalty</li>
+    <li>Ludeon.RimWorld.Ideology</li>
+    <li>Ludeon.RimWorld.Biotech</li>
+    <li>Ludeon.RimWorld.Anomaly</li>
+    <li>Ludeon.RimWorld.Odyssey</li>
+    <li>skyarkhangel.HSK</li>
+    <li>skyarkhangel.HSK.Core</li>
+    <li>skyarkhangel.HSK.DLC</li>
+    <li>CETeam.CombatExtended</li>
+    <li>PalverZ.CustomGasFramework</li>
+  </loadAfter>
+  <description>HSK Chemical Warfare (0.1, test release): chemical warfare for RimWorld 1.7, built on PalverZ's Custom Gas Framework: nine weaponized gases and two farm chemicals, built around RimWorld's own systems: capacities, mental states, apparel, factions and the map grid. Standalone; replaces PalverZ's Gas Pack.
+
+- Deathbreath Fog: downs in about 2 seconds, kills in about 5. Survivors keep brain or heart scarring, and past 3 seconds the poison keeps killing for hours unless a doctor treats it.
+- Hexvein Mist: nerve collapse for every living creature, mechanoids excepted. Soaks through skin, so a mask alone only slows it. Survivors of convulsions keep nerve damage.
+- Slumbercloud: knocks pawns out for hours. Lethal only if they are left in thick gas; coma survivors keep brain scarring.
+- Barbsmoke: skin agent that ignores gas masks. Only a sealed chemical suit protects.
+- Dreadspore Vapor: violent pawns go berserk, everyone else flees.
+- Gear-Rot Fume: eats worn apparel until masks and armor fall apart.
+- Scourge Fog: acid. Burns through ordinary clothes and floods unmasked lungs hours later. Corrodes buildings, kills plants, dissolves loot. Raiders path around it.
+- Aegis Swarm: friend-or-foe nanites that cut only hostiles, some of them all the way to the organs.
+- Cypherphage Cloud: anti-mechanoid logic plague. Stuns, blinds, melts, scrambles and sometimes hijacks mechs.
+
+New farm chemicals:
+- Agent Orange (herbicide): grass, bushes and crops wither in seconds; trees only lose their leaves. Clears cover and fire paths.
+- Verminbane (pesticide): rats and small insects die in seconds, people and dogs sicken over minutes, large animals barely notice. Its blood thinner makes wounds bleed harder, and a heavy dose bleeds inside hours later unless treated. Slowly kills insect hives.
+
+Protection follows how a gas gets in: a gas mask stops anything breathed, a chemical suit stops skin agents, and acid needs both.
+
+Every gas comes as a canister, gas trap, vent and mortar shell. With Combat Extended you also get hand grenades, 40x46mm grenades and 81mm mortar shells. Each gas sits on a research tier that matches its lethality and complexity.
+
+Switching from PalverZ's Gas Pack: remove the Gas Pack and add this mod. It uses the Gas Pack's item names, so canisters, traps, vents, shells and implants already in your colony carry over as the new gases. Don't run both.</description>
+</ModMetaData>

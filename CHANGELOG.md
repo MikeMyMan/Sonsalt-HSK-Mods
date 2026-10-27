@@ -1,5 +1,39 @@
 # Changelog
 
+## 1.9.0 (2026-10-27): HSK Chemical Warfare 0.1.0
+
+**HSK Chemical Warfare 0.1.0** (new, test release, RimWorld 1.7): chemical warfare on PalverZ's Custom Gas Framework.
+It started as a rework of PalverZ's Gas Pack and now replaces it.
+
+- **Nine weapons:** deathbreath fog (down in under 2 s, dead in about 5), hexvein mist (nerve agent, about 11 s,
+  insects included), slumbercloud (asleep for hours; a coma kills if left in thick gas), barbsmoke (barbs in the skin:
+  pain shock and burns), dreadspore vapor (berserk or flee after about 6 s), gear-rot fume (rots worn gear within a
+  minute), scourge fog (acid: kills plants, dissolves loot, eats walls; raiders path around it), aegis swarm
+  (friend-or-foe drones that cut only hostiles; some cuts reach the organs), cypherphage cloud (stuns, blinds, melts
+  down, scrambles or hijacks mechanoids).
+- **Two farm chemicals:** Agent Orange (herbicide: grass, crops and bushes die within about 4 s; trees go bare and die
+  after minutes; special trees are spared) and Verminbane (pesticide: dose scales with body size; rats die in about
+  2 s, megascarabs in about 5, people only sicken; kills insect hives; its blood thinner makes wounds bleed harder and
+  starts internal bleeding a few hours after a heavy dose).
+- **Protection by route:** a gas mask stops anything breathed completely; only a chemical protection suit stops skin
+  agents; hexvein and scourge's acid need both. Acid ignores ordinary clothes and armor. Nerve agents ignore general
+  toxin resistance (HSK gives rats 99 %).
+- **Delayed and lasting harm:** deathbreath poisoning (about 6 h), scourge's pulmonary edema (about 7 h) and
+  verminbane's internal bleeding (about 17 h) kill unless a doctor treats them; a good tend reverses them. Survivors
+  can keep brain or heart scarring (deathbreath, slumbercloud coma), permanent nerve damage (hexvein) or a scarred
+  lung (scourge).
+- **Research:** agrochemical aerosols, weaponized gas, sedative aerosols, nerve agents (also needs agrochemicals),
+  terminal asphyxiants, corrosive agents, IFF nanite swarms, cypherphage nanites; with HSK also Chemistry II/III,
+  Drugs and Robotics nodes. Prices follow HSK material values (canister 24 silver for Agent Orange up to 470 for
+  cypherphage).
+- **Delivery:** canister, gas trap, vent and mortar shell for every gas, trap implants for three; with Combat Extended
+  also hand grenades, 40x46mm grenades and 81mm shells. Every gas draws its own coloured cloud with release puffs; every
+  item has its own sprite.
+- **Switching from PalverZ's Gas Pack:** uses the Gas Pack's def names, so a colony can remove the Gas Pack, add this
+  mod and keep its items. Marked incompatible with the Gas Pack.
+- Tested on RimWorld 1.7.4990 with HSK and Combat Extended (223 mods): 288 of 288 checks of its in-game test pass, with
+  no errors from the mod. Not yet tested without HSK or without Combat Extended.
+
 ## 1.8.0 (2026-10-26): HSK Tactical AI 0.3.1, HSK 1.7 Compatibility Fixes 1.0.2
 
 **HSK Tactical AI 0.3.1**

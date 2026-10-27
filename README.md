@@ -1,6 +1,6 @@
 # Sonsalt's HSK mods
 
-Seven mods for [Hardcore SK](https://github.com/HardcoreSK/Hardcore-SK) on RimWorld 1.6 (HSK `alpha` branch) and
+Eight mods for [Hardcore SK](https://github.com/HardcoreSK/Hardcore-SK) on RimWorld 1.6 (HSK `alpha` branch) and
 RimWorld 1.7 (`1.7-super-unstable` branch). Each mod is one folder; copy the folders you want into your
 `RimWorld\Mods` folder. The game loads the right build by itself.
 
@@ -8,6 +8,7 @@ RimWorld 1.7 (`1.7-super-unstable` branch). Each mod is one folder; copy the fol
 |---|---|---|---|
 | [HSK Tactical AI](#hsk-tactical-ai) (0.3, test release) | `sonsalt.hsk.tacticalai` | 1.6, 1.7 | HSK, Harmony (Combat Extended recommended) |
 | [HSK Weapon Blueprints](#hsk-weapon-blueprints) (0.1, test release) | `sonsalt.hsk.weaponblueprints` | 1.6, 1.7 | Harmony; built for HSK and Combat Extended. New colony only |
+| [HSK Chemical Warfare](#hsk-chemical-warfare) (0.1, test release) | `sonsalt.hsk.chemicalwarfare` | 1.7 | Harmony, PalverZ's Custom Gas Framework; built for HSK and Combat Extended. Replaces PalverZ's Gas Pack (not with it) |
 | [Relation Based Trading](#relation-based-trading) (2.1, by TheLoneTec) | `thelonetec.relationbasedtrading` | 1.6, 1.7 (also contains 1.4-1.5 builds, untested) | Harmony |
 | [HSK Fortifications Rebalance](#hsk-fortifications-rebalance) | `sonsalt.hsk.fortifications` | 1.6, 1.7 | HSK + Aoba's Fortifications - Medieval and/or - Industrial |
 | [HSK Outposts](#hsk-outposts) | `sonsalt.hsk.outposts` | 1.6, 1.7 | HSK, Vanilla Expanded Framework, Vanilla Outposts Expanded (VOE: Additional Outposts optional) |
@@ -20,10 +21,15 @@ RimWorld 1.7 (`1.7-super-unstable` branch). Each mod is one folder; copy the fol
   Tactical AI was run through the AI Lab scenarios, and Weapon Blueprints and Relation Based Trading through their test
   harnesses.
 
+- HSK Chemical Warfare: its in-game test (every gas on protected and unprotected pawns, animals, insects, mechs,
+  buildings, plants and loot, every delivery method, pawns watched 24 hours after rescue) passes 288 of 288 checks on
+  RimWorld 1.7.4990 with HSK and Combat Extended (223 mods). Not yet tested without HSK or without CE.
+
 Gameplay testing is still light, and HSK 1.7 itself is a dev sandbox, so expect changes.
 
 **Game version:** Tactical AI and Weapon Blueprints have one build per game version (`1.6/Assemblies` and
 `1.7/Assemblies`); `LoadFolders.xml` picks the right one. The XML mods work on both HSK versions.
+HSK Chemical Warfare is 1.7 only; its `LoadFolders.xml` picks the Combat Extended or the vanilla mortar shells.
 Relation Based Trading also contains builds for 1.4 and 1.5: the 1.5 build compiles from the same source but has not
 been tested in game, and the 1.4 build is the old 1.x version.
 
@@ -83,6 +89,34 @@ menus only list the weapons you know, which keeps big weapon packs tidy.
 
 **Start a new colony.** Adding it to an existing save locks every gated weapon in that save. Load after HSK and Combat
 Extended.
+
+## HSK Chemical Warfare
+
+Chemical warfare on PalverZ's [Custom Gas Framework](https://steamcommunity.com/sharedfiles/filedetails/?id=3784051935)
+(0.1 is a test release; balance will change). Nine weaponized gases plus a herbicide and a pesticide. Each does one
+clear job, needs the right protective gear, has its own coloured cloud, and sits on a research tier that matches how
+deadly and how advanced it is. RimWorld 1.7 only.
+
+- **Gases:** deathbreath (down in under 2 s, dead in about 5), hexvein nerve agent (about 11 s, insects included),
+  slumbercloud (asleep for hours, deadly only if left lying in it), barbsmoke (pain and burns through the skin),
+  dreadspore (the violent go berserk, the rest flee), gear-rot (rots worn gear), scourge (acid: plants, loot and
+  buildings; raiders path around it), aegis (friend-or-foe drones that cut only hostiles, some cuts reach the organs),
+  cypherphage (stuns, blinds, melts down and sometimes hijacks mechanoids). Farm chemicals: **Agent Orange** clears
+  grass, crops and brush in seconds; **Verminbane** kills rats and small insects in seconds, only sickens people, and
+  its blood thinner bleeds a heavily dosed pawn out hours later unless treated.
+- **Protection by route:** anything breathed is stopped completely by a gas mask; skin agents (barbsmoke) only by a
+  chemical protection suit; hexvein and scourge's acid need both. Acid ignores ordinary clothes and armor.
+- **Delayed and lasting harm:** deathbreath poisoning, scourge's pulmonary edema and verminbane's internal bleeding get
+  worse for hours and kill unless a doctor treats them. Survivors can keep brain or heart scarring, nerve damage or a
+  scarred lung.
+- **Delivery:** every gas as canister, gas trap, vent and mortar shell (three also as trap implants); with Combat
+  Extended also hand grenades, 40x46mm grenades and 81mm shells, made at HSK's heavy ammunition bench. Six research
+  tiers, hung off HSK's chemistry, drugs and robotics research when HSK is loaded.
+- **Switching from PalverZ's Gas Pack:** this mod uses the Gas Pack's item names. Remove the Gas Pack, add this mod,
+  and the canisters, traps, vents, shells, implants and gas clouds in your colony carry over. The two are marked
+  incompatible; don't run both.
+
+Load after Custom Gas Framework, HSK and Combat Extended. Tested: see Status above.
 
 ## Relation Based Trading
 
@@ -217,7 +251,9 @@ Some XML is generated. Edit the generator, not the XML:
 | `tools/Build-FortifPatch.ps1` | everything in `HSK Fortifications Rebalance` (uses `tools/data/fortifications_deflist.tsv`) |
 | `tools/Build-AOLayouts.ps1` | `HSK Outposts/AdditionalOutposts/Patches/AO_Layouts_HSK.xml` (reads the installed Additional Outposts; `-AdditionalOutposts <folder>`) |
 | `tools/Build-ResearchGates.ps1` | `HSK Zero Research Start/Patches/HSK_ResearchGates.xml` (one line per building) |
-| `tools/Sync-ToGame.ps1` | mirrors the five mod folders into your RimWorld `Mods` folder (`-ModsFolder <path>`) |
+| `tools/ChemicalWarfare/gen_defs.py` | the item, implant and shell XML in `HSK Chemical Warfare` (from `tools/ChemicalWarfare/gas_data.py`) |
+| `tools/ChemicalWarfare/gen_sprites.py` | the item textures in `HSK Chemical Warfare/Common/Textures` (Python with Pillow and numpy) |
+| `tools/Sync-ToGame.ps1` | mirrors the mod folders into your RimWorld `Mods` folder (`-ModsFolder <path>`) |
 
 ## Credits
 
@@ -228,8 +264,11 @@ Some XML is generated. Edit the generator, not the XML:
 - **Oskar Potocki and the Vanilla Expanded team**: Vanilla Outposts Expanded and the framework.
 - **MrHydralisk**: VOE: Additional Outposts.
 - **Watcher**, **Elldar**, **kaitorisenkou**, **Vile**: the mods the compatibility fixes and gates touch.
+- **PalverZ**: *Custom Gas Framework*, which HSK Chemical Warfare is built on (a separate download, not included), and
+  *PalverZ's Gas Pack*, which HSK Chemical Warfare started as a rework of and now replaces.
 
-No textures or assets from other mods are included in the mod files; the outpost items use HSK's own weapon-crate texture.
+No textures or assets from other mods are included in the mod files; the outpost items use HSK's own weapon-crate texture,
+and HSK Chemical Warfare's item sprites are drawn by its own generator.
 The preview images (`About/Preview.png`) are in-game screenshots of RimWorld with HSK; the icons (`About/ModIcon.png`) are
 original artwork over those screenshots.
 

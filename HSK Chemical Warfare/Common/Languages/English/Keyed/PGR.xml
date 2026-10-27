@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <PGR_GearRotDestroyed>{0}'s {1} corroded away in gear-rot fume.</PGR_GearRotDestroyed>
+  <PGR_GearRotMote>{0} corroded away</PGR_GearRotMote>
+
+  <PGR_AftermathMessage>{PAWN_labelShort} survived {GAS} but was left with {RESULT}.</PGR_AftermathMessage>
+  <PGR_InternalBleedingMessage>The verminbane in {PAWN_labelShort}'s blood has caused {RESULT}. It will not stop without a doctor.</PGR_InternalBleedingMessage>
+
+  <PGR_DreadsporeReason>dreadspore vapor</PGR_DreadsporeReason>
+  <PGR_CypherphageReason>cypherphage subroutine scramble</PGR_CypherphageReason>
+  <PGR_FirmwareHijacked>Firmware hijack: {0} now answers to the colony.</PGR_FirmwareHijacked>
+
+  <PGR_Cyph_LoopStun>loop stun</PGR_Cyph_LoopStun>
+  <PGR_Cyph_Meltdown>component meltdown</PGR_Cyph_Meltdown>
+  <PGR_Cyph_SensorBlind>sensor blind</PGR_Cyph_SensorBlind>
+  <PGR_Cyph_Scramble>subroutine scramble</PGR_Cyph_Scramble>
+  <PGR_Cyph_Hijack>firmware hijack</PGR_Cyph_Hijack>
+
+</LanguageData>

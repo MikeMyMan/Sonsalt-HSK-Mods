@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The nine gases. Their def names are the ones PalverZ's Gas Pack used, so a colony that swaps the Gas Pack for
+  this mod keeps its canisters, traps, vents, shells, implants and gas clouds, now carrying the new gases.
+
+  PGP_ToxicGas      -> deathbreath fog        PGP_TearGas      -> barbsmoke
+  PGP_AntibugGas    -> hexvein mist           PGP_RageGas      -> gear-rot fume (rage folded into dreadspore)
+  PGP_SleepGas      -> slumbercloud           PGP_FearGas      -> dreadspore vapor
+  PGP_AcidGas       -> scourge fog            PGP_DefNaniteGas -> aegis swarm
+  PGP_MechVirusGas  -> cypherphage cloud
+
+  Framework gasDamageInfos defaults to damaging structures, ground items and carried gear, so every
+  entry below sets those flags explicitly.
+-->
+<Defs>
+
+  <!-- ==================== Deathbreath Fog ==================== -->
+  <GasFrameWork.GasTypeDef>
+    <defName>PGP_ToxicGas</defName>
+    <label>deathbreath fog</label>
+    <description>A breathed asphyxiant: down in two seconds, dead in five. A gas mask stops it. Past organ failure the dose keeps killing after the pawn is out, unless a doctor treats it.</description>
+    <gasColor>(0.50, 0.85, 0.15, 1)</gasColor>
+    <dissipationRate>1</dissipationRate>
+    <effects>
+      <li Class="PalverZGasRework.GasEffect_Hediff">
+        <targets>Biological</targets>
+        <hediff>PGR_DeathbreathShock</hediff>
+        <severityPerHit>0.10~0.10</severityPerHit>
+      </li>
+    </effects>
+    <modExtensions>
+      <li Class="PalverZGasRework.GasVisualExtension">
+        <opacity>1.15</opacity>
+        <puffScale>1.5~2.6</puffScale>
+        <wispScale>1.8~3.0</wispScale>
+        <wispSpeed>0.12</wispSpeed>
+      </li>
+    </modExtensions>
+  </GasFrameWork.GasTypeDef>
+
+  <!-- ==================== Barbsmoke ==================== -->
+  <GasFrameWork.GasTypeDef>
+    <defName>PGP_TearGas</defName>
+    <label>barbsmoke</label>
+    <description>Crystalline barbs that work through skin and clothing. Gas masks don't help; a sealed suit does.</description>
+    <gasColor>(0.88, 0.18, 0.25, 1)</gasColor>
+    <dissipationRate>2</dissipationRate>
+    <effects>
+      <li Class="PalverZGasRework.GasEffect_Hediff">
+        <targets>Biological</targets>
+        <hediff>PGR_BarbsmokeAgony</hediff>
+        <severityPerHit>0.35~0.35</severityPerHit>
+        <route>Skin</route>
+        <toxicResistanceReduces>false</toxicResistanceReduces>
+        <blockedBySealedSuit>
+          <requiredCoverage>
+            <li>Torso</li>
+            <li>Legs</li>
+          </requiredCoverage>
+        </blockedBySealedSuit>
+      </li>
+      <li Class="PalverZGasRework.GasEffect_Damage">
+        <targets>Biological</targets>
+        <damageDef>PGR_ChemicalBurn</damageDef>
+        <damagePerHit>0.12~0.3</damagePerHit>
+        <ignoreArmor>true</ignoreArmor>
+        <excludedParts>
+          <li>Torso</li>
+        </excludedParts>
+        <blockedBySealedSuit>
+          <requiredCoverage>
+            <li>Torso</li>
+            <li>Legs</li>
+          </requiredCoverage>
+        </blockedBySealedSuit>
+      </li>
+    </effects>
+    <modExtensions>
+      <li Class="PalverZGasRework.GasVisualExtension">
+        <opacity>0.95</opacity>
+        <glintFleck>PGR_GasGlint</glintFleck>
+        <glintChance>0.35</glintChance>
+        <glintColor>(1.0, 0.75, 0.8)</glintColor>
+      </li>
+    </modExtensions>
+  </GasFrameWork.GasTypeDef>
+
+  <!-- ==================== Hexvein Mist ==================== -->
+  <GasFrameWork.GasTypeDef>
+    <defName>PGP_AntibugGas</defName>
+    <label>hexvein mist</label>
+    <description>A nerve agent for every living thing: tremors in three seconds, convulsions in six, death in ten to twelve. It gets in through lungs and skin: a mask alone only slows it, a chemical suit and mask stop it.</description>
+    <gasColor>(0.55, 0.20, 0.90, 1)</gasColor>
+    <dissipationRate>1</dissipationRate>
+    <effects>
+      <li Class="PalverZGasRework.GasEffect_Hediff">
+        <targets>Biological</targets>
+        <hediff>PGR_HexveinParalysis</hediff>
+        <severityPerHit>0.045~0.05</severityPerHit>
+        <route>InhaledAndSkin</route>
+        <skinShare>0.3</skinShare>
+        <!-- A nerve agent: general toxin resistance (HSK insects 80%) doesn't help. Mask and suit do. -->
+        <toxicResistanceReduces>false</toxicResistanceReduces>
+      </li>
+    </effects>
+    <modExtensions>
+      <li Class="PalverZGasRework.GasVisualExtension">
+        <opacity>1.0</opacity>
+        <wispScale>1.6~2.6</wispScale>
+        <wispSpeed>0.15</wispSpeed>
+      </li>
+    </modExtensions>
+  </GasFrameWork.GasTypeDef>
+
+  <!-- ==================== Gear-Rot Fume ==================== -->
+  <GasFrameWork.GasTypeDef>
+    <defName>PGP_RageGas</defName>
+    <label>gear-rot fume</label>
+    <description>An oxidizer that eats worn gear: 2-5% of each item's integrity per second in thick fume.</description>
+    <gasColor>(0.82, 0.42, 0.12, 1)</gasColor>
+    <dissipationRate>2</dissipationRate>
+    <gasDamageInfos>
+      <li>
+        <damageDef>AcidBurn</damageDef>
+        <damageAmountRange>0.15~0.35</damageAmountRange>
+        <damagePenetration>0~0</damagePenetration>
+        <damagesPawns>true</damagesPawns>
+        <damageDownPawns>true</damageDownPawns>
+        <onlyDamageExposedParts>true</onlyDamageExposedParts>
+        <toxicResistanceReduces>false</toxicResistanceReduces>
+        <damageCarriedThings>false</damageCarriedThings>
+        <damageGroundThings>false</damageGroundThings>
+        <damageStructures>false</damageStructures>
+        <damagePlants>false</damagePlants>
+        <exclusivelyDamagesFleshTypes>
+          <li>Normal</li>
+          <li>Insectoid</li>
+        </exclusivelyDamagesFleshTypes>
+      </li>
+    </gasDamageInfos>
+    <effects>
+      <li Class="PalverZGasRework.GasEffect_GearRot">
+        <minDensity>100</minDensity>
+        <hitPointFractionPerHit>0.01~0.025</hitPointFractionPerHit>
+      </li>
+    </effects>
+    <modExtensions>
+      <li Class="PalverZGasRework.GasVisualExtension">
+        <opacity>1.0</opacity>
+        <puffScale>1.2~2.0</puffScale>
+        <wispSpeed>0.22</wispSpeed>
+      </li>
+    </modExtensions>
+  </GasFrameWork.GasTypeDef>
+
+  <!-- ==================== Slumbercloud ==================== -->
+  <GasFrameWork.GasTypeDef>
+    <defName>PGP_SleepGas</defName>
+    <label>slumbercloud</label>
+    <description>A breathed sedative. Unconscious in four seconds; fatal only to pawns left lying in thick cloud. A gas mask stops it.</description>
+    <gasColor>(0.25, 0.45, 0.95, 1)</gasColor>
+    <dissipationRate>2</dissipationRate>
+    <effects>
+      <li Class="PalverZGasRework.GasEffect_Hediff">
+        <targets>Biological</targets>
+        <hediff>PGR_SedationStupor</hediff>
+        <severityPerHit>0.05~0.05</severityPerHit>
+      </li>
+      <li Class="PalverZGasRework.GasEffect_Hediff">
+        <targets>Biological</targets>
+        <hediff>PGR_AnoxicComa</hediff>
+        <minDensity>180</minDensity>
+        <requiresHediff>PGR_SedationStupor</requiresHediff>
+        <requiresSeverity>0.8</requiresSeverity>
+        <severityPerHit>0.05~0.05</severityPerHit>
+        <scaleWithDensity>false</scaleWithDensity>
+      </li>
+    </effects>
+    <modExtensions>
+      <li Class="PalverZGasRework.GasVisualExtension">
+        <opacity>0.9</opacity>
+        <puffScale>1.6~2.8</puffScale>
+        <wispScale>2.0~3.2</wispScale>
+        <wispSpeed>0.1</wispSpeed>
+      </li>
+    </modExtensions>
+  </GasFrameWork.GasTypeDef>
+
+  <!-- ==================== Dreadspore Vapor ==================== -->
+  <GasFrameWork.GasTypeDef>
+    <defName>PGP_FearGas</defName>
+    <label>dreadspore vapor</label>
+    <description>Breathed psychotropic spores. Aim collapses at once; after six seconds the violent go berserk and everyone else flees. A gas mask stops it.</description>
+    <gasColor>(0.88, 0.22, 0.72, 1)</gasColor>
+    <dissipationRate>2</dissipationRate>
+    <effects>
+      <li Class="PalverZGasRework.GasEffect_Hediff">
+        <targets>Biological</targets>
+        <hediff>PGR_DreadsporeExposure</hediff>
+        <severityPerHit>0.05~0.05</severityPerHit>
+      </li>
+    </effects>
+    <modExtensions>
+      <li Class="PalverZGasRework.GasVisualExtension">
+        <opacity>0.85</opacity>
+        <glintFleck>PGR_GasGlint</glintFleck>
+        <glintChance>0.12</glintChance>
+        <glintColor>(1.0, 0.6, 0.95)</glintColor>
+        <wispSpeed>0.2</wispSpeed>
+      </li>
+    </modExtensions>
+  </GasFrameWork.GasTypeDef>
+
+  <!-- ==================== Scourge Fog ==================== -->
+  <GasFrameWork.GasTypeDef>
+    <defName>PGP_AcidGas</defName>
+    <label>scourge fog</label>
+    <description>A clinging acid fog that withers plants, dissolves loot and eats buildings. It burns through ordinary clothes; only a chemical suit and a gas mask together keep it off. Breathing it can flood the lungs hours later. Raiders path around it.</description>
+    <gasColor>(0.92, 0.84, 0.12, 1)</gasColor>
+    <dissipationRate>1</dissipationRate>
+    <effects>
+      <li Class="PalverZGasRework.GasEffect_Damage">
+        <damageDef>PGR_Corrosion</damageDef>
+        <damagePerHit>0.2~0.45</damagePerHit>
+        <ignoreArmor>true</ignoreArmor>
+        <sealedGearProtects>true</sealedGearProtects>
+      </li>
+      <li Class="PalverZGasRework.GasEffect_Hediff">
+        <targets>Biological</targets>
+        <hediff>PGR_AcidInhalation</hediff>
+        <severityPerHit>0.008~0.008</severityPerHit>
+      </li>
+      <li Class="PalverZGasRework.GasEffect_Scourge">
+        <damageDef>PGR_Corrosion</damageDef>
+        <buildingDamagePerSecond>4~8</buildingDamagePerSecond>
+        <plantKillMinDensity>15</plantKillMinDensity>
+        <woodyFactor>3</woodyFactor>
+        <metallicFactor>1.5</metallicFactor>
+        <stonyFactor>0.35</stonyFactor>
+        <resistantFactor>0.25</resistantFactor>
+        <itemDamagePerSecond>1~2</itemDamagePerSecond>
+        <resistantStuff>
+          <li>Plasteel</li>
+        </resistantStuff>
+      </li>
+    </effects>
+    <modExtensions>
+      <li Class="PalverZGasRework.GasAvoidanceExtension">
+        <minDensity>20</minDensity>
+        <baseCost>30</baseCost>
+        <densityCost>70</densityCost>
+      </li>
+
+      <li Class="PalverZGasRework.GasVisualExtension">
+        <opacity>1.25</opacity>
+        <puffScale>1.6~2.8</puffScale>
+        <wispScale>2.2~3.4</wispScale>
+        <wispSpeed>0.07</wispSpeed>
+      </li>
+
+    </modExtensions>
+  </GasFrameWork.GasTypeDef>
+
+  <!-- ==================== Aegis Swarm ==================== -->
+  <GasFrameWork.GasTypeDef>
+    <defName>PGP_DefNaniteGas</defName>
+    <label>aegis swarm</label>
+    <description>Friend-or-foe micro-drones. They cut hostiles and leave colonists, allies and tame animals alone.</description>
+    <gasColor>(0.80, 0.85, 0.90, 1)</gasColor>
+    <dissipationRate>1</dissipationRate>
+    <!-- armor penetration 4: full penetration in vanilla terms, 4mm sharp under Combat Extended -->
+    <gasDamageInfos>
+      <li>
+        <damageDef>Cut</damageDef>
+        <damageAmountRange>1.25~2.75</damageAmountRange>
+        <damagePenetration>4~4</damagePenetration>
+        <damagesPawns>true</damagesPawns>
+        <ignoreFriendlies>true</ignoreFriendlies>
+        <damageDownPawns>false</damageDownPawns>
+        <onlyDamageExposedParts>false</onlyDamageExposedParts>
+        <toxicResistanceReduces>false</toxicResistanceReduces>
+        <damageCarriedThings>false</damageCarriedThings>
+        <damageGroundThings>false</damageGroundThings>
+        <damageStructures>false</damageStructures>
+        <damagePlants>false</damagePlants>
+      </li>
+    </gasDamageInfos>
+    <effects>
+      <li Class="PalverZGasRework.GasEffect_Hediff">
+        <iff>NotHostileToPlayer</iff>
+        <hediff>PGR_IFFRecognized</hediff>
+        <severityPerHit>1~1</severityPerHit>
+        <scaleWithDensity>false</scaleWithDensity>
+        <route>None</route>
+        <toxicResistanceReduces>false</toxicResistanceReduces>
+      </li>
+      <!-- Some drones slip in through the cuts and reach the organs. Those wounds bleed inside; armor still helps. -->
+      <li Class="PalverZGasRework.GasEffect_Damage">
+        <targets>Biological</targets>
+        <iff>HostileToPlayer</iff>
+        <affectDowned>false</affectDowned>
+        <damageDef>Cut</damageDef>
+        <damagePerHit>0.6~1.6</damagePerHit>
+        <armorPenetration>4</armorPenetration>
+        <chance>0.3</chance>
+        <onlyParts>
+          <li>Lung</li>
+          <li>Kidney</li>
+          <li>Liver</li>
+          <li>Stomach</li>
+        </onlyParts>
+      </li>
+    </effects>
+    <modExtensions>
+      <li Class="PalverZGasRework.GasVisualExtension">
+        <opacity>0.8</opacity>
+        <glintFleck>PGR_GasGlint</glintFleck>
+        <glintChance>0.8</glintChance>
+        <glintColor>(0.9, 0.95, 1.0)</glintColor>
+        <wispSpeed>0.3</wispSpeed>
+      </li>
+    </modExtensions>
+  </GasFrameWork.GasTypeDef>
+
+  <!-- ==================== Cypherphage Cloud ==================== -->
+  <GasFrameWork.GasTypeDef>
+    <defName>PGP_MechVirusGas</defName>
+    <label>cypherphage cloud</label>
+    <description>Logic-core nanites. Every three seconds in thick cloud, a mechanoid rolls a malfunction. Harmless to living things.</description>
+    <gasColor>(0.15, 0.85, 0.90, 1)</gasColor>
+    <dissipationRate>2</dissipationRate>
+    <effects>
+      <li Class="PalverZGasRework.GasEffect_Cypherphage">
+        <minDensity>100</minDensity>
+        <rollIntervalTicks>180</rollIntervalTicks>
+        <outcomes>
+          <li>
+            <outcome>LoopStun</outcome>
+            <weight>40</weight>
+            <stunTicks>240~360</stunTicks>
+            <textKey>PGR_Cyph_LoopStun</textKey>
+            <textColor>(0.6, 0.9, 1.0)</textColor>
+          </li>
+          <li>
+            <outcome>ComponentMeltdown</outcome>
+            <weight>25</weight>
+            <fireSize>0.6</fireSize>
+            <burnDamageDef>Burn</burnDamageDef>
+            <burnDamage>4~8</burnDamage>
+            <hediff>PGP_MechLeaking</hediff>
+            <textKey>PGR_Cyph_Meltdown</textKey>
+            <textColor>(1.0, 0.55, 0.2)</textColor>
+          </li>
+          <li>
+            <outcome>SensorBlind</outcome>
+            <weight>20</weight>
+            <hediff>PGR_SensorBlind</hediff>
+            <textKey>PGR_Cyph_SensorBlind</textKey>
+            <textColor>(0.8, 0.8, 0.8)</textColor>
+          </li>
+          <li>
+            <outcome>SubroutineScramble</outcome>
+            <weight>10</weight>
+            <mentalState>PGR_SubroutineScramble</mentalState>
+            <textKey>PGR_Cyph_Scramble</textKey>
+            <textColor>(1.0, 0.3, 0.5)</textColor>
+          </li>
+          <li>
+            <outcome>FirmwareHijack</outcome>
+            <weight>5</weight>
+            <textKey>PGR_Cyph_Hijack</textKey>
+            <textColor>(0.4, 1.0, 0.5)</textColor>
+          </li>
+        </outcomes>
+      </li>
+    </effects>
+    <modExtensions>
+      <li Class="PalverZGasRework.GasVisualExtension">
+        <opacity>0.85</opacity>
+        <glintFleck>PGR_GasGlint</glintFleck>
+        <glintChance>0.7</glintChance>
+        <glintColor>(0.6, 1.0, 1.0)</glintColor>
+        <wispSpeed>0.25</wispSpeed>
+      </li>
+    </modExtensions>
+  </GasFrameWork.GasTypeDef>
+
+</Defs>
