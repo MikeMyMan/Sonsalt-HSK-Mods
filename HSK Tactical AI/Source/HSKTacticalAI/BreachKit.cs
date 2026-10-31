@@ -67,6 +67,13 @@ namespace HSKTacticalAI
         /// <summary>The breaching kit of a tech level: crude tools, then simple explosives, then charges (spacer: more, and a mining charge).</summary>
         private static string GiveKit(Pawn p, TechLevel tech, TacticalAISettings s)
         {
+            if (tech >= TechLevel.Industrial && !ItemSources.OwnChargesAllowed)
+            {
+                // HSK items only: no breach charge of ours - high-explosive grenades (stick bombs if there are none), else a
+                // breach axe with the gun in the pack
+                string he = GiveThrown(p, "Weapon_GrenadeHighExplosive", "CE_Weapon_GrenadeStickBomb", s.thrownPerSpecialist, toolFallback: false);
+                return he ?? GiveTool(p, "MeleeWeapon_BreachAxe", true);
+            }
             if (tech >= TechLevel.Industrial)
             {
                 int n = s.chargesPerSpecialist + (tech >= TechLevel.Spacer ? 2 : 0);
@@ -74,7 +81,7 @@ namespace HSKTacticalAI
                 c.stackCount = n;
                 if (!p.inventory.innerContainer.TryAdd(c)) return null;
                 ChargesGiven += n;
-                if (tech >= TechLevel.Spacer && TAI_DefOf.HSKTAI_MiningCharge != null)
+                if (tech >= TechLevel.Spacer && TAI_DefOf.HSKTAI_MiningCharge != null && ItemSources.OwnChargesAllowed)
                 {
                     Thing m = ThingMaker.MakeThing(TAI_DefOf.HSKTAI_MiningCharge);
                     if (p.inventory.innerContainer.TryAdd(m)) MiningChargesGiven++;
@@ -138,13 +145,13 @@ namespace HSKTacticalAI
         public static int ThrownGiven;
 
         /// <summary>A thrown breaching weapon (stick bombs): one equipped, the rest in the pockets. Never replaces a gun.</summary>
-        private static string GiveThrown(Pawn p, string defName, string fallback, int count)
+        private static string GiveThrown(Pawn p, string defName, string fallback, int count, bool toolFallback = true)
         {
             if (p.equipment == null || p.inventory == null) return null;
             var primary = p.equipment.Primary;
             if (primary != null && primary.def.IsRangedWeapon) return null;
-            ThingDef def = DefDatabase<ThingDef>.GetNamedSilentFail(defName) ?? DefDatabase<ThingDef>.GetNamedSilentFail(fallback);
-            if (def == null) return GiveTool(p, "MeleeWeapon_BreachAxe");
+            ThingDef def = Usable(defName) ?? Usable(fallback);
+            if (def == null) return toolFallback ? GiveTool(p, "MeleeWeapon_BreachAxe") : null;
             if (primary != null) p.equipment.DestroyEquipment(primary);
             p.equipment.AddEquipment((ThingWithComps)ThingMaker.MakeThing(def));
             if (count > 1 && def.stackLimit > 1)
@@ -157,6 +164,13 @@ namespace HSKTacticalAI
             return count + " " + def.label;
         }
 
+        /// <summary>A def by name, if it exists and may be handed out ("HSK items only").</summary>
+        private static ThingDef Usable(string defName)
+        {
+            ThingDef d = defName == null ? null : DefDatabase<ThingDef>.GetNamedSilentFail(defName);
+            return d != null && ItemSources.Allowed(d) ? d : null;
+        }
+
         private static string GiveTool(Pawn p, string defName, bool stowGun = false)
         {
             if (p.equipment == null) return null;
@@ -167,7 +181,7 @@ namespace HSKTacticalAI
                 if (!stowGun || p.inventory == null || !p.equipment.TryTransferEquipmentToContainer(primary, p.inventory.innerContainer)) return null;
                 primary = null;
             }
-            ThingDef def = DefDatabase<ThingDef>.GetNamedSilentFail(defName) ?? DefDatabase<ThingDef>.GetNamedSilentFail("MeleeWeapon_BreachAxe");
+            ThingDef def = Usable(defName) ?? Usable("MeleeWeapon_BreachAxe");
             if (def == null) return null;
             if (primary != null) p.equipment.DestroyEquipment(primary);
             var tool = (ThingWithComps)ThingMaker.MakeThing(def, def.MadeFromStuff ? GenStuff.DefaultStuffFor(def) : null);
@@ -208,7 +222,7 @@ namespace HSKTacticalAI
 
         /// <summary>The best digging tool a raid of this tech level could carry (none: null).</summary>
         private static ThingDef MiningToolDef(TechLevel tech) =>
-            MiningTools().Where(t => t.def.techLevel <= tech).OrderByDescending(t => t.gain).ThenBy(t => t.def.defName).Select(t => t.def).FirstOrDefault();
+            MiningTools().Where(t => t.def.techLevel <= tech && ItemSources.Allowed(t.def)).OrderByDescending(t => t.gain).ThenBy(t => t.def.defName).Select(t => t.def).FirstOrDefault();
 
         /// <summary>Speed gain of the kit tool for a tech level (1 = bare hands).</summary>
         public static float MiningToolFactor(TechLevel tech)
@@ -323,7 +337,7 @@ namespace HSKTacticalAI
         public static bool GiveMiningCharges(Pawn p, int rockCells)
         {
             var s = TacticalAIMod.Settings;
-            if (s == null || !s.breachKit || !s.equipRaiders || p.inventory == null || TAI_DefOf.HSKTAI_MiningCharge == null) return false;
+            if (s == null || !s.breachKit || !s.equipRaiders || p.inventory == null || TAI_DefOf.HSKTAI_MiningCharge == null || !ItemSources.OwnChargesAllowed) return false;
             Thing c = ThingMaker.MakeThing(TAI_DefOf.HSKTAI_MiningCharge);
             c.stackCount = UnityEngine.Mathf.Clamp(UnityEngine.Mathf.CeilToInt(rockCells / 2f) + 1, 1, 6);
             if (!p.inventory.innerContainer.TryAdd(c)) return false;

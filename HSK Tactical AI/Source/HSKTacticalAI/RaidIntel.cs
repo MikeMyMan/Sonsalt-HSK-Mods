@@ -165,24 +165,24 @@ namespace HSKTacticalAI
             var lines = new List<string>();
             if (mem != null && mem.raids > 0 && mem.lastStrength > 0)
             {
-                if (mem.lastEscaped == 0) lines.Add("The last group they sent here, all " + mem.lastStrength + " of them, never came back.");
-                else if (mem.lastSuccess) lines.Add("Their last attack here went their way.");
-                else if (!mem.lastReached) lines.Add("Their last attack here cost them " + mem.lastLosses + " of " + mem.lastStrength + " and never reached the colony.");
-                else if (mem.lastLosses >= mem.lastStrength * 0.4f) lines.Add("They took heavy losses here last time (" + mem.lastLosses + " of " + mem.lastStrength + ").");
+                if (mem.lastEscaped == 0) lines.Add("HSKTAI_L_NeverBack".Translate(mem.lastStrength.ToString()).ToString());
+                else if (mem.lastSuccess) lines.Add("HSKTAI_L_WentTheirWay".Translate().ToString());
+                else if (!mem.lastReached) lines.Add("HSKTAI_L_NeverReached".Translate(mem.lastLosses.ToString(), mem.lastStrength.ToString()).ToString());
+                else if (mem.lastLosses >= mem.lastStrength * 0.4f) lines.Add("HSKTAI_L_HeavyLosses".Translate(mem.lastLosses.ToString(), mem.lastStrength.ToString()).ToString());
                 // what they do about it (only if someone told them)
                 var mode = FactionMemory.PreferredMode(f, true, out _);
-                if (mode == PlanMode.Siege) lines.Add("This time they mean to stay out of reach and besiege you.");
-                else if (mode == PlanMode.Breach) lines.Add("This group is not using your entrance; it is coming through a wall.");
-                else if (mem.lastEscaped == 0 && mem.intel < s.memoryIntelMin) lines.Add("They do not know what killed them.");
+                if (mode == PlanMode.Siege) lines.Add("HSKTAI_L_Siege".Translate().ToString());
+                else if (mode == PlanMode.Breach) lines.Add("HSKTAI_L_Breach".Translate().ToString());
+                else if (mem.lastEscaped == 0 && mem.intel < s.memoryIntelMin) lines.Add("HSKTAI_L_DontKnow".Translate().ToString());
                 if (s.escalation && mem.escalation >= 0.2f)
-                    lines.Add("Angry about it, they have sent about " + Mathf.RoundToInt(mem.escalation * s.escalationSize * 100f) + "% more people than usual.");
+                    lines.Add("HSKTAI_L_Angry".Translate(Mathf.RoundToInt(mem.escalation * s.escalationSize * 100f).ToString()).ToString());
                 if (mem.informants > 0 && mem.lastInformantTick >= 0 && Find.TickManager.TicksGame - mem.lastInformantTick < GenDate.TicksPerDay * 30)
-                    lines.Add("A prisoner who got away from you has told them about your defences.");
+                    lines.Add("HSKTAI_L_Informant".Translate().ToString());
             }
             switch (PeekIntent(f))
             {
-                case RaidIntent.Slaving: lines.Add("They are after people, not goods."); break;
-                case RaidIntent.Punitive: lines.Add("They are not here to take anything, and they will not break off."); break;
+                case RaidIntent.Slaving: lines.Add("HSKTAI_L_Slaving".Translate().ToString()); break;
+                case RaidIntent.Punitive: lines.Add("HSKTAI_L_Punitive".Translate().ToString()); break;
             }
             if (lines.Count == 0) return null;
             Letters++;

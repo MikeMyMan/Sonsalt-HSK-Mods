@@ -6,17 +6,78 @@ namespace HSKTacticalAI
 {
     public class TacticalAIMod : Mod
     {
-        public const string Version = "0.2.0";
+        public const string Version = "0.4.0";
         public static TacticalAISettings Settings;
         public static Harmony Harmony;
+        public static ModContentPack Content;
 
         public TacticalAIMod(ModContentPack content) : base(content)
         {
+            Content = content;
             Settings = GetSettings<TacticalAISettings>();
             Harmony = new Harmony("sonsalt.hsk.tacticalai");
-            Harmony.PatchAll(typeof(TacticalAIMod).Assembly);
-            Log.Message("[HSK Tactical AI] " + Version + " loaded" + (AILab.Active ? " - AI Lab run: " + AILab.Config.runId : ""));
+            if (Settings.enabled) PatchEachFeature();
+            Log.Message("[HSK Tactical AI] " + Version + " loaded" + (AILab.Active ? " - AI Lab run: " + AILab.Config.runId : "")
+                        + (Settings.enabled ? "" : " - switched off in the mod settings, nothing patched"));
         }
+
+        public static bool Patched { get; private set; }
+
+        /// <summary>Master switch: off removes every patch of this mod (raids are vanilla, nothing of ours runs); on applies them again.</summary>
+        public static void SetEnabled(bool on)
+        {
+            Settings.enabled = on;
+            if (on)
+            {
+                if (!Patched) PatchEachFeature();
+                return;
+            }
+            AssaultPlanner.DropAllPlans();   // raids get vanilla duties right away (our duty patches see "off" already)
+            if (Patched) { Harmony.UnpatchAll(Harmony.Id); Patched = false; }
+            Log.Message("[HSK Tactical AI] switched off: all patches removed");
+        }
+
+        /// <summary>Patch classes that failed to apply (target renamed or removed, e.g. after an HSK alpha update): shown in the settings.</summary>
+        public static readonly System.Collections.Generic.List<string> FailedPatches = new System.Collections.Generic.List<string>();
+        /// <summary>Patch classes whose Prepare() said no (the optional mod they hook isn't loaded).</summary>
+        public static readonly System.Collections.Generic.List<string> SkippedPatches = new System.Collections.Generic.List<string>();
+        public static int AppliedPatches;
+
+        /// <summary>
+        /// Harmony.PatchAll stops at the first patch whose target is missing, and every patch after it is lost. Here each patch
+        /// class is applied on its own: one that fails switches off just that feature and logs one line saying which and why
+        /// (HSK dev feedback 2026-10-30: "disable automatically with a log entry when a dependency is missing after an update").
+        /// </summary>
+        private static void PatchEachFeature()
+        {
+            FailedPatches.Clear(); SkippedPatches.Clear(); AppliedPatches = 0;
+            Patched = true;
+            foreach (System.Type t in AccessTools.GetTypesFromAssembly(typeof(TacticalAIMod).Assembly))
+            {
+                // patch classes only, as PatchAll does (Harmony finds Prepare/Cleanup/TargetMethod by name: a JobDriver's own
+                // Cleanup would be taken for one)
+                if (!t.IsDefined(typeof(HarmonyAttribute), false)) continue;
+                System.Collections.Generic.List<System.Reflection.MethodInfo> done;
+                try { done = Harmony.CreateClassProcessor(t).Patch(); }
+                catch (System.Exception e)
+                {
+                    System.Exception inner = e;
+                    while (inner.InnerException != null) inner = inner.InnerException;
+                    FailedPatches.Add(PatchName(t));
+                    Log.Warning("[HSK Tactical AI] " + PatchName(t) + " disabled: " + inner.Message
+                                + " (probably renamed in an HSK, CE or RimWorld update; the rest of the mod keeps working)");
+                    continue;
+                }
+                if (done == null || done.Count == 0) SkippedPatches.Add(PatchName(t));   // Prepare() said no: its mod isn't loaded
+                else AppliedPatches++;
+            }
+            if (SkippedPatches.Count > 0)
+                Log.Message("[HSK Tactical AI] optional mod not loaded, skipped: " + string.Join(", ", SkippedPatches));
+            if (FailedPatches.Count > 0)
+                Log.Warning("[HSK Tactical AI] " + FailedPatches.Count + " of " + (AppliedPatches + FailedPatches.Count) + " patches could not be applied: " + string.Join(", ", FailedPatches));
+        }
+
+        private static string PatchName(System.Type t) => t.DeclaringType != null ? t.DeclaringType.Name + "." + t.Name : t.Name;
 
         public override string SettingsCategory() => "HSK Tactical AI";
 
@@ -60,11 +121,11 @@ namespace HSKTacticalAI
         public float routeCostPerFire = 400f;        // extra path cost per unit of defender fire on a route cell (wide arcs)
         public int routeBaseCostInFire = 60;         // extra path cost for any cell the defenders can shoot
         public int waypointSpacing = 8;              // cells between route waypoints
-        public float maxApproachDetour = 1.5f;       // assault position: walk to the defenders ≤ this × straight line (+6)
+        public float maxApproachDetour = 1.5f;       // assault position: walk to the defenders ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¤ this ÃƒÆ’Ã¢â‚¬â€ straight line (+6)
         public bool avoidFunnels = true;             // one covered entrance (killbox): make a new one instead
         public float funnelCellPenalty = 2500f;      // extra cost per narrow route cell under fire (corridor, doorway, gap)
         public int newEntranceWallCost = 600;        // planning cost per wall to blow when making a new entrance
-        public float newEntranceRatio = 0.85f;       // new entrance chosen if it costs less than this × the walking route
+        public float newEntranceRatio = 0.85f;       // new entrance chosen if it costs less than this ÃƒÆ’Ã¢â‚¬â€ the walking route
         public float replanLossFraction = 0.3f;      // walk assault losing this share after H-hour -> pull back, make a new entrance
         public int breachStallTicks = 3600;          // breach plan without wall damage this long -> plan the next breach point
         public int minFunnelCells = 3;               // new entrance at planning only if the way in has this many funnel cells
@@ -79,12 +140,8 @@ namespace HSKTacticalAI
         public int breachOpenGraceTicks = 600;       // one breach open: wait this long for the others before going in
         public bool fireBreaching = true;            // wooden walls are set on fire instead of blown
         public bool forceRatioCheck = true;          // no assault without enough strength (siege or withdraw instead)
-        public float assaultForceRatio = 1.2f;       // scaled strength ratio needed to assault from one direction (1.0 = about even)
-        public float forceScale = 4f;                // calibration (Lab v14-v15): raw 0.25 with several breaches = about even
-        public float fortificationFactor = 1.5f;     // defenders in prepared positions count this much more
-        public float multiAxisRatioFactor = 0.85f;   // several simultaneous directions need this much less
         public float commitRatioTolerance = 0.8f;    // at H-hour, withdraw only below this share of the required ratio
-        public float defendedAxisPenalty = 8000f;    // breach planning: extra cost for a breach point facing the defence (0 from 90° off)
+        public float defendedAxisPenalty = 8000f;    // breach planning: extra cost for a breach point facing the defence (0 from 90Ãƒâ€šÃ‚Â° off)
         public float defendedAxisExclude = 40f;      // no breach points within this angle of the way the defence faces
         // combined arms (0.6)
         public bool supportFire = true;              // base of fire (MGs, marksmen, best riflemen) pins the defenders before the assault moves
@@ -218,6 +275,9 @@ namespace HSKTacticalAI
         public bool fieldFight = true;               // defenders out of their base: the raid turns and fights them there, then back to the plan
         public bool indirectFire = true;             // grenade launchers lob explosive rounds over walls at targets they can't hit directly
         public bool breachGear = true;               // a raid out to breach that has nothing of its own: 1-3 raiders carry the tech level's breaching kit
+        public bool hskItemsOnly = true;             // everything the AI gives or picks comes from RimWorld/DLC, CE or the HSK pack (not our own charges)
+        public bool enabled = true;                  // master switch: off = no patches at all, vanilla raids
+        public bool nolbRescueFilter = true;         // No One Left Behind: raiders don't run into the defenders' fire to rescue someone
         public bool raidGoals = true;                // some raids come to scout or to sabotage instead of to assault
         public bool raidIntents = true;              // an assault comes for goods, for people (slaving) or for revenge (punitive)
         public float slavingShare = 0.15f;           // weight of a slaving raid (plunder = 1)
@@ -291,10 +351,6 @@ namespace HSKTacticalAI
             Scribe_Values.Look(ref breachOpenGraceTicks, "breachOpenGraceTicks", 600);
             Scribe_Values.Look(ref fireBreaching, "fireBreaching", true);
             Scribe_Values.Look(ref forceRatioCheck, "forceRatioCheck", true);
-            Scribe_Values.Look(ref assaultForceRatio, "assaultForceRatio", 1.2f);
-            Scribe_Values.Look(ref forceScale, "forceScale", 4f);
-            Scribe_Values.Look(ref fortificationFactor, "fortificationFactor", 1.5f);
-            Scribe_Values.Look(ref multiAxisRatioFactor, "multiAxisRatioFactor", 0.85f);
             Scribe_Values.Look(ref commitRatioTolerance, "commitRatioTolerance", 0.8f);
             Scribe_Values.Look(ref defendedAxisPenalty, "defendedAxisPenalty", 8000f);
             Scribe_Values.Look(ref defendedAxisExclude, "defendedAxisExclude", 40f);
@@ -423,6 +479,9 @@ namespace HSKTacticalAI
             Scribe_Values.Look(ref fieldFight, "fieldFight", true);
             Scribe_Values.Look(ref indirectFire, "indirectFire", true);
             Scribe_Values.Look(ref breachGear, "breachGear", true);
+            Scribe_Values.Look(ref hskItemsOnly, "hskItemsOnly", true);
+            Scribe_Values.Look(ref enabled, "enabled", true);
+            Scribe_Values.Look(ref nolbRescueFilter, "nolbRescueFilter", true);
             Scribe_Values.Look(ref raidGoals, "raidGoals", true);
             Scribe_Values.Look(ref raidIntents, "raidIntents", true);
             Scribe_Values.Look(ref slavingShare, "slavingShare", 0.15f);
@@ -442,166 +501,6 @@ namespace HSKTacticalAI
             Scribe_Values.Look(ref cornerHoldTicks, "cornerHoldTicks", 1800);
         }
 
-        private Vector2 scroll;
-
-        public void DoWindow(Rect inRect)
-        {
-            var view = new Rect(0f, 0f, inRect.width - 16f, 1700f);
-            Widgets.BeginScrollView(inRect, ref scroll, view);
-            var l = new Listing_Standard();
-            l.Begin(view);
-            l.Label("HSK Tactical AI " + TacticalAIMod.Version + " - raid tactics on a threat map of your defences.");
-            l.GapLine();
-            l.CheckboxLabeled("Tactical competence: smarter leaders, smarter raids", ref tacticalCompetence,
-                "How well a raid uses its tactics depends on its leader's intelligence (Intellectual skill; traits such as too smart, slow learner, dumb, " +
-                "dunce or volatile genius; learning genes and brain injuries) and on its faction's tech level, which sets the ceiling: tribal 55 %, " +
-                "medieval 70 %, industrial 85 %, spacer and above 100 %; mechanoids think as a hive. A sharp raid reads your whole defence, avoids " +
-                "killboxes, funnels and most of your traps, envelops you from several sides with smoke, overwatch and fire and movement, attacks only " +
-                "with the odds on its side and withdraws in time. A dull one walks the straight way in, into your killbox and traps, picks poor " +
-                "breach points and runs like vanilla raiders. Off: every raid uses all tactics.");
-            if (tacticalCompetence)
-            {
-                l.Label("Leader's intelligence " + Mathf.RoundToInt(competenceIntelWeight * 100f) + " %, faction tech level " + Mathf.RoundToInt((1f - competenceIntelWeight) * 100f) + " %");
-                competenceIntelWeight = l.Slider(competenceIntelWeight, 0f, 1f);
-                l.CheckboxLabeled("Loss of command when the leader falls", ref competenceLossOfCommand,
-                    "Leader down, dead or gone: the next in rank takes over, at most as sharp as himself and a fifth less than that, and the raid " +
-                    "is confused for about 20 seconds.");
-                l.CheckboxLabeled("Show each raid's competence", ref competenceReadout,
-                    "A message when a raid arrives (and when it loses its leader) with its competence and why, also in the log and in the tooltip of the threat-map button.");
-            }
-            l.GapLine();
-            l.CheckboxLabeled("Compute the threat map", ref enableThreatMap,
-                "Where your colonists and turrets can shoot. Later versions use it for raider tactics; 0.1 only shows it.");
-            l.CheckboxLabeled("Show threat map overlay", ref showThreatOverlay,
-                "Also toggleable with the button in the bottom-right play-settings bar.");
-            l.Label("CPU budget per tick: " + budgetMsPerTick.ToString("0.0") + " ms");
-            budgetMsPerTick = l.Slider(budgetMsPerTick, 0.2f, 4f);
-            l.Label("Update interval with enemies present: " + cycleTicksCombat + " ticks");
-            cycleTicksCombat = (int)l.Slider(cycleTicksCombat, 30, 600);
-            l.Label("Update interval in peace: " + cycleTicksPeace + " ticks");
-            cycleTicksPeace = (int)l.Slider(cycleTicksPeace, 120, 5000);
-            l.Label("Weight: drafted shooter " + weightDrafted.ToString("0.00") + ", undrafted " + weightUndrafted.ToString("0.00") + ", turret " + weightTurret.ToString("0.00"));
-            weightDrafted = l.Slider(weightDrafted, 0f, 3f);
-            weightUndrafted = l.Slider(weightUndrafted, 0f, 3f);
-            weightTurret = l.Slider(weightTurret, 0f, 3f);
-            l.CheckboxLabeled("Siege camp: guards in cover, guns at range", ref siegeGuards,
-                "Raiders who besiege you and aren't building take covered positions around their camp facing your defenders, by role: riflemen in front, machine guns on the flanks, snipers further back, melee guarding the builders, one watching the rear. They turn with you when you try to flank them and move when their cover stops working. Direct-fire siege guns (cannons, ordnance rifles) are set up as close as their range needs, with a line of fire on your walls, instead of in the middle of the camp.");
-            l.GapLine();
-            l.CheckboxLabeled("Smart breaching: only break walls when walking around is worse", ref smartBreaching,
-                "Breaching raids compare the open route (walking + exposure to your fire) with breaking through walls. " +
-                "Off = vanilla/Smarter Raid AI behaviour (walls are almost free, so raiders cut through even with a way around).");
-            l.Label("Cost of walking through your fire: " + exposureCost.ToString("0"));
-            exposureCost = l.Slider(exposureCost, 0f, 300f);
-            l.Label("Cost per wall to break: " + wallPenalty.ToString("0") + " + " + wallHpPenalty.ToString("0.00") + " per HP");
-            wallPenalty = l.Slider(wallPenalty, 0f, 2000f);
-            wallHpPenalty = l.Slider(wallHpPenalty, 0f, 2f);
-            l.Label("Extra cost to tunnel through rock: " + naturalWallExtraCost + " (vanilla 20)");
-            naturalWallExtraCost = (int)l.Slider(naturalWallExtraCost, 20, 5000);
-            l.GapLine();
-            l.CheckboxLabeled("Give raiders extra equipment", ref equipRaiders, "Off (default): raiders keep the loadout they spawned with, and pick their breach method from it and their tech level. On: breach specialists get charges, tools or stick bombs, some raiders get grenades and smoke, gas raids get masks and tox grenades.");
-            l.CheckboxLabeled("RunAndGun: only assault troops shoot on the move", ref runAndGunByRole, "With RunAndGun installed: riflemen and assault raiders in the assault may shoot on the move; medics, breachers, shields, support fire, carriers and withdrawing raiders walk.");
-            l.CheckboxLabeled("Factions remember earlier raids", ref raidMemory, "A faction whose raid failed and had survivors who got away learns from it: a walk-in that died becomes a breach next time, a failed breach a siege. Wiping a raid out teaches them nothing. Fades over about two seasons.");
-            l.CheckboxLabeled("Adapt loadouts to what hurt them", ref adaptiveLoadouts, "With raid memory: up to 30 % of the next raid swaps gear against what hurt them (launchers vs turrets, long rifles and smoke vs snipers, shotguns and SMGs vs melee, armour-piercing ammo vs armour). Only weapons their kind may carry, worth no more than what they had; ammo is swapped, not added.");
-            l.CheckboxLabeled("Breaching equipment", ref breachKit,
-                "With extra equipment on: breaching raids bring tools for their tech level - Industrial and up carry breach charges they plant against walls " +
-                "(shoot the charge to defuse it); tribal and medieval breachers get breach axes or stick bombs.");
-            l.Label("Breach charges per specialist: " + chargesPerSpecialist);
-            chargesPerSpecialist = (int)l.Slider(chargesPerSpecialist, 1, 5);
-            l.GapLine();
-            l.CheckboxLabeled("Assault planner: flank and attack from several directions", ref assaultPlanner,
-                "Raids that can walk to your defenders split into groups, go around obstacles to assault positions on " +
-                "different sides, wait for each other and attack at the same time. They don't hit walls they can walk around. " +
-                "Raids that can't walk in breach instead (with breaching equipment).");
-            l.Label("Maximum attack directions: " + maxAxes);
-            maxAxes = (int)l.Slider(maxAxes, 1, 4);
-            l.Label("Minimum angle between directions: " + minAxisSeparation.ToString("0") + "°");
-            minAxisSeparation = l.Slider(minAxisSeparation, 30f, 150f);
-            l.Label("Wait for the other groups at most: " + (syncTimeoutTicks / 60) + " s");
-            syncTimeoutTicks = (int)l.Slider(syncTimeoutTicks, 600, 12000);
-            l.Label("Wide arcs: extra route cost per unit of your fire: " + routeCostPerFire.ToString("0") + " (0 = straight routes)");
-            routeCostPerFire = l.Slider(routeCostPerFire, 0f, 2000f);
-            l.CheckboxLabeled("Avoid killbox entrances: make a new entrance instead", ref avoidFunnels,
-                "If the only way in on foot is a narrow entrance covered by your fire, raids that can break walls blow " +
-                "their own entrance elsewhere. A raid bleeding out in an entrance pulls back and does the same.");
-            l.Label("Breaching: the rest of the raid waits " + stagingDistance + " cells back until the breach is open");
-            stagingDistance = (int)l.Slider(stagingDistance, 6, 25);
-            l.Label("Breach: wait beside the hole, more than " + breachConeDegrees.ToString("0") + "° off the defenders' line through it");
-            breachConeDegrees = l.Slider(breachConeDegrees, 20f, 85f);
-            l.CheckboxLabeled("Smoke on the breach", ref smokeOnBreach,
-                "When the wall opens, an Industrial+ breach team throws smoke on the hole and just inside it before the raid goes in.");
-            l.Label("Breach points on different sides, opened together: up to " + maxBreaches + " (one per " + raidersPerBreach + " raiders)");
-            maxBreaches = (int)l.Slider(maxBreaches, 1, 4);
-            l.CheckboxLabeled("Burn wooden walls", ref fireBreaching, "Raiders set wooden walls on fire instead of blowing them.");
-            l.CheckboxLabeled("Explosive rounds instead of gas", ref gasAmmoSwap, "Raiders whose launcher carries only gas rounds (the waster heavies' 40 mm tox grenades) swap three quarters of them for the explosive round of the same calibre - one for one, no extra gear. Gas only works in an enclosed room; they keep a quarter for that.");
-            l.CheckboxLabeled("Keep the weapon's range", ref keepRange, "Each raider fights at its weapon's distance: bowmen and long guns (rifles, more so snipers) step back when you get too close, pistols and SMGs close in before they shoot, melee raiders go for anyone near them in the open. Part of tactical competence: a dull raid fights from wherever it stands.");
-            l.CheckboxLabeled("Crew-served weapons", ref crewWeapons, "Industrial and later raids of 8 or more bring a light crew-served gun (16 or more: two) - a manned turret of up to 40 kg from your modlist (M240B, AGS-17, ...). The gunner carries it packed, one or two raiders carry its ammo. The team sets it up at range in cover with a line of fire, the gunner mans it, the bearers reload it; the assault waits until the guns fire. When the raid leaves, a crew member packs the gun up and carries it out, or wrecks it if it stands in your fire; only if the crew is down, or the raid flees in panic, does it stay behind as loot.");
-            l.CheckboxLabeled("Fight defenders who come out", ref fieldFight, "When your colonists leave the base to meet the raid, the raid turns on them: shooters take cover at their weapon's distance and fire, melee raiders charge, a sharp command sends men round their side. When they are back inside, the raid returns to its plan. Part of tactical competence: a dull raid only fires back when hit.");
-            l.CheckboxLabeled("Grenade launchers fire over walls", ref indirectFire, "A grenadier with an explosive round and no direct shot lobs it over the wall: at your colonists, turrets and workshops under open sky, spread over the base, never near his own men. One real round per shot; scatter by distance and skill. Part of tactical competence.");
-            l.CheckboxLabeled("Grenade launchers stay out of the breach", ref launchersStayOut, "Once their wall is open, raiders with an explosive launcher (M79 and the like) don't follow the assault through the hole: they stay outside as base of fire and shell whatever shows itself, over the walls too. They shoot at the wall from further out, from cover if there is any.");
-            l.CheckboxLabeled("Raids bring breaching gear", ref breachGear, "A raid that has to break in and carries nothing that opens a wall brings it: one raider in eight (1-3) carries the kit of the faction's tech level - a breach axe for tribes, stick bombs for medieval factions, breach charges for industrial ones, more charges and a mining charge for spacers. On top of the loadout; independent of \"extra equipment\".");
-            l.CheckboxLabeled("Scouting and sabotage raids", ref raidGoals, "Some raids don't come to take the colony. Scouts watch it from cover out of your fire and leave (survivors tell their faction more about you). Saboteurs set fires, kill livestock out of your fire, jump a colonist who is alone outside and leave before your defence turns out. Weak raids harass more often, strong raids attack; factions that know little of you scout first.");
-            if (raidGoals)
-            {
-                l.Label("Scouting raids (weight vs 1 for an assault): " + scoutShare.ToString("0.00"));
-                scoutShare = l.Slider(scoutShare, 0f, 1f);
-                l.Label("Sabotage raids (weight vs 1 for an assault): " + sabotageShare.ToString("0.00"));
-                sabotageShare = l.Slider(sabotageShare, 0f, 1f);
-            }
-            l.CheckboxLabeled("Slaving and punitive raids", ref raidIntents, "An assault comes for goods (as before), for people or for revenge. Slavers burn and loot nothing, grab a downed colonist and leave with him. A punitive raid only comes after a bad beating its faction knows the reason for: it takes nothing and does not break off until nobody of yours is left standing. The raid letter says which.");
-            if (raidIntents)
-            {
-                l.Label("Slaving raids (weight vs 1 for plunder): " + slavingShare.ToString("0.00"));
-                slavingShare = l.Slider(slavingShare, 0f, 1f);
-                l.Label("Punitive raids after a bad beating (weight): " + punitiveShare.ToString("0.00"));
-                punitiveShare = l.Slider(punitiveShare, 0f, 2f);
-            }
-            l.CheckboxLabeled("Beaten factions send bigger raids", ref escalation, "A faction you beat here is angry for a while and sends more people (up to the share below at full anger). A raid that goes its way calms it down; the anger fades with its memory.");
-            if (escalation)
-            {
-                l.Label("Bigger at most by: " + escalationSize.ToStringPercent());
-                escalationSize = l.Slider(escalationSize, 0f, 1f);
-            }
-            l.CheckboxLabeled("Raid letter says why", ref raidLetters, "The raid letter adds a line on how the faction's last raid here went and what it does about it: \"the last group never came back\", \"this group is coming through a wall\", \"they are after people, not goods\".");
-            l.CheckboxLabeled("Coordinated operations", ref operations, "Now and then a sharp command runs an operation. Hammer and anvil (factions that lay sieges): a third of the raid digs in and shells you while the rest waits out of range and goes in once the guns have been firing a while. Armoured spearhead: the best-armoured raiders go in first, the rest fight from where they stand and follow once the spearhead is inside.");
-            if (operations)
-            {
-                l.Label("Chance per raid (twice after a failed raid here): " + operationChance.ToStringPercent());
-                operationChance = l.Slider(operationChance, 0f, 1f);
-            }
-            l.CheckboxLabeled("Raiders choose how they arrive", ref arrivalChoice, "A faction that knows your layout and failed to walk in comes from the map edge whose way to your base crosses the least of your fire. A spacer faction that failed both walking in and breaching drops in by pod at the edge (if its raid type allows pods). Raids whose arrival a quest or another mod already set are left alone.");
-            l.CheckboxLabeled("Released prisoners report back", ref prisonersReport, "A prisoner you release, or one who escapes over the map edge, tells his faction about your defences, just like a raider who got away.");
-            l.CheckboxLabeled("Corner fire at the breach", ref cornerFire, "When a wall opens, gunners take the corners beside the hole on their side of the wall and lean out to fire through it at the defenders inside - covered by the wall - before they go in (at most about 10 s).");
-            l.CheckboxLabeled("Shield wall", ref shieldTactics, "Raiders with ballistic or body shields lead the assault straight at the defenders; two gunners follow behind each shield and shoot past it. Through a breach the shield goes first.");
-            l.CheckboxLabeled("Fire discipline", ref fireDoctrine, "Raiders choose aimed or snap shots and single, burst or full-auto fire by range and situation: aimed single shots at long range, aimed bursts at medium range, snap bursts up close, full auto in close quarters and to suppress defenders in cover. Marksmen always take aimed single shots; machine guns fire bursts.");
-            l.CheckboxLabeled("Don't chase into funnels", ref funnelCaution, "When defenders fall back into a narrow corridor, raiders don't follow straight in: they throw grenades into it, hold covered spots beside its mouth and shoot whoever comes out, and go in after a while (smoke first). Shield bearers still lead in.");
-            l.CheckboxLabeled("Plunder instead of chasing", ref plunder, "Raiders don't chase defenders who are far away or holed up: they kill livestock, loot valuables, burn crops and wooden buildings and smash workbenches, generators and turrets - out of the defenders' fire - forcing the defenders to come out. With nothing left to take they withdraw.");
-            l.CheckboxLabeled("Finish the assault before leaving satisfied", ref satisfiedHold, "Vanilla raiders leave \"satisfied\" once they have damaged enough of the colony. While a planned assault is under way and making progress they finish it first; they leave once it stalls, has run a while, or the defenders are down. Damage from their own breach (walls and doors) never counts.");
-            l.CheckboxLabeled("Go prone under fire", ref posture, "Suppressed raiders without cover drop flat: a much smaller target (Combat Extended hit profile), crawling, still shooting. They get up once the suppression ends. Not shield bearers, breachers planting, close quarters or a retreat.");
-            l.CheckboxLabeled("Show prone raiders lying down", ref proneVisual, "Prone raiders are drawn in the crawl pose, weapon still shown. Visual only.");
-            l.CheckboxLabeled("Label prone raiders", ref proneLabel, "Shows \"prone\" above a raider for as long as he lies flat, so prone and downed raiders are easy to tell apart.");
-            l.CheckboxLabeled("Gas and burn-out", ref gasRaids, "Against defenders in a small enclosed room (bunker, mountain room, keep), Industrial raids bring gas masks, tox grenades and, if the room burns, molotovs. When the breach opens, they gas and burn the room first, hold the exits while it works, then go in masked.");
-            l.CheckboxLabeled("Realistic suppression", ref realSuppression, "Changes Combat Extended's suppression for everyone: normal body armour no longer reduces the scare of a near miss (only armour the round cannot penetrate does, to 60 %), machine guns x1.5 and automatic weapons x1.2 for the volume of fire, arrows and bolts x0.3, hand grenades x3, grenade and rocket launchers x4, all of it x" + suppressionScale.ToString("0.0") + ". Heads stay down longer: suppression starts fading 1.5 s after the last near miss and fades a quarter as fast.");
-            l.CheckboxLabeled("Don't cross open ground into fire", ref openCrossing, "Before assaulting over open ground under the defenders' guns, raiders take a covered route if there is one; otherwise they rush only with overwhelming force or behind a smoke screen, else they stay out of range and let their snipers and machine guns work, and withdraw if that achieves nothing.");
-            l.CheckboxLabeled("Flanking", ref flanking, "Raiders shoot the defenders their cover does not protect first (snipers above all), pick firing positions from the side of the defenders' cover, and prefer assault directions the defences do not face.");
-            l.CheckboxLabeled("Focus fire and covered advance", ref focusFire, "Raiders concentrate their fire on exposed, wounded and dangerous defenders (machine guns, launchers, snipers) and on the ones their comrades already shoot; in the assault they move on you along routes that avoid your fields of fire.");
-            threatAdvance = focusFire;
-            l.CheckboxLabeled("Combat micro", ref combatMicro, "Raiders under fire from several of your shooters fall back to cover, melee raiders intercept anyone hitting their gunners and come in from the side, and gunners step back from melee attackers instead of trading blows.");
-            l.CheckboxLabeled("Raiding party", ref raidingParty, "In raids of 10 or more, a sixth of the raiders go for your valuables, livestock and crops from the start, out of your fire, while the rest attack.");
-            l.CheckboxLabeled("Evade and duck", ref evasion, "Raiders get out of your tox gas, away from fire and from where your grenades and launched rounds will land; a raider in the open that you are aiming at ducks into cover or drops flat.");
-            l.CheckboxLabeled("Combat medics", ref medics, "The raid's medic throws smoke on a comrade down in your field of fire, carries him to cover and tends him there.");
-            l.CheckboxLabeled("Cover the wounded", ref coverCarry, "When a raider carries a downed comrade out through your fire (the medic, a withdrawal, No One Left Behind), up to two unhurt raiders with guns nearby take cover beside him on your side and fire at whoever threatens him, until he is out of fire. Part of tactical competence: a dull raid lets its carriers run alone.");
-            l.CheckboxLabeled("React to contact", ref contactReaction, "When one of your colonists comes into sight within a raider's range while he is walking, waiting or going for a downed comrade, he breaks it off, takes cover close by and fires back - at once under a sharp command, up to 2 s late under a dull one. A rescue into your sight only goes ahead when two riflemen can cover it. Breachers at their charges, gun crews and raiders carrying the wounded keep at their task.");
-            l.CheckboxLabeled("Siege supplies by pack animal", ref siegePackAnimals, "Tribal and medieval factions that lay a siege get their building material, ammunition and food brought in on pack animals (their caravans' carriers, else muffalo) from the map edge nearest the camp, instead of by drop pod. The animals unload at the camp and leave. Industrial and later factions keep their drop pods.");
-            l.CheckboxLabeled("Coordinated assault", ref syncedAssault, "Walk-in assaults from several directions arrive together (groups on shorter routes start later), and inside each group half moves while the other half stops and fires, so the defenders are never without fire on them.");
-            l.CheckboxLabeled("Strength check before the assault", ref forceRatioCheck,
-                "Raids compare their strength with your defenders (weapons, skill, armour, health, turrets). " +
-                "Too weak for an assault: they besiege you (factions that can), snipe from out of range, plunder, or hold back and leave instead of storming in.");
-            l.Label("Odds needed to assault: " + assaultOdds.ToString("0.0") + " : 1 (classic 3 : 1)");
-            assaultOdds = l.Slider(assaultOdds, 1f, 5f);
-            l.Label("A raid that can't break your walls holds " + (standoffTicks / 60) + " s, then withdraws (factions that can siege besiege you instead)");
-            standoffTicks = (int)l.Slider(standoffTicks, 1200, 30000);
-            l.End();
-            Widgets.EndScrollView();
-        }
+        public void DoWindow(Rect inRect) => SettingsWindow.Draw(this, inRect);
     }
 }

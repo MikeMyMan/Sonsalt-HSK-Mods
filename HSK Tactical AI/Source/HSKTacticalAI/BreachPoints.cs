@@ -37,6 +37,8 @@ namespace HSKTacticalAI
         public float etaTicks;                        // tunnel: estimated digging time
         public bool blasting;                          // tunnel with mining charges (Industrial+) instead of picks
         public bool abandoned, smoked;
+        public int noMeansSince = -1;                 // first tick the team looked out of means (reloading, a sidearm swap): only a lasting lack counts
+        public int fragsNeeded, fragsThrown;           // grenade door breach: frags planned (HP / fragDoorDamage) and frags thrown so far
         public float bearing;                         // from the objective, degrees
         public float cost;
         public float score;

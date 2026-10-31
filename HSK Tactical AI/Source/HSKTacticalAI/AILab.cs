@@ -31,6 +31,8 @@ namespace HSKTacticalAI
         public int maxTicks = 60000;
         public string outDir = "";
         public bool quitWhenDone = true;
+        public string speed = "ultrafast";    // game speed during the run: normal | fast | superfast | ultrafast
+        public bool showcase = false;         // for recording: camera on the base, threat overlay on, windows left alone once it runs
         public bool aiEnabled = true;
         public bool forceRatioCheck = true;
         public int shields = 0;   // give this many raiders a body shield (one-handed gun if needed): shield-wall tests on any faction
@@ -112,7 +114,42 @@ namespace HSKTacticalAI
 
     public class GameComponent_AILab : GameComponent
     {
-        private enum State { Waiting, Settling, Running, Done, Quitting }
+        private enum State { Waiting, Settling, Running, Done, Quitting, UiTest }
+
+        // settings-window test (scenario "settingsui"): the real mod settings window, scrolled through, searched, the master
+        // switch flipped off and on; drawing errors end up in the log
+        private readonly Stopwatch uiClock = new Stopwatch();
+        private int uiPhase = -1;
+        public static string UiPhaseNote = "";
+
+        private void UiTestUpdate()
+        {
+            var mod = LoadedModManager.GetMod<TacticalAIMod>();
+            if (!uiClock.IsRunning) uiClock.Start();
+            int phase = (int)(uiClock.Elapsed.TotalSeconds / 10.0);
+            if (mod != null && !Find.WindowStack.Windows.Any(w => w is Dialog_ModSettings) && phase < 8) Find.WindowStack.Add(new Dialog_ModSettings(mod));
+            if (phase == uiPhase) return;
+            uiPhase = phase;
+            switch (phase)
+            {
+                case 0: SettingsWindow.LabView(0f, ""); break;
+                case 1: SettingsWindow.LabView(1200f, ""); break;
+                case 2: SettingsWindow.LabView(99999f, ""); break;
+                case 3: SettingsWindow.LabView(0f, "breach"); break;
+                case 4: SettingsWindow.LabView(0f, ""); TacticalAIMod.Settings.assaultPlanner = false; break;
+                case 5: TacticalAIMod.Settings.assaultPlanner = true; TacticalAIMod.SetEnabled(false); break;
+                case 6: TacticalAIMod.SetEnabled(true); TacticalAIMod.Settings.equipRaiders = true; TacticalAIMod.Settings.maxAxes = 2; break;
+                case 7: TacticalAIMod.Settings.equipRaiders = false; TacticalAIMod.Settings.maxAxes = 3; break;
+                default:
+                    foreach (var w in Find.WindowStack.Windows.Where(w => w is Dialog_ModSettings).ToList()) Find.WindowStack.TryRemove(w, false);
+                    outcome = TacticalAIMod.Patched ? "uiOk" : "uiNotRepatched";
+                    state = State.Done;
+                    WriteResults();
+                    return;
+            }
+            UiPhaseNote += phase + ":" + (TacticalAIMod.Patched ? "p" : "u") + " ";
+            Log.Message("[HSK Tactical AI] AI Lab settings UI phase " + phase);
+        }
 
         private State state = State.Waiting;
         private Map map;
@@ -137,19 +174,47 @@ namespace HSKTacticalAI
 
         public GameComponent_AILab(Game game) { }
 
+        private static TimeSpeed LabSpeed()
+        {
+            switch ((AILab.Config.speed ?? "").ToLowerInvariant())
+            {
+                case "normal": return TimeSpeed.Normal;
+                case "fast": return TimeSpeed.Fast;
+                case "superfast": return TimeSpeed.Superfast;
+                default: return TimeSpeed.Ultrafast;
+            }
+        }
+
+        private bool showcaseStarted;
+        private static readonly System.Reflection.FieldInfo slowerField = HarmonyLib.AccessTools.Field(typeof(TimeSlower), "forceNormalSpeedUntil");
+
         public override void GameComponentUpdate()
         {
             if (!AILab.Active || Current.ProgramState != ProgramState.Playing) return;
-            // keep the run moving: no pausing dialogs, maximum speed
+            bool showcase = AILab.Config.showcase;
+            // keep the run moving: no pausing dialogs (a showcase leaves windows alone once the raid runs: settings, inspect)
             var ws = Find.WindowStack;
-            if (ws != null)
+            if (state == State.UiTest) { UiTestUpdate(); return; }
+            if (ws != null && (!showcase || state == State.Waiting || state == State.Settling))
             {
                 foreach (Window w in ws.Windows.ToList())
                     if (w.forcePause || w.absorbInputAroundWindow) ws.TryRemove(w, false);
             }
             if (state == State.Settling || state == State.Running)
             {
-                if (Find.TickManager.CurTimeSpeed != TimeSpeed.Ultrafast) Find.TickManager.CurTimeSpeed = TimeSpeed.Ultrafast;
+                // the Lab's speed (ultrafast by default); a showcase may be paused or slowed by hand while recording
+                if (!showcase && Find.TickManager.CurTimeSpeed != LabSpeed()) Find.TickManager.CurTimeSpeed = LabSpeed();
+                // RimWorld drops to normal speed while colonists are under fire (TimeSlower): in a measurement run that caps
+                // the game at 60 ticks/s and hides what the raid really costs (s1 suite: every fight read exactly 60)
+                if (!showcase && slowerField != null && Find.TickManager.slower != null) slowerField.SetValue(Find.TickManager.slower, 0);
+                if (showcase && !showcaseStarted && state == State.Running)
+                {
+                    showcaseStarted = true;
+                    Find.TickManager.CurTimeSpeed = LabSpeed();
+                    TacticalAIMod.Settings.showThreatOverlay = true;
+                    if (map != null) Find.CameraDriver.JumpToCurrentMapLoc(center);
+                }
+                else if (showcase && state == State.Settling && Find.TickManager.CurTimeSpeed != TimeSpeed.Ultrafast) Find.TickManager.CurTimeSpeed = TimeSpeed.Ultrafast;
             }
             else if (state == State.Waiting && Find.TickManager.Paused)
             {
@@ -180,6 +245,7 @@ namespace HSKTacticalAI
                         break;
                     case State.Settling:
                         if (now - stateTick < 300) return;
+                        if (AILab.Config.scenario == "settingsui") { state = State.UiTest; return; }
                         // arrival tests: the threat map must have read the defence before the raid is sent (max 50 s)
                         if (!string.IsNullOrEmpty(TacticalAIMod.Settings.arrivalOverride) && now - stateTick < 3000
                             && (MapComponent_TacticalAI.For(map)?.Threat?.CompletedCycles ?? 0) == 0) return;
@@ -296,6 +362,46 @@ namespace HSKTacticalAI
                 }
                 killZone = new CellRect(rx0, center.z - 1, rx1 - rx0 + 1, 3).ClipInsideMap(map);
                 notes += "bridge=" + (bridgeT?.defName ?? "none") + " ";
+            }
+            else if (cfg.scenario == "island" || cfg.scenario == "islanddoor")
+            {
+                // a base no raider can walk to (HSK dev question: "settling on a part of the map with deep water around and
+                // using bridges at the tribal tech level" drops TPS): a ring of deep water 14-19 cells out. islanddoor: one
+                // bridge to the east with a wall and a door across it - reachable only through the door
+                TerrainDef deep = DefDatabase<TerrainDef>.GetNamedSilentFail("WaterDeep") ?? TerrainDefOf.WaterDeep;
+                TerrainDef bridgeT = DefDatabase<TerrainDef>.GetNamedSilentFail("Bridge");
+                bool door = cfg.scenario == "islanddoor";
+                foreach (IntVec3 c in GenRadial.RadialCellsAround(center, 19.5f, true))
+                {
+                    if (!c.InBounds(map) || c.DistanceTo(center) < 14f) continue;
+                    foreach (Thing t in c.GetThingList(map).ToList())
+                        if (!(t is Pawn) && t.def.destroyable && !t.Destroyed) t.Destroy(DestroyMode.Vanish);
+                    bool onBridge = door && bridgeT != null && c.x > center.x && Math.Abs(c.z - center.z) <= 1;
+                    map.terrainGrid.SetTerrain(c, onBridge ? bridgeT : deep);
+                }
+                if (door && bridgeT != null)
+                {
+                    // the bridge's inner end: a wall across it with a door in the middle
+                    int wx = center.x + 13;
+                    for (int dz = -2; dz <= 2; dz++)
+                    {
+                        var c = new IntVec3(wx, 0, center.z + dz);
+                        if (dz == 0) Place(ThingDefOf.Door, c, GenStuff.DefaultStuffFor(ThingDefOf.Door));
+                        else Place(ThingDefOf.Wall, c, stuffWall);
+                    }
+                }
+                // defenders behind sandbags in a ring around the middle
+                foreach (IntVec3 c in GenRadial.RadialCellsAround(center, 6.5f, false))
+                {
+                    if (c.DistanceTo(center) < 6f) continue;
+                    if (sandbags != null) Place(sandbags, c);
+                }
+                for (int i = 0; i < 8 && positions.Count < cfg.defenders; i++)
+                {
+                    float a = i * (float)Math.PI / 4f;
+                    positions.Add(center + new IntVec3((int)Math.Round(Math.Cos(a) * 5.0), 0, (int)Math.Round(Math.Sin(a) * 5.0)));
+                }
+                notes += (door ? "island with a bridge and a door" : "island, no way across") + " ";
             }
             else if (cfg.scenario == "bunker")
             {
@@ -672,6 +778,13 @@ namespace HSKTacticalAI
             var s = TacticalAIMod.Settings;
             foreach (var kv in cfg.settings)
             {
+                if (kv.Key == "enabled")
+                {
+                    // the master switch the way the settings window flips it: patches removed (or applied) in the running game
+                    TacticalAIMod.SetEnabled(bool.Parse(kv.Value));
+                    notes += "set enabled=" + kv.Value + " (patched " + TacticalAIMod.Patched + ") ";
+                    continue;
+                }
                 var f = typeof(TacticalAISettings).GetField(kv.Key);
                 if (f == null) { notes += "unknownSetting=" + kv.Key + " "; continue; }
                 try
@@ -1285,6 +1398,8 @@ namespace HSKTacticalAI
         }
 
         private readonly List<Dictionary<string, object>> timeline = new List<Dictionary<string, object>>();
+        private int lastSampleT;
+        private double lastSampleReal, lastSamplePerf;
 
         /// <summary>Every 300 ticks: where the raiders are, how exposed, and what they're doing.</summary>
         private void Snapshot(int now, ThreatMap tm)
@@ -1308,9 +1423,17 @@ namespace HSKTacticalAI
                 string tg = TargetKind(r);
                 if (tg != null) targets[tg] = targets.TryGetValue(tg, out int k) ? k + 1 : 1;
             }
+            // game speed since the last sample (ticks per real second) and our share of it: TPS per phase of the raid
+            double realNow = realTime.Elapsed.TotalSeconds, perfNow = Perf.TotalMs;
+            int dt = (now - raidStartTick) - lastSampleT;
+            double tps = realNow - lastSampleReal > 0.01 ? Math.Round(dt / (realNow - lastSampleReal), 1) : 0;
+            double aiMs = dt > 0 ? Math.Round((perfNow - lastSamplePerf) / dt, 4) : 0;
+            lastSampleT = now - raidStartTick; lastSampleReal = realNow; lastSamplePerf = perfNow;
             timeline.Add(new Dictionary<string, object>
             {
                 ["t"] = now - raidStartTick,
+                ["tps"] = tps,
+                ["aiMs"] = aiMs,
                 ["active"] = active,
                 ["inKillZone"] = inZone,
                 ["inFire"] = inFire,
@@ -1716,6 +1839,14 @@ namespace HSKTacticalAI
                 ["firesStarted"] = BreachKit.FiresStarted,
                 ["forceRatioCheck"] = cfg.forceRatioCheck,
                 ["breachToolsGiven"] = BreachKit.ToolsGiven,
+                ["breachImpassableLines"] = AssaultPlanner.ImpassableLines,
+                ["uiPhases"] = UiPhaseNote,
+                ["timeSlowerOff"] = slowerField != null && !cfg.showcase,
+                ["patchesApplied"] = TacticalAIMod.AppliedPatches,
+                ["patched"] = TacticalAIMod.Patched,
+                ["competenceSystem"] = Competence.Enabled,
+                ["patchesSkipped"] = string.Join(" ", TacticalAIMod.SkippedPatches),
+                ["patchesFailed"] = string.Join(" ", TacticalAIMod.FailedPatches),
                 ["breachPlansWalk"] = BreachPlanner.DecisionsWalk,
                 ["breachPlansBreach"] = BreachPlanner.DecisionsBreach,
                 ["lastBreachPlan"] = BreachPlanner.DecisionsWalk + BreachPlanner.DecisionsBreach > 0 ? BreachPlanner.LastDecision.ToString() : "",

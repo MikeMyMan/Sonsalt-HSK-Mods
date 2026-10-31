@@ -3,7 +3,7 @@
   <name>HSK Tactical AI</name>
   <author>Sonsalt</author>
   <packageId>sonsalt.hsk.tacticalai</packageId>
-  <modVersion>0.3.1</modVersion>
+  <modVersion>0.4.0</modVersion>
   <url>https://github.com/MikeMyMan/Sonsalt-HSK-Mods</url>
   <supportedVersions>
     <li>1.6</li>
@@ -33,7 +33,7 @@
     <li>Krkr.rule56</li>
     <li>Funstab.RaidTactics</li>
   </incompatibleWith>
-  <description>A custom raid AI for Hardcore SK (0.3, test release).
+  <description>A custom raid AI for Hardcore SK (0.4, test release).
 
 Raiders plan their attack instead of walking into your guns:
 - Threat map: they know where your colonists and turrets can shoot (toggle the overlay with the crosshair button, bottom-right bar).
@@ -47,7 +47,7 @@ Raiders plan their attack instead of walking into your guns:
 - Adapting: defenders who come out are fought where they are, a defence beaten in the field is stormed at once. Grenadiers lob explosive rounds over your walls; bigger raids carry a crew-served gun, set it up near its full range and man it before the assault, and pack it up or wreck it when they leave - loot only if the crew falls. Riflemen cover comrades who carry the wounded out of your fire, and raiders react when a colonist steps into sight. Tribal and medieval sieges get their supplies by pack animal.
 - Raid memory: factions learn from survivors and from prisoners who got away. They pick a quieter edge to come in from, or drop pods (spacers); a beaten faction comes back bigger and sometimes for revenge (takes nothing, does not break off); some raids come for people (slavers grab a downed colonist and leave). Sharp commands run operations: hammer and anvil (a siege group shells while the rest waits out of range) or an armoured spearhead. The raid letter says why.
 
-Every behaviour can be switched off in the mod settings.
+Every behaviour can be switched off in the mod settings, and one master switch turns the whole mod off. By default raiders only get HSK, Combat Extended or vanilla items.
 
 Works with Smarter Raid AI, Combat Extended and Enemy Self Preservation. Not with CAI 5000 or Raid Tactics (they change the same raid AI; this mod has its own raid memory).</description>
 </ModMetaData>

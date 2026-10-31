@@ -316,7 +316,7 @@ namespace HSKTacticalAI
             string phrase = ThreatPhrase(t);
             plan.capability += "; memory: " + phrase + " (" + (changes.Count == 0 ? "no matching gear" : string.Join(", ", changes.Distinct())) + ")";
             if (s.memoryMessages && lord.Map != null)
-                Messages.Message(lord.faction.Name + " remember " + phrase + (changes.Count > 0 ? ": this raid brings " + string.Join(", ", changes.Distinct()) + "." : "."),
+                Messages.Message(changes.Count > 0 ? "HSKTAI_M_MemoryBrings".Translate(lord.faction.Name, phrase, string.Join(", ", changes.Distinct())).ToString() : "HSKTAI_M_Memory".Translate(lord.faction.Name, phrase).ToString(),
                     new LookTargets(pawns), MessageTypeDefOf.ThreatSmall, false);
         }
 
@@ -365,7 +365,7 @@ namespace HSKTacticalAI
             // within budget: what this kind of pawn may be generated with (its weapon money), at least the old gun's value
             float cap = Mathf.Max(old.MarketValue * 1.1f, p.kindDef?.weaponMoney.max ?? 0f);
             var tagged = DefDatabase<ThingDef>.AllDefsListForReading
-                .Where(d => d.IsRangedWeapon && d.equipmentType == EquipmentType.Primary && d.weaponTags != null && d.weaponTags.Any(tags.Contains)).ToList();
+                .Where(d => d.IsRangedWeapon && d.equipmentType == EquipmentType.Primary && d.weaponTags != null && d.weaponTags.Any(tags.Contains) && ItemSources.Allowed(d)).ToList();
             var inTech = tagged.Where(d => d.techLevel <= tech && !d.destroyOnDrop).ToList();
             var inBudget = inTech.Where(d => d.BaseMarketValue <= cap).ToList();
             // his own kind's first; then ordinary weapons over spacer-tagged oddities below spacer tech (mem3: Dead Space's

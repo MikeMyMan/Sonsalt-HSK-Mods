@@ -176,8 +176,20 @@ namespace HSKTacticalAI
         public static bool Applies(Lord lord)
         {
             var s = TacticalAIMod.Settings;
-            return s != null && s.assaultPlanner && lord?.faction != null && lord.faction != Faction.OfPlayer
+            return s != null && s.enabled && s.assaultPlanner && lord?.faction != null && lord.faction != Faction.OfPlayer
                    && lord.faction.HostileTo(Faction.OfPlayer) && lord.Map != null && lord.Map.IsPlayerHome;
+        }
+
+        /// <summary>Forget every plan and hand the raids back to vanilla duties (planner or the whole mod switched off).</summary>
+        public static void DropAllPlans()
+        {
+            var lords = Plans.Values.Select(p => p.map?.lordManager?.lords?.FirstOrDefault(l => l.loadID == p.lordId)).Where(l => l != null).ToList();
+            Plans.Clear();
+            foreach (var l in lords)
+            {
+                try { l.CurLordToil?.UpdateAllDuties(); }
+                catch (Exception e) { Verse.Log.ErrorOnce("[HSK Tactical AI] handing a raid back to vanilla failed: " + e.Message, 0x4A11 + l.loadID); }
+            }
         }
 
         private static readonly Dictionary<int, int> podWaitSince = new Dictionary<int, int>();
@@ -402,15 +414,37 @@ namespace HSKTacticalAI
 
         public static bool HasBreachTool(Pawn p) => p.equipment?.Primary != null && BreachTools.Contains(p.equipment.Primary.def.defName);
 
+        /// <summary>A breach tool in the pack (s2_islanddoor: a tribal breacher's bow went back in his hand - sidearm logic - and
+        /// the axe into the pack; the planner saw no tool and called the whole raid off).</summary>
+        public static ThingWithComps CarriedBreachTool(Pawn p) =>
+            p.inventory?.innerContainer?.FirstOrDefault(t => t is ThingWithComps && BreachTools.Contains(t.def.defName) && !PrimitiveBreachTools.Contains(t.def.defName)) as ThingWithComps;
+
+        /// <summary>Holds a breach tool or carries one.</summary>
+        public static bool HasOrCarriesBreachTool(Pawn p) => HasBreachTool(p) || CarriedBreachTool(p) != null;
+
+        /// <summary>Takes the breach tool out of the pack into the hands; what was held goes into the pack. True if it is in hand now.</summary>
+        public static bool TakeOutBreachTool(Pawn p)
+        {
+            if (HasBreachTool(p)) return true;
+            var tool = CarriedBreachTool(p);
+            if (tool == null || p.equipment == null) return false;
+            var held = p.equipment.Primary;
+            if (held != null && !p.equipment.TryTransferEquipmentToContainer(held, p.inventory.innerContainer)) return false;
+            p.inventory.innerContainer.Remove(tool);
+            p.equipment.AddEquipment(tool);
+            return true;
+        }
+
         public static bool HasPrimitiveBreachTool(Pawn p) => p.equipment?.Primary != null && PrimitiveBreachTools.Contains(p.equipment.Primary.def.defName);
 
         /// <summary>Wall HP one tool user takes down in reasonable time: breach axe full budget, other tools a fifth,
         /// stone-age tools a tenth.</summary>
         public static float ToolBudget(Pawn p)
         {
-            if (!HasBreachTool(p)) return 0f;
+            ThingDef held = HasBreachTool(p) ? p.equipment.Primary.def : CarriedBreachTool(p)?.def;
+            if (held == null) return 0f;
             float full = TacticalAIMod.Settings.toolHpBudget;
-            string d = p.equipment.Primary.def.defName;
+            string d = held.defName;
             return d == "MeleeWeapon_BreachAxe" ? full : PrimitiveBreachTools.Contains(d) ? full * 0.1f : full * 0.2f;
         }
 
@@ -426,7 +460,8 @@ namespace HSKTacticalAI
 
         /// <summary>Breach specialists: charges, launchers / thrown explosives, real breaching tools (not mining tools: 4-16 wall dps).</summary>
         public static bool IsSpecialist(Pawn p) => BreachKit.CarriedCharge(p) != null || DestructiveRangedVerb(p) != null
-            || (p.equipment?.Primary != null && StrongBreachTools.Contains(p.equipment.Primary.def.defName));
+            || (p.equipment?.Primary != null && StrongBreachTools.Contains(p.equipment.Primary.def.defName))
+            || (CarriedBreachTool(p) is ThingWithComps carried && StrongBreachTools.Contains(carried.def.defName));
 
         /// <summary>
         /// "If there is one entrance, that's the one to avoid": compare the walking route (priced by the defenders'
@@ -641,8 +676,6 @@ namespace HSKTacticalAI
         {
             Map map = lord.Map;
             var s = TacticalAIMod.Settings;
-            BreachKit.EquipOnce(lord, force: true);
-            BreachKit.EnsureMeans(lord, plan, pawns);   // a raid out to breach never comes without the means (playtest 2026-10-25)
             ClearBreaches(plan);
             var tm = MapComponent_TacticalAI.For(map)?.Threat;
 
@@ -654,6 +687,14 @@ namespace HSKTacticalAI
             if (nodes == null) nodes = new List<IntVec3>();
             BreachPoint primary = nodes.Count > 0 ? BuildBreachPoint(map, plan, nodes, null, tm, out bool rockOnPath) : null;
             bool rock = primary == null && nodes.Count > 0;
+            var ring = RingCandidates(map, plan, tm, s);
+
+            // the kit only for a raid that has somewhere to use it (island test: axes for a raid that could not breach)
+            if (primary != null || ring.Count > 0 || (s.doorBreach && DoorCandidates(map, plan, tm, s).Count > 0))
+            {
+                BreachKit.EquipOnce(lord, force: true);
+                BreachKit.EnsureMeans(lord, plan, pawns);   // a raid out to breach never comes without the means (playtest 2026-10-25)
+            }
 
             // specialists and what they carry
             var pool = pawns.Where(IsSpecialist).ToList();
@@ -669,7 +710,7 @@ namespace HSKTacticalAI
             var cands = new List<BreachPoint>();
             int want = Mathf.Min(s.maxBreaches, Mathf.Max(1, pawns.Count / Mathf.Max(1, s.raidersPerBreach)));
             if (!Competence.Knows(plan, Doctrine.MultiBreach)) want = 1;   // several breaches opened together take a sharp command
-            cands.AddRange(RingCandidates(map, plan, tm, s));
+            cands.AddRange(ring);
             // launchers (M79 and the like) blow doors as well as walls (playtest 2026-10-25): every outer door is a breach point
             // too, priced like a one-wall breach (the facing door still gets the defended-axis penalty)
             if (s.doorBreach && pool.Any(p => DestructiveRangedVerb(p) != null))
@@ -825,7 +866,7 @@ namespace HSKTacticalAI
             else
             {
                 // breach axe (Demolish) counts fully; other "tools" do 4-16 wall damage per second: a fifth
-                var toolers = pool.Where(HasBreachTool).OrderByDescending(ToolBudget).ToList();
+                var toolers = pool.Where(HasOrCarriesBreachTool).OrderByDescending(ToolBudget).ToList();
                 if (toolers.Count == 0 || bp.hp > toolers.Sum(ToolBudget))
                 {
                     if (!bp.flammable || !s.fireBreaching) return false;
@@ -845,6 +886,8 @@ namespace HSKTacticalAI
         /// outside the walls (reachable on foot) is a launch point; the cheapest breach route from there gives a
         /// candidate (cost = breach route + covered walk to the launch point).
         /// </summary>
+        public static int ImpassableLines;
+
         private static List<BreachPoint> RingCandidates(Map map, AssaultPlan plan, ThreatMap tm, TacticalAISettings s)
         {
             var walk = TraverseParms.For(TraverseMode.NoPassClosedDoors, Danger.Deadly);
@@ -872,6 +915,9 @@ namespace HSKTacticalAI
                     // crossing the base under fire costs more - that is the side they face)
                     List<IntVec3> nodes = Cardinalize(GenSight.BresenhamCellsBetween(launch, plan.objective));
                     if (!ThreatPathing.TryFindRoute(map, plan.gather, launch, customizer, out var lead, out float lcost)) continue;
+                    // deep water (or other impassable ground) on the way in: no wall or rock to open there, so a breach on this
+                    // bearing leads nowhere (island test: a tunnel was planned through rock that ended at the water)
+                    if (nodes.Any(c => c.InBounds(map) && c.GetTerrain(map).passability == Traversability.Impassable)) { ImpassableLines++; continue; }
                     var bp = BuildBreachPoint(map, plan, nodes, ThreatPathing.Waypoints(lead, s.waypointSpacing), tm, out bool rockFirst, allowRock: s.tunnelling);
                     if (bp == null) continue;
                     if (cands.Any(o => o.entry.DistanceTo(bp.entry) < 3f)) continue;   // same wall from a neighbouring bearing
@@ -963,7 +1009,7 @@ namespace HSKTacticalAI
                 plan.breachTeam.Add(p);
                 have += Grenades.CarriedFrag(p).stackCount;
             }
-            if (have >= need) { bp.method = BreachMethod.Grenade; return true; }
+            if (have >= need) { bp.method = BreachMethod.Grenade; bp.fragsNeeded = need; bp.fragsThrown = 0; return true; }
             foreach (var p in bp.team) plan.breachTeam.Remove(p);
             bp.team.Clear();
             if (TryAssignMethod(bp, pool, s)) return true;
@@ -1575,6 +1621,8 @@ namespace HSKTacticalAI
         /// <summary>Every 60 ticks: synchronise the breach teams, and start the assault (H-hour) at the right moment.</summary>
         public static void Tick(Map map)
         {
+            // "Assault planner" switched off mid-raid: the plans stop, and vanilla duties take over at once
+            if (!TacticalAIMod.Settings.assaultPlanner) { if (Plans.Count > 0) DropAllPlans(); return; }
             // raids waiting for their drop pods to open: ask for duties again, which plans them once everyone is out
             if (podWaitSince.Count > 0)
                 foreach (Lord l in map.lordManager.lords.ToList())
@@ -1773,10 +1821,28 @@ namespace HSKTacticalAI
             {
                 case BreachMethod.Launcher: return team.Any(p => Launchers.CanStillBreach(p, DestructiveRangedVerb(p)));
                 case BreachMethod.Charge: return team.Any(p => BreachKit.CarriedCharge(p) != null);
-                case BreachMethod.Tool: return team.Any(HasBreachTool);
+                case BreachMethod.Tool: return team.Any(HasOrCarriesBreachTool);
                 case BreachMethod.Grenade: return team.Any(p => Grenades.CarriedFrag(p) != null || DestructiveRangedVerb(p) != null);
                 default: return true;
             }
+        }
+
+        /// <summary>Switch a breach point to bashing: up to four raiders not on another breach (melee weapons first, the closest),
+        /// if at least two can and the walls left are thin enough (500 HP per basher, as at planning).</summary>
+        private static bool TryBashRest(AssaultPlan plan, BreachPoint bp, List<Pawn> alive, bool ignoreHp = false)
+        {
+            var bashers = alive.Where(p => p.RaceProps.Humanlike && !p.WorkTagIsDisabled(WorkTags.Violent) && !plan.breaches.Any(b => b != bp && b.team.Contains(p)))
+                               .OrderBy(p => p.equipment?.Primary != null && p.equipment.Primary.def.IsMeleeWeapon ? 0 : 1)
+                               .ThenBy(p => p.Position.DistanceToSquared(bp.entry)).Take(4).ToList();
+            if (bashers.Count < 2) return false;
+            float left = bp.walls.Concat(bp.walls2).Where(w => w != null && !w.Destroyed).Sum(w => (float)w.HitPoints);
+            if (!ignoreHp && left > 500f * bashers.Count) return false;
+            foreach (var p in bp.team) plan.breachTeam.Remove(p);
+            bp.team.Clear();
+            foreach (var p in bashers) { bp.team.Add(p); plan.breachTeam.Add(p); }
+            bp.method = BreachMethod.Bash;
+            bp.noMeansSince = -1;
+            return true;
         }
 
         private static bool TickBreach(Map map, Lord lord, AssaultPlan plan, List<Pawn> alive, int now, TacticalAISettings s, ref string reason)
@@ -1793,6 +1859,18 @@ namespace HSKTacticalAI
                 // ff2 (full modlist): a one-shot launcher spent on the first wall left breach #1 with a living team and
                 // nothing to open it with; the raid waited for it until the timeout. Out of means = given up now.
                 bool outOfMeans = bp.TeamAlive && !BreachKit.BreachUnderWay(map, bp) && !HasMeans(bp);
+                // only a lasting lack (s4_comp_off: a grenadier mid-reload read as "out of means" and the raid went home)
+                if (!outOfMeans) bp.noMeansSince = -1;
+                else if (bp.noMeansSince < 0) { bp.noMeansSince = now; outOfMeans = false; }
+                else if (now - bp.noMeansSince < 600) outOfMeans = false;
+                // out of means with little wall left (s6_comp_off: the launcher spent its rounds on 7 of the walls, one layer
+                // left): break the rest down by hand rather than give the raid up
+                if (outOfMeans && bp.method != BreachMethod.Bash && TryBashRest(plan, bp, alive))
+                {
+                    plan.capability += "; breach #" + bp.index + " out of means -> bash the rest";
+                    dutiesChanged = true;
+                    continue;
+                }
                 if (outOfMeans)
                 {
                     bp.abandoned = true;
@@ -1801,6 +1879,18 @@ namespace HSKTacticalAI
                     plan.capability += "; breach #" + bp.index + " out of means";
                     dutiesChanged = true;
                     continue;
+                }
+                // grenades that don't break the door (s5_comp_off: 29 frags at a 335 HP door, no damage - the planner's
+                // frag damage was far too high for that door): after twice the planned frags, break it down by hand
+                if (bp.method == BreachMethod.Grenade && bp.fragsNeeded > 0 && bp.fragsThrown >= bp.fragsNeeded * 2 + 2)
+                {
+                    bp.fragsNeeded = 0;
+                    if (TryBashRest(plan, bp, alive, ignoreHp: true))
+                    {
+                        plan.capability += "; breach #" + bp.index + " grenades not enough -> bash";
+                        dutiesChanged = true;
+                        continue;
+                    }
                 }
                 if (bp.TeamAlive || BreachKit.BreachUnderWay(map, bp)) continue;
                 plan.capability += "; breach #" + bp.index + " team not alive [" + string.Join(",", bp.team.Select(p => p.LabelShort + (p.Spawned ? "" : ":unspawned") + (p.Downed ? ":downed" : ""))) + "]";
@@ -1835,11 +1925,14 @@ namespace HSKTacticalAI
                 bool allReady = owReady && active.All(b => b.WallsGone || b.reachedStaging.Any(p => p.Spawned && !p.Downed));
                 bool anyReady = active.Any(b => b.reachedStaging.Any(p => p.Spawned && !p.Downed));
                 if (anyReady && plan.firstReadyTick < 0) plan.firstReadyTick = now;
-                if (allReady || (plan.firstReadyTick >= 0 && now - plan.firstReadyTick > s.breachSyncTicks))
+                // nobody reached a stack point at all (s3_comp_off: the stack point was on the defended face and every
+                // breacher held in cover out of its fire - the raid waited 6000 ticks): go anyway, from where they are
+                bool neverReady = plan.firstReadyTick < 0 && now - plan.createdTick > 2 * Competence.SyncTimeout(plan, s.syncTimeoutTicks);
+                if (allReady || neverReady || (plan.firstReadyTick >= 0 && now - plan.firstReadyTick > s.breachSyncTicks))
                 {
                     plan.goTick = now;
                     plan.lastBreachProgressTick = now;
-                    plan.hHourReason = allReady ? "go: all breach teams ready" : "go: sync timeout";
+                    plan.hHourReason = allReady ? "go: all breach teams ready" : neverReady ? "go: stack points never reached" : "go: sync timeout";
                     Log(plan);
                 }
             }
@@ -2164,7 +2257,7 @@ namespace HSKTacticalAI
             // first get to the stack point along the covered route, like everyone else
             if (staging.IsValid && !bp.reachedStaging.Contains(pawn))
             {
-                if (pawn.Position.DistanceTo(staging) > 6f) return Hold(pawn, staging);
+                if (pawn.Position.DistanceTo(staging) > 6f && plan.goTick < 0) return Hold(pawn, staging);
                 bp.reachedStaging.Add(pawn);
             }
             // all breach points start together
@@ -2179,6 +2272,7 @@ namespace HSKTacticalAI
                 case BreachMethod.Grenade:
                 {
                     Job gj = Grenades.ThrowAtBuilding(pawn, plan, wall);
+                    if (gj != null && gj.def == Grenades.ThrowJob) bp.fragsThrown++;
                     if (gj != null) return gj;
                     return Hold(pawn, staging);
                 }
@@ -2291,7 +2385,7 @@ namespace HSKTacticalAI
                 shoot.expiryInterval = 600;
                 return shoot;
             }
-            if (AssaultPlanner.HasBreachTool(pawn))
+            if (AssaultPlanner.HasBreachTool(pawn) || AssaultPlanner.TakeOutBreachTool(pawn))
             {
                 // from the raid's side of the wall, never the inside face reached through the funnel
                 if (BreachKit.TryFindPlantSpot(pawn, wall, prefer, out IntVec3 hitSpot) && pawn.Position != hitSpot && !pawn.Position.AdjacentTo8WayOrInside(wall))

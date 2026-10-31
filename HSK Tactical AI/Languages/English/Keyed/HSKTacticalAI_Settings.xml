@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <!-- ===== window ===== -->
+  <HSKTAI_UI_Search>Search settings...</HSKTAI_UI_Search>
+  <HSKTAI_UI_Reset>Reset</HSKTAI_UI_Reset>
+  <HSKTAI_UI_ResetConfirm>Reset {0} to the defaults? {1} setting(s) will change.</HSKTAI_UI_ResetConfirm>
+  <HSKTAI_UI_Default>Changed. Default: {0}</HSKTAI_UI_Default>
+  <HSKTAI_UI_On>on</HSKTAI_UI_On>
+  <HSKTAI_UI_Off>off</HSKTAI_UI_Off>
+  <HSKTAI_UI_Needs>Needs "{0}" to be on.</HSKTAI_UI_Needs>
+  <HSKTAI_UI_ModOff>Tactical AI is switched off.</HSKTAI_UI_ModOff>
+  <HSKTAI_UI_FailedPatches>Switched off after a load error (probably renamed in an HSK, CE or RimWorld update, see the log): {0}. Everything else works.</HSKTAI_UI_FailedPatches>
+
+  <!-- ===== sections ===== -->
+  <HSKTAI_Sec_General>General</HSKTAI_Sec_General>
+  <HSKTAI_Sec_ThreatMap>Threat map</HSKTAI_Sec_ThreatMap>
+  <HSKTAI_Sec_Planning>Raid planning</HSKTAI_Sec_Planning>
+  <HSKTAI_Sec_Breaching>Breaching</HSKTAI_Sec_Breaching>
+  <HSKTAI_Sec_Combat>Combat</HSKTAI_Sec_Combat>
+  <HSKTAI_Sec_Sieges>Sieges</HSKTAI_Sec_Sieges>
+  <HSKTAI_Sec_Memory>Memory, intents and operations</HSKTAI_Sec_Memory>
+
+  <!-- ===== General ===== -->
+  <HSKTAI_S_enabled>Tactical AI on</HSKTAI_S_enabled>
+  <HSKTAI_S_enabled_Tip>Master switch. Off: every patch of this mod is removed and raids behave as in vanilla HSK. Nothing of Tactical AI runs. Takes effect at once, also in a running game.</HSKTAI_S_enabled_Tip>
+  <HSKTAI_S_tacticalCompetence>Tactical competence: smarter leaders, smarter raids</HSKTAI_S_tacticalCompetence>
+  <HSKTAI_S_tacticalCompetence_Tip>How well a raid uses its tactics depends on its leader's intelligence (Intellectual skill; traits such as too smart, slow learner, dumb, dunce or volatile genius; learning genes and brain injuries) and on its faction's tech level, which sets the ceiling: tribal 55 %, medieval 70 %, industrial 85 %, spacer and above 100 %. Mechanoids think as a hive. A sharp raid reads your whole defence, avoids killboxes, funnels and most of your traps, attacks from several sides and withdraws in time. A dull one walks the straight way in and picks poor breach points.\n\nOff: every raid gets the same ordinary command (50 %), whoever leads it.</HSKTAI_S_tacticalCompetence_Tip>
+  <HSKTAI_S_competenceIntelWeight>Share of the leader's intelligence (rest: tech level)</HSKTAI_S_competenceIntelWeight>
+  <HSKTAI_S_competenceIntelWeight_Tip>How much of a raid's competence comes from its leader's intelligence. The rest comes from its faction's tech level.</HSKTAI_S_competenceIntelWeight_Tip>
+  <HSKTAI_S_competenceLossOfCommand>Loss of command when the leader falls</HSKTAI_S_competenceLossOfCommand>
+  <HSKTAI_S_competenceLossOfCommand_Tip>Leader down, dead or gone: the next in rank takes over, at most as sharp as himself and a fifth less than that, and the raid is confused for about 20 seconds.</HSKTAI_S_competenceLossOfCommand_Tip>
+  <HSKTAI_S_competenceReadout>Show each raid's competence</HSKTAI_S_competenceReadout>
+  <HSKTAI_S_competenceReadout_Tip>A message when a raid arrives (and when it loses its leader) with its competence and why. Also in the log and in the tooltip of the threat-map button.</HSKTAI_S_competenceReadout_Tip>
+  <HSKTAI_S_hskItemsOnly>Only HSK, CE and vanilla items</HSKTAI_S_hskItemsOnly>
+  <HSKTAI_S_hskItemsOnly_Tip>Everything the AI hands to raiders or picks for them (breaching kit, crew-served guns, swapped weapons, digging tools) comes from RimWorld and its DLC, Combat Extended or the HSK pack. Tactical AI's own breach and mining charges are not used: industrial raids breach with grenades and tools instead.\n\nOff: guns and tools from any loaded mod can be picked, and industrial raids carry Tactical AI's breach charges.</HSKTAI_S_hskItemsOnly_Tip>
+  <HSKTAI_S_equipRaiders>Give raiders extra equipment</HSKTAI_S_equipRaiders>
+  <HSKTAI_S_equipRaiders_Tip>Off (default): raiders keep the loadout they spawned with and pick their breach method from it and their tech level.\n\nOn: breach specialists get charges, tools or stick bombs, some raiders get grenades and smoke, gas raids get masks and tox grenades.</HSKTAI_S_equipRaiders_Tip>
+  <HSKTAI_S_breachGear>Raids bring breaching gear</HSKTAI_S_breachGear>
+  <HSKTAI_S_breachGear_Tip>A raid that has to break in and carries nothing that opens a wall brings it: one raider in eight (1 to 3) carries the kit of the faction's tech level. A breach axe for tribes, stick bombs for medieval factions, breach charges (or, with "only HSK items", grenades) for industrial ones. Only when there is a wall to break. Independent of "extra equipment".</HSKTAI_S_breachGear_Tip>
+
+  <!-- ===== Threat map ===== -->
+  <HSKTAI_S_enableThreatMap>Compute the threat map</HSKTAI_S_enableThreatMap>
+  <HSKTAI_S_enableThreatMap_Tip>Where your colonists and turrets can shoot. The raid planner routes around it, picks breach points by it and decides when to cross open ground.</HSKTAI_S_enableThreatMap_Tip>
+  <HSKTAI_S_showThreatOverlay>Show the threat map overlay</HSKTAI_S_showThreatOverlay>
+  <HSKTAI_S_showThreatOverlay_Tip>Red: heavy fire, yellow: light fire. Also toggled with the button in the play settings, bottom right.</HSKTAI_S_showThreatOverlay_Tip>
+  <HSKTAI_S_budgetMsPerTick>CPU budget per tick</HSKTAI_S_budgetMsPerTick>
+  <HSKTAI_S_budgetMsPerTick_Tip>The threat map never takes more than this per game tick. It spreads the work over several ticks instead.</HSKTAI_S_budgetMsPerTick_Tip>
+  <HSKTAI_S_cycleTicksCombat>Update interval with enemies present (ticks)</HSKTAI_S_cycleTicksCombat>
+  <HSKTAI_S_cycleTicksPeace>Update interval in peace (ticks)</HSKTAI_S_cycleTicksPeace>
+  <HSKTAI_S_weightDrafted>Weight of a drafted shooter</HSKTAI_S_weightDrafted>
+  <HSKTAI_S_weightUndrafted>Weight of an undrafted colonist with a gun</HSKTAI_S_weightUndrafted>
+  <HSKTAI_S_weightTurret>Weight of a turret</HSKTAI_S_weightTurret>
+
+  <!-- ===== Planning ===== -->
+  <HSKTAI_S_assaultPlanner>Assault planner</HSKTAI_S_assaultPlanner>
+  <HSKTAI_S_assaultPlanner_Tip>Raids plan their attack: they split into groups, go around obstacles to assault positions on different sides, wait for each other and attack together. Raids that can't walk in breach. Raids that can't breach either besiege you or hold at range and leave.\n\nOff: raids get vanilla duties. Most combat options need it.</HSKTAI_S_assaultPlanner_Tip>
+  <HSKTAI_S_maxAxes>Maximum attack directions</HSKTAI_S_maxAxes>
+  <HSKTAI_S_minAxisSeparation>Minimum angle between directions</HSKTAI_S_minAxisSeparation>
+  <HSKTAI_S_syncTimeoutTicks>Wait for the other groups at most</HSKTAI_S_syncTimeoutTicks>
+  <HSKTAI_S_routeCostPerFire>Detour around your fire (0 = straight routes)</HSKTAI_S_routeCostPerFire>
+  <HSKTAI_S_routeCostPerFire_Tip>Extra route cost per unit of your fire. Higher: wider arcs around your fields of fire.</HSKTAI_S_routeCostPerFire_Tip>
+  <HSKTAI_S_syncedAssault>Coordinated assault</HSKTAI_S_syncedAssault>
+  <HSKTAI_S_syncedAssault_Tip>Walk-in assaults from several directions arrive together (groups on shorter routes start later), and inside each group half moves while the other half stops and fires.</HSKTAI_S_syncedAssault_Tip>
+  <HSKTAI_S_forceRatioCheck>Strength check before the assault</HSKTAI_S_forceRatioCheck>
+  <HSKTAI_S_forceRatioCheck_Tip>Raids compare their strength with your defenders (weapons, skill, armour, health, turrets). Too weak for an assault: they besiege you (factions that can), snipe from out of range, plunder, or hold back and leave.</HSKTAI_S_forceRatioCheck_Tip>
+  <HSKTAI_S_assaultOdds>Odds needed to assault (classic 3 : 1)</HSKTAI_S_assaultOdds>
+  <HSKTAI_S_standoffTicks>A raid that can't get in holds at range for</HSKTAI_S_standoffTicks>
+  <HSKTAI_S_standoffTicks_Tip>A raid that can neither walk nor breach in (deep water, walls it can't break) holds out of reach and shoots what it can see, then leaves. Factions that can siege besiege you instead.</HSKTAI_S_standoffTicks_Tip>
+  <HSKTAI_S_avoidFunnels>Avoid killbox entrances</HSKTAI_S_avoidFunnels>
+  <HSKTAI_S_avoidFunnels_Tip>If the only way in on foot is a narrow entrance covered by your fire, raids that can break walls make their own entrance elsewhere. A raid bleeding out in an entrance pulls back and does the same.</HSKTAI_S_avoidFunnels_Tip>
+  <HSKTAI_S_openCrossing>Don't cross open ground into fire</HSKTAI_S_openCrossing>
+  <HSKTAI_S_openCrossing_Tip>Before assaulting over open ground under your guns, raiders take a covered route if there is one. Otherwise they rush only with overwhelming force or behind smoke, else they stay out of range and let their snipers and machine guns work.</HSKTAI_S_openCrossing_Tip>
+  <HSKTAI_S_flanking>Flanking</HSKTAI_S_flanking>
+  <HSKTAI_S_flanking_Tip>Raiders shoot the defenders their cover doesn't protect first, pick firing positions from the side of your cover, and prefer directions your defences don't face.</HSKTAI_S_flanking_Tip>
+  <HSKTAI_S_focusFire>Focus fire and covered advance</HSKTAI_S_focusFire>
+  <HSKTAI_S_focusFire_Tip>Raiders concentrate fire on exposed, wounded and dangerous defenders (machine guns, launchers, snipers). In the assault they move along routes that avoid your fields of fire.</HSKTAI_S_focusFire_Tip>
+  <HSKTAI_S_raidingParty>Raiding party</HSKTAI_S_raidingParty>
+  <HSKTAI_S_raidingParty_Tip>In raids of 10 or more, a sixth of the raiders go for your valuables, livestock and crops from the start, out of your fire, while the rest attack.</HSKTAI_S_raidingParty_Tip>
+  <HSKTAI_S_plunder>Plunder instead of chasing</HSKTAI_S_plunder>
+  <HSKTAI_S_plunder_Tip>Raiders don't chase defenders who are far away or holed up: they kill livestock, loot, burn crops and wooden buildings and smash workbenches, generators and turrets out of your fire, forcing you to come out. With nothing left to take they withdraw.</HSKTAI_S_plunder_Tip>
+  <HSKTAI_S_satisfiedHold>Finish the assault before leaving satisfied</HSKTAI_S_satisfiedHold>
+  <HSKTAI_S_satisfiedHold_Tip>Vanilla raiders leave "satisfied" once they have damaged enough. While a planned assault makes progress they finish it first. Damage from their own breach never counts.</HSKTAI_S_satisfiedHold_Tip>
+  <HSKTAI_S_funnelCaution>Don't chase into funnels</HSKTAI_S_funnelCaution>
+  <HSKTAI_S_funnelCaution_Tip>When defenders fall back into a narrow corridor, raiders throw grenades into it, hold covered spots beside its mouth and go in after a while (smoke first).</HSKTAI_S_funnelCaution_Tip>
+  <HSKTAI_S_plannedWithdrawal>Planned withdrawal</HSKTAI_S_plannedWithdrawal>
+  <HSKTAI_S_plannedWithdrawal_Tip>A raid that has lost the fight bounds back under covering fire and carries its wounded, instead of vanilla's panic run.</HSKTAI_S_plannedWithdrawal_Tip>
+
+  <!-- ===== Breaching ===== -->
+  <HSKTAI_S_smartBreaching>Smart breaching: only break walls when walking around is worse</HSKTAI_S_smartBreaching>
+  <HSKTAI_S_smartBreaching_Tip>Breaching raids compare the open route (walking plus exposure to your fire) with breaking through walls.\n\nOff: vanilla behaviour (walls are almost free, so raiders cut through even with a way around).</HSKTAI_S_smartBreaching_Tip>
+  <HSKTAI_S_exposureCost>Cost of walking through your fire</HSKTAI_S_exposureCost>
+  <HSKTAI_S_wallPenalty>Cost per wall to break</HSKTAI_S_wallPenalty>
+  <HSKTAI_S_wallHpPenalty>Extra cost per wall HP</HSKTAI_S_wallHpPenalty>
+  <HSKTAI_S_naturalWallExtraCost>Extra cost to tunnel through rock (vanilla 20)</HSKTAI_S_naturalWallExtraCost>
+  <HSKTAI_S_stagingDistance>The rest waits this many cells back until the breach is open</HSKTAI_S_stagingDistance>
+  <HSKTAI_S_breachConeDegrees>Breach team waits beside the hole, off your line of fire by</HSKTAI_S_breachConeDegrees>
+  <HSKTAI_S_maxBreaches>Breach points opened together (one per 4 raiders)</HSKTAI_S_maxBreaches>
+  <HSKTAI_S_smokeOnBreach>Smoke on the breach</HSKTAI_S_smokeOnBreach>
+  <HSKTAI_S_smokeOnBreach_Tip>When the wall opens, an industrial or later breach team throws smoke on the hole and just inside it before the raid goes in.</HSKTAI_S_smokeOnBreach_Tip>
+  <HSKTAI_S_cornerFire>Corner fire at the breach</HSKTAI_S_cornerFire>
+  <HSKTAI_S_cornerFire_Tip>When a wall opens, gunners take the corners beside the hole and lean out to fire through it, covered by the wall, before they go in (at most about 10 s).</HSKTAI_S_cornerFire_Tip>
+  <HSKTAI_S_fireBreaching>Burn wooden walls</HSKTAI_S_fireBreaching>
+  <HSKTAI_S_fireBreaching_Tip>Raiders set wooden walls on fire instead of blowing them.</HSKTAI_S_fireBreaching_Tip>
+  <HSKTAI_S_tunnelling>Tunnel into mountain bases</HSKTAI_S_tunnelling>
+  <HSKTAI_S_tunnelling_Tip>Against a base inside a mountain, the best miners dig through the thinnest rock towards it, if they can do it in reasonable time.</HSKTAI_S_tunnelling_Tip>
+  <HSKTAI_S_doorBreach>Blow doors with launchers</HSKTAI_S_doorBreach>
+  <HSKTAI_S_doorBreach_Tip>Raiders with an explosive launcher treat every outer door as a possible breach point.</HSKTAI_S_doorBreach_Tip>
+  <HSKTAI_S_breachKit>Breaching kit as extra equipment</HSKTAI_S_breachKit>
+  <HSKTAI_S_breachKit_Tip>With extra equipment on: breach specialists get the kit of their tech level (charges for industrial and up, axes or stick bombs below).</HSKTAI_S_breachKit_Tip>
+  <HSKTAI_S_chargesPerSpecialist>Breach charges per specialist</HSKTAI_S_chargesPerSpecialist>
+  <HSKTAI_S_grenadeKit>Grenades as extra equipment</HSKTAI_S_grenadeKit>
+  <HSKTAI_S_grenadeKit_Tip>With extra equipment on: a third of industrial raiders carry frag grenades and a fifth smoke; stick bombs below industrial.</HSKTAI_S_grenadeKit_Tip>
+  <HSKTAI_S_gasRaids>Gas and burn-out</HSKTAI_S_gasRaids>
+  <HSKTAI_S_gasRaids_Tip>Against defenders in a small enclosed room (bunker, mountain room, keep), industrial raids gas and burn the room when the breach opens, hold the exits while it works, then go in masked. Masks and tox grenades are only handed out with extra equipment on.</HSKTAI_S_gasRaids_Tip>
+  <HSKTAI_S_gasAmmoSwap>Explosive rounds instead of gas</HSKTAI_S_gasAmmoSwap>
+  <HSKTAI_S_gasAmmoSwap_Tip>Raiders whose launcher carries only gas rounds swap three quarters of them for the explosive round of the same calibre, one for one. Gas only works in an enclosed room.</HSKTAI_S_gasAmmoSwap_Tip>
+  <HSKTAI_S_indirectFire>Grenade launchers fire over walls</HSKTAI_S_indirectFire>
+  <HSKTAI_S_indirectFire_Tip>A grenadier with an explosive round and no direct shot lobs it over the wall at colonists, turrets and workshops under open sky. Never at roofed cells. Scatter by distance and skill.</HSKTAI_S_indirectFire_Tip>
+  <HSKTAI_S_lobOverWalls>Hand grenades over walls</HSKTAI_S_lobOverWalls>
+  <HSKTAI_S_lobOverWalls_Tip>Raiders lob hand grenades over a wall at defenders behind it. Only under open sky: no lob if the target, the thrower or any cell of the arc is roofed.</HSKTAI_S_lobOverWalls_Tip>
+  <HSKTAI_S_launchersStayOut>Grenade launchers stay out of the breach</HSKTAI_S_launchersStayOut>
+  <HSKTAI_S_launchersStayOut_Tip>Once their wall is open, raiders with an explosive launcher stay outside as base of fire and shell whatever shows itself.</HSKTAI_S_launchersStayOut_Tip>
+  <HSKTAI_S_arson>Arson</HSKTAI_S_arson>
+  <HSKTAI_S_arson_Tip>Raids of 5 or more may send raiders to set fires at a few places out of your fire.</HSKTAI_S_arson_Tip>
+
+  <!-- ===== Combat ===== -->
+  <HSKTAI_S_keepRange>Keep the weapon's range</HSKTAI_S_keepRange>
+  <HSKTAI_S_keepRange_Tip>Each raider fights at its weapon's distance: bowmen and long guns step back when you get close, pistols and SMGs close in, melee raiders go for anyone near them in the open.</HSKTAI_S_keepRange_Tip>
+  <HSKTAI_S_fieldFight>Fight defenders who come out</HSKTAI_S_fieldFight>
+  <HSKTAI_S_fieldFight_Tip>When your colonists leave the base to meet the raid, the raid turns on them: shooters take cover and fire, melee raiders charge, a sharp command sends men round their side.</HSKTAI_S_fieldFight_Tip>
+  <HSKTAI_S_combatMicro>Combat micro</HSKTAI_S_combatMicro>
+  <HSKTAI_S_combatMicro_Tip>Raiders under fire from several shooters fall back to cover, melee raiders intercept anyone hitting their gunners, and gunners step back from melee attackers.</HSKTAI_S_combatMicro_Tip>
+  <HSKTAI_S_evasion>Evade and duck</HSKTAI_S_evasion>
+  <HSKTAI_S_evasion_Tip>Raiders get out of your tox gas, away from fire and from where your grenades will land. A raider in the open that you are aiming at ducks into cover or drops flat.</HSKTAI_S_evasion_Tip>
+  <HSKTAI_S_medics>Combat medics</HSKTAI_S_medics>
+  <HSKTAI_S_medics_Tip>The raid's medic throws smoke on a comrade down in your field of fire, carries him to cover and tends him there.</HSKTAI_S_medics_Tip>
+  <HSKTAI_S_coverCarry>Cover the wounded</HSKTAI_S_coverCarry>
+  <HSKTAI_S_coverCarry_Tip>When a raider carries a downed comrade out through your fire, up to two raiders with guns take cover beside him and fire at whoever threatens him.</HSKTAI_S_coverCarry_Tip>
+  <HSKTAI_S_contactReaction>React to contact</HSKTAI_S_contactReaction>
+  <HSKTAI_S_contactReaction_Tip>When one of your colonists comes into sight within range, a raider who is walking or waiting breaks it off, takes cover and fires back.</HSKTAI_S_contactReaction_Tip>
+  <HSKTAI_S_crewWeapons>Crew-served weapons</HSKTAI_S_crewWeapons>
+  <HSKTAI_S_crewWeapons_Tip>Industrial raids of 8 or more bring a light crew-served gun (16 or more: two), a manned turret of up to 40 kg. Set up at range in cover, manned and reloaded by its crew; packed up or wrecked when the raid leaves. With "only HSK items" the gun is always from HSK, CE or vanilla.</HSKTAI_S_crewWeapons_Tip>
+  <HSKTAI_S_shieldTactics>Shield wall</HSKTAI_S_shieldTactics>
+  <HSKTAI_S_shieldTactics_Tip>Raiders with ballistic or body shields lead the assault; two gunners follow behind each shield and shoot past it.</HSKTAI_S_shieldTactics_Tip>
+  <HSKTAI_S_fireDoctrine>Fire discipline (Combat Extended)</HSKTAI_S_fireDoctrine>
+  <HSKTAI_S_fireDoctrine_Tip>Raiders choose aimed or snap shots and single, burst or full-auto fire by range and situation.</HSKTAI_S_fireDoctrine_Tip>
+  <HSKTAI_S_realSuppression>Realistic suppression (Combat Extended)</HSKTAI_S_realSuppression>
+  <HSKTAI_S_realSuppression_Tip>Changes CE's suppression for everyone: body armour no longer cancels the scare of a near miss, machine guns and explosions count more, arrows less. Heads stay down longer.</HSKTAI_S_realSuppression_Tip>
+  <HSKTAI_S_posture>Go prone under fire</HSKTAI_S_posture>
+  <HSKTAI_S_posture_Tip>Suppressed raiders without cover drop flat: a smaller target, crawling, still shooting.</HSKTAI_S_posture_Tip>
+  <HSKTAI_S_proneVisual>Draw prone raiders lying down</HSKTAI_S_proneVisual>
+  <HSKTAI_S_proneLabel>Label prone raiders</HSKTAI_S_proneLabel>
+  <HSKTAI_S_runAndGunByRole>Run and Gun: only assault troops shoot on the move</HSKTAI_S_runAndGunByRole>
+  <HSKTAI_S_runAndGunByRole_Tip>With Run and Gun installed: riflemen and assault raiders may shoot on the move; medics, breachers, shields, carriers and withdrawing raiders walk.</HSKTAI_S_runAndGunByRole_Tip>
+  <HSKTAI_S_nolbRescueFilter>No One Left Behind: no rescues into your fire</HSKTAI_S_nolbRescueFilter>
+  <HSKTAI_S_nolbRescueFilter_Tip>With No One Left Behind installed: raiders don't run into your defenders' fire to rescue a downed comrade, unless two riflemen can cover the rescue.</HSKTAI_S_nolbRescueFilter_Tip>
+
+  <!-- ===== Sieges ===== -->
+  <HSKTAI_S_siegeGuards>Siege camp: guards in cover, guns at range</HSKTAI_S_siegeGuards>
+  <HSKTAI_S_siegeGuards_Tip>Besiegers who aren't building take covered positions around their camp facing your defenders, by role. Direct-fire siege guns are set up as close as their range needs, with a line of fire on your walls.</HSKTAI_S_siegeGuards_Tip>
+  <HSKTAI_S_siegePackAnimals>Siege supplies by pack animal</HSKTAI_S_siegePackAnimals>
+  <HSKTAI_S_siegePackAnimals_Tip>Tribal and medieval sieges get their supplies brought in on pack animals from the map edge instead of by drop pod.</HSKTAI_S_siegePackAnimals_Tip>
+
+  <!-- ===== Memory ===== -->
+  <HSKTAI_S_raidMemory>Factions remember earlier raids</HSKTAI_S_raidMemory>
+  <HSKTAI_S_raidMemory_Tip>A faction whose raid failed and had survivors who got away learns from it: a walk-in that died becomes a breach next time, a failed breach a siege. Fades over about two seasons.</HSKTAI_S_raidMemory_Tip>
+  <HSKTAI_S_adaptiveLoadouts>Adapt loadouts to what hurt them</HSKTAI_S_adaptiveLoadouts>
+  <HSKTAI_S_adaptiveLoadouts_Tip>Up to 30 % of the next raid swaps gear against what hurt them. Only weapons their kind may carry, worth no more than what they had. Ammo is swapped, not added.</HSKTAI_S_adaptiveLoadouts_Tip>
+  <HSKTAI_S_prisonersReport>Released prisoners report back</HSKTAI_S_prisonersReport>
+  <HSKTAI_S_prisonersReport_Tip>A prisoner you release, or one who escapes, tells his faction about your defences.</HSKTAI_S_prisonersReport_Tip>
+  <HSKTAI_S_escalation>Beaten factions send bigger raids</HSKTAI_S_escalation>
+  <HSKTAI_S_escalation_Tip>A faction you beat here is angry for a while and sends more people. A raid that goes its way calms it down; the anger fades with its memory.</HSKTAI_S_escalation_Tip>
+  <HSKTAI_S_escalationSize>Bigger at most by</HSKTAI_S_escalationSize>
+  <HSKTAI_S_arrivalChoice>Raiders choose how they arrive</HSKTAI_S_arrivalChoice>
+  <HSKTAI_S_arrivalChoice_Tip>A faction that knows your layout and failed to walk in comes from the side whose way to your base crosses the least of your fire. Spacers whose walk-ins and breaches failed drop in by pod.</HSKTAI_S_arrivalChoice_Tip>
+  <HSKTAI_S_raidLetters>Raid letter says why</HSKTAI_S_raidLetters>
+  <HSKTAI_S_raidLetters_Tip>The raid letter adds a line on how the faction's last raid here went and what it does about it.</HSKTAI_S_raidLetters_Tip>
+  <HSKTAI_S_raidGoals>Scouting and sabotage raids</HSKTAI_S_raidGoals>
+  <HSKTAI_S_raidGoals_Tip>Some raids don't come to take the colony. Scouts watch from cover and leave; saboteurs set fires, kill livestock and jump colonists who are alone outside.</HSKTAI_S_raidGoals_Tip>
+  <HSKTAI_S_scoutShare>Scouting raids (weight vs 1 for an assault)</HSKTAI_S_scoutShare>
+  <HSKTAI_S_sabotageShare>Sabotage raids (weight vs 1 for an assault)</HSKTAI_S_sabotageShare>
+  <HSKTAI_S_raidIntents>Slaving and punitive raids</HSKTAI_S_raidIntents>
+  <HSKTAI_S_raidIntents_Tip>An assault comes for goods, for people or for revenge. Slavers loot and burn nothing, grab a downed colonist and leave. A punitive raid only comes after a bad beating: it takes nothing and does not break off until nobody of yours is left standing.</HSKTAI_S_raidIntents_Tip>
+  <HSKTAI_S_slavingShare>Slaving raids (weight vs 1 for plunder)</HSKTAI_S_slavingShare>
+  <HSKTAI_S_punitiveShare>Punitive raids after a bad beating (weight)</HSKTAI_S_punitiveShare>
+  <HSKTAI_S_operations>Coordinated operations</HSKTAI_S_operations>
+  <HSKTAI_S_operations_Tip>Now and then a sharp command runs an operation: hammer and anvil (part of the raid digs in and shells you, the rest goes in after) or an armoured spearhead (the best-armoured go first).</HSKTAI_S_operations_Tip>
+  <HSKTAI_S_operationChance>Chance per raid (twice after a failed raid)</HSKTAI_S_operationChance>
+
+</LanguageData>

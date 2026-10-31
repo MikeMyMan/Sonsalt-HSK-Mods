@@ -68,7 +68,7 @@ namespace HSKTacticalAI
             var people = pawns.Where(p => p.RaceProps.Humanlike && !p.Downed && p.inventory != null && !p.WorkTagIsDisabled(WorkTags.Violent)).ToList();
             int n = people.Count >= 16 ? 2 : people.Count >= 8 ? 1 : 0;
             if (n == 0) return;
-            var guns = Candidates().Where(d => d.techLevel <= lord.faction.def.techLevel).ToList();
+            var guns = Candidates().Where(d => d.techLevel <= lord.faction.def.techLevel && ItemSources.Allowed(d)).ToList();
             if (guns.Count == 0) return;
             var pool = people.Where(p => !plan.breachTeam.Contains(p) && p != plan.leader
                                          && (!plan.roleOf.TryGetValue(p, out var r) || r == RaidRole.Rifleman || r == RaidRole.Support || r == RaidRole.Marksman))
@@ -319,6 +319,16 @@ namespace HSKTacticalAI
             Pawn who = t.Crew.Where(Able).OrderBy(p => p == t.gunner ? 0 : 1).ThenBy(p => p.Position.DistanceToSquared(at)).FirstOrDefault()
                        ?? plan.members.Where(p => Able(p) && p.Position.DistanceTo(at) <= 15f).OrderBy(p => p.Position.DistanceToSquared(at)).FirstOrDefault();
             if (who == null) { Abandon(t); return; }
+            // the gun is still held (a crew member manning it): he packs it himself, or lets go first (s1_comp_off:
+            // "could not reserve" when another raider was sent while the gunner still manned it)
+            Pawn holder = map.reservationManager.FirstRespectedReserver(t.gun, who);
+            if (holder != null && holder != who)
+            {
+                if (!plan.members.Contains(holder)) return;   // not one of ours: try again next pass
+                if (Able(holder)) who = holder;
+                else holder.jobs?.EndCurrentJob(JobCondition.InterruptForced);
+                if (who != holder && map.reservationManager.FirstRespectedReserver(t.gun, who) != null) return;
+            }
             var tm = MapComponent_TacticalAI.For(map)?.Threat;
             float fire = tm != null && tm.CompletedCycles > 0 ? tm.FireAt(at) : 0f;
             float dist = who.Position.DistanceTo(at);
