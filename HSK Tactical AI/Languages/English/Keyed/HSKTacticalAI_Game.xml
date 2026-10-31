@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <!-- ===== raid letter (raid memory, intents) ===== -->
+  <HSKTAI_L_NeverBack>The last group they sent here, all {0} of them, never came back.</HSKTAI_L_NeverBack>
+  <HSKTAI_L_WentTheirWay>Their last attack here went their way.</HSKTAI_L_WentTheirWay>
+  <HSKTAI_L_NeverReached>Their last attack here cost them {0} of {1} and never reached the colony.</HSKTAI_L_NeverReached>
+  <HSKTAI_L_HeavyLosses>They took heavy losses here last time ({0} of {1}).</HSKTAI_L_HeavyLosses>
+  <HSKTAI_L_Siege>This time they mean to stay out of reach and besiege you.</HSKTAI_L_Siege>
+  <HSKTAI_L_Breach>This group is not using your entrance; it is coming through a wall.</HSKTAI_L_Breach>
+  <HSKTAI_L_DontKnow>They do not know what killed them.</HSKTAI_L_DontKnow>
+  <HSKTAI_L_Angry>Angry about it, they have sent about {0}% more people than usual.</HSKTAI_L_Angry>
+  <HSKTAI_L_Informant>A prisoner who got away from you has told them about your defences.</HSKTAI_L_Informant>
+  <HSKTAI_L_Slaving>They are after people, not goods.</HSKTAI_L_Slaving>
+  <HSKTAI_L_Punitive>They are not here to take anything, and they will not break off.</HSKTAI_L_Punitive>
+
+  <!-- ===== messages ===== -->
+  <HSKTAI_M_Competence>{0}: tactical competence {1} ({2})</HSKTAI_M_Competence>
+  <HSKTAI_M_LeaderLost>{0} lost its leader {1}: tactical competence {2} -> {3}</HSKTAI_M_LeaderLost>
+  <HSKTAI_M_Memory>{0} remember {1}.</HSKTAI_M_Memory>
+  <HSKTAI_M_MemoryBrings>{0} remember {1}: this raid brings {2}.</HSKTAI_M_MemoryBrings>
+
+</LanguageData>

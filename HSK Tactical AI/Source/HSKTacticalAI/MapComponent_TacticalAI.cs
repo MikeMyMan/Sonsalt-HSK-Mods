@@ -20,6 +20,7 @@ namespace HSKTacticalAI
 
         public override void MapComponentTick()
         {
+            if (!TacticalAIMod.Settings.enabled) return;   // master switch: nothing of ours runs
             Adaptive.Tick();
             long t = Perf.Start();
             Threat.Tick();
@@ -38,7 +39,7 @@ namespace HSKTacticalAI
 
         public override void MapComponentUpdate()
         {
-            if (!TacticalAIMod.Settings.showThreatOverlay || Find.CurrentMap != map) return;
+            if (!TacticalAIMod.Settings.enabled || !TacticalAIMod.Settings.showThreatOverlay || Find.CurrentMap != map) return;
             if (overlay == null) overlay = new ThreatOverlay(Threat, map);
             overlay.Update();
         }

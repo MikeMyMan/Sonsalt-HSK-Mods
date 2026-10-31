@@ -36,7 +36,7 @@ namespace HSKTacticalAI
         private static readonly HashSet<int> equippedLords = new HashSet<int>();
 
         private static JobDef throwJob;
-        private static JobDef ThrowJob => throwJob ?? (throwJob = DefDatabase<JobDef>.GetNamedSilentFail("OpportunisticAttack"));
+        public static JobDef ThrowJob => throwJob ?? (throwJob = DefDatabase<JobDef>.GetNamedSilentFail("OpportunisticAttack"));
 
         public static int Lobs;
 

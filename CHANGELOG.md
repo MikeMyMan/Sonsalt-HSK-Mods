@@ -1,5 +1,52 @@
 # Changelog
 
+## 1.10.0 (2026-10-31): HSK Tactical AI 0.4.0
+
+**HSK Tactical AI 0.4.0** (test release): feedback from the HSK dev team on dependencies, performance and the settings.
+
+- **Bases nobody can reach:** a raid facing deep water (or other ground it can't cross) no longer plans a breach or a
+  tunnel that ends at the water's edge. With no way in it besieges you (factions that can) or holds at range, shoots
+  what it can see and leaves. Before, the raiders stood around issuing move orders the pathfinder couldn't serve, which
+  cost game speed. Breaching kit is only handed out when there is a wall to break.
+- **Only HSK, CE and vanilla items** (new setting, on by default): everything the AI hands to raiders or picks for them
+  (breaching kit, crew-served guns, swapped weapons, digging tools) comes from RimWorld and its DLC, Combat Extended or
+  the HSK pack. Tactical AI's own breach and mining charges are not used then; industrial raids breach with grenades
+  and tools.
+- **Safe after updates:** every patch is applied on its own. If an HSK, CE or RimWorld update renames something a
+  feature hooks, only that feature switches off; the log gets one line saying which and why, and the settings window
+  lists it. Optional mods that aren't loaded are listed in one log line.
+- **Master switch:** "Tactical AI on" at the top of the settings. Off removes every patch of the mod at once, also in a
+  running game; raids go back to vanilla duties.
+- **Tactical competence off** now gives every raid the same ordinary command (50 %). Before, off meant every raid used
+  every tactic.
+- Switching the assault planner off mid-raid hands running raids back to vanilla at once. The No One Left Behind rescue
+  filter has its own switch.
+- **New settings window:** sections with headers and dividing lines, one row per setting (label left, control right),
+  options that depend on another stay in place greyed out with the reason on hover, number fields next to the sliders,
+  a marker on changed values, a reset per section (with confirmation) and a search box. Six options that had no
+  checkbox get one (planned withdrawal, tunnelling, door breaching, grenade kit, hand grenades over walls, arson).
+  Four unused settings removed.
+- **Translations:** all settings, the raid letter lines and the messages are in Languages/English/Keyed, ready for other
+  languages.
+- **Fixes found in testing:**
+  - a breacher whose breach axe went back into his pack (his bow back in hand, e.g. by a sidearm mod) no longer makes
+    the raid give up;
+  - a breach team that only looks out of means for a moment (reloading) no longer calls the raid off;
+  - grenades that don't break a door (after twice the planned frags), or a breach team out of rounds with little wall
+    left, give way to bashing the rest down;
+  - a breach raid whose stack points are all under fire no longer waits forever for H-hour;
+  - a crew-served gun is packed up by its own gunner instead of a second raider ("could not reserve" error).
+- AI Lab: island scenarios, game speed and AI cost per phase of a raid (RimWorld's forced normal speed during
+  fights switched off for measuring), a settings-window test, showcase mode for recording.
+- **Tested** in the AI Lab on RimWorld 1.7.4985, about 60 runs in 7 rounds: island and island with a door, fortress
+  with HSK grenades and with breach charges, crew-served guns, competence off, master switch off, killbox, tribal
+  village, the settings window and a 219-mod HSK list. In the last round every breach raid got in, with no errors from
+  the mod.
+  - Island, tribal raid: with Tactical AI the raid holds at range and leaves (about 560 to 940 ticks/s on ultrafast).
+    Without it, Smarter Raid AI's sapper keeps searching for a path (about 3,800 errors in 9,000 ticks, 350 to 530
+    ticks/s) and the raid never leaves.
+  - Average AI cost 0.02 to 0.09 ms per tick.
+  - The 1.6 build compiles but wasn't tested in game.
 ## 1.9.0 (2026-10-27): HSK Chemical Warfare 0.1.0
 
 **HSK Chemical Warfare 0.1.0** (new, test release, RimWorld 1.7): chemical warfare on PalverZ's Custom Gas Framework.

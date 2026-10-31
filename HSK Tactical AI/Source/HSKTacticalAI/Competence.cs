@@ -77,6 +77,10 @@ namespace HSKTacticalAI
 
         public static bool Enabled => TacticalAIMod.Settings != null && TacticalAIMod.Settings.tacticalCompetence;
 
+        /// <summary>Competence (and doctrine roll) of every raid while the competence system is off: an ordinary command, the
+        /// same for all raids. Before 0.4.0 "off" meant 1 - every raid used every tactic (HSK dev feedback: backwards).</summary>
+        public const float OffCompetence = 0.5f;
+
         // ---------------- the value ----------------
 
         public static float TechCeiling(TechLevel t)
@@ -151,7 +155,13 @@ namespace HSKTacticalAI
         {
             var s = TacticalAIMod.Settings;
             plan.competenceRoll = s.competenceRoll >= 0f ? Mathf.Clamp01(s.competenceRoll) : Hash01(plan.lordId, 0x5A17);
-            if (!Enabled) { plan.competence = plan.competenceBase = 1f; plan.competenceWhy = "off"; return; }
+            if (!Enabled)
+            {
+                plan.competence = plan.competenceBase = OffCompetence;
+                if (s.competenceRoll < 0f) plan.competenceRoll = OffCompetence;
+                plan.competenceWhy = "off";
+                return;
+            }
             Pawn leader = PickLeader(pawns);
             plan.competenceLeader = leader;
             TechLevel tech = lord.faction?.def.techLevel ?? TechLevel.Industrial;
@@ -171,7 +181,7 @@ namespace HSKTacticalAI
             PublishTrapRatio(plan);
             if (s.competenceReadout)
             {
-                string txt = (lord.faction?.Name ?? "Raid") + ": tactical competence " + Pct(plan.competence) + " (" + plan.competenceWhy + ")";
+                string txt = "HSKTAI_M_Competence".Translate(lord.faction?.Name ?? "Raid", Pct(plan.competence), plan.competenceWhy).ToString();
                 Log.Message("[HSK Tactical AI] " + txt);
                 if (Current.ProgramState == ProgramState.Playing && !AILab.Active)
                     Messages.Message(txt, leader != null ? new LookTargets(leader) : LookTargets.Invalid, MessageTypeDefOf.NeutralEvent, false);
@@ -197,27 +207,29 @@ namespace HSKTacticalAI
             plan.shockUntil = now + CommandShockTicks;
             plan.competenceWhy += "; leader " + (l.Dead ? "dead" : l.Downed ? "down" : "gone") + " -> " + (next != null ? why : "nobody") + " takes over";
             PublishTrapRatio(plan);
-            string txt = (lord.faction?.Name ?? "Raid") + " lost its leader " + l.LabelShort + ": tactical competence " + Pct(before) + " -> " + Pct(plan.competence);
+            string txt = "HSKTAI_M_LeaderLost".Translate(lord.faction?.Name ?? "Raid", l.LabelShort, Pct(before), Pct(plan.competence)).ToString();
             if (Prefs.DevMode || s.competenceReadout) Log.Message("[HSK Tactical AI] " + txt);
             if (s.competenceReadout && Current.ProgramState == ProgramState.Playing && !AILab.Active)
                 Messages.Message(txt, next != null ? new LookTargets(next) : LookTargets.Invalid, MessageTypeDefOf.NeutralEvent, false);
         }
 
-        /// <summary>The raid's competence now (1 = the full planner, also when the system is off or there is no plan).</summary>
+        /// <summary>The raid's competence now (1 without a plan; OffCompetence for every plan while the system is off).</summary>
         public static float Of(AssaultPlan plan)
         {
-            if (plan == null || !Enabled) return 1f;
+            if (plan == null) return 1f;
+            if (!Enabled) return OffCompetence;
             float c = plan.competence;
             if (plan.shockUntil > 0 && Find.TickManager.TicksGame < plan.shockUntil) c *= CommandShockFactor;
             return c;
         }
 
-        /// <summary>Does this raid's command use the doctrine? Always true without the system or a plan.</summary>
+        /// <summary>Does this raid's command use the doctrine? Always true without a plan; with the system off, the doctrines
+        /// of an ordinary command (OffCompetence against a fixed roll).</summary>
         public static bool Knows(AssaultPlan plan, Doctrine d)
         {
-            if (plan == null || !Enabled) return true;
+            if (plan == null) return true;
             Vector2 b = Bands[(int)d];
-            return Smooth(b.x, b.y, Of(plan)) > plan.competenceRoll;
+            return Smooth(b.x, b.y, Of(plan)) > (Enabled ? plan.competenceRoll : OffCompetence);
         }
 
         /// <summary>Planned withdrawal (bounding back under covering fire, carrying the wounded) instead of the vanilla panic run.</summary>
@@ -237,7 +249,8 @@ namespace HSKTacticalAI
         public static float OfLord(Lord lord, out float roll)
         {
             roll = 0f;
-            if (lord == null || !Enabled) return 1f;
+            if (lord == null) return 1f;
+            if (!Enabled) { roll = OffCompetence; return OffCompetence; }
             if (AssaultPlanner.Plans.TryGetValue(lord.loadID, out var plan)) { roll = plan.competenceRoll; return Of(plan); }
             if (!lordCompetence.TryGetValue(lord.loadID, out var v))
             {
@@ -254,7 +267,7 @@ namespace HSKTacticalAI
 
         public static bool KnowsLord(Lord lord, Doctrine d)
         {
-            if (lord == null || !Enabled) return true;
+            if (lord == null) return true;
             float c = OfLord(lord, out float roll);
             Vector2 b = Bands[(int)d];
             return Smooth(b.x, b.y, c) > roll;
@@ -280,7 +293,7 @@ namespace HSKTacticalAI
 
         /// <summary>Share of the colony's traps the raid knows about and walks around (vanilla smart raids 0.3).</summary>
         public static float TrapRatio(AssaultPlan plan) =>
-            Mathf.Min(0.95f, 0.95f * Smooth(0.2f, 0.95f, plan == null || !Enabled ? 1f : plan.competence) + (plan?.trapMemoryBonus ?? 0f));
+            Mathf.Min(0.95f, 0.95f * Smooth(0.2f, 0.95f, plan == null ? 1f : !Enabled ? OffCompetence : plan.competence) + (plan?.trapMemoryBonus ?? 0f));
 
         /// <summary>Required odds x this: dull commanders attack at worse odds (overconfidence).</summary>
         public static float OddsFactor(AssaultPlan plan) => Mathf.Lerp(0.55f, 1f, Of(plan));
@@ -293,7 +306,7 @@ namespace HSKTacticalAI
         /// <summary>Random extra cost for a breach candidate: high for dull commanders (poorly chosen breach points).</summary>
         public static float BreachNoise(AssaultPlan plan, float bearing)
         {
-            if (plan == null || !Enabled) return 0f;
+            if (plan == null) return 0f;
             float dull = 1f - Of(plan);
             return dull * dull * BreachNoiseCost * Hash01(plan.lordId, Mathf.RoundToInt(bearing) + 977);
         }

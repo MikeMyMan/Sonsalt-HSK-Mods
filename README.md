@@ -6,7 +6,7 @@ RimWorld 1.7 (`1.7-super-unstable` branch). Each mod is one folder; copy the fol
 
 | Mod | packageId | Game version | Needs |
 |---|---|---|---|
-| [HSK Tactical AI](#hsk-tactical-ai) (0.3, test release) | `sonsalt.hsk.tacticalai` | 1.6, 1.7 | HSK, Harmony (Combat Extended recommended) |
+| [HSK Tactical AI](#hsk-tactical-ai) (0.4, test release) | `sonsalt.hsk.tacticalai` | 1.6, 1.7 | HSK, Harmony (Combat Extended recommended) |
 | [HSK Weapon Blueprints](#hsk-weapon-blueprints) (0.1, test release) | `sonsalt.hsk.weaponblueprints` | 1.6, 1.7 | Harmony; built for HSK and Combat Extended. New colony only |
 | [HSK Chemical Warfare](#hsk-chemical-warfare) (0.1, test release) | `sonsalt.hsk.chemicalwarfare` | 1.7 | Harmony, PalverZ's Custom Gas Framework; built for HSK and Combat Extended. Replaces PalverZ's Gas Pack (not with it) |
 | [Relation Based Trading](#relation-based-trading) (2.1, by TheLoneTec) | `thelonetec.relationbasedtrading` | 1.6, 1.7 (also contains 1.4-1.5 builds, untested) | Harmony |
@@ -40,7 +40,7 @@ the game's auto-sort). Put the compatibility fixes near the end.
 
 ## HSK Tactical AI
 
-A custom raid AI for HSK (0.3 is a test release for the dev team; see the [changelog](CHANGELOG.md) for the full list).
+A custom raid AI for HSK (0.4 is a test release for the dev team; see the [changelog](CHANGELOG.md) for the full list).
 Raiders plan their attack instead of walking into your guns:
 - they read where your guns can shoot (threat map) and avoid killboxes and funnels;
 - they breach several walls at once with what they carry (launchers, explosives, tools, fire, tunnels), and a raid
@@ -66,8 +66,10 @@ Raiders plan their attack instead of walking into your guns:
   sharp spacer commander uses every tactic and walks around your traps, a dull tribal chief walks into your killbox;
   losing the leader costs the raid its edge.
 
-Every behaviour has a switch in the mod settings; the threat map overlay is the crosshair button in the bottom-right
-bar. Works with Combat Extended, Smarter Raid AI, Enemy Self Preservation and RunAndGun; not with CAI 5000 or Raid Tactics. Load after HSK and
+Every behaviour has a switch in the mod settings (grouped in sections, with search, per-section reset and a master
+switch that removes every patch); by default raiders only get HSK, Combat Extended or vanilla items. If an HSK or CE
+update renames something the mod hooks, only that feature switches off, with one log line saying which. The threat map
+overlay is the crosshair button in the bottom-right bar. Works with Combat Extended, Smarter Raid AI, Enemy Self Preservation and RunAndGun; not with CAI 5000 or Raid Tactics. Load after HSK and
 Combat Extended.
 
 ## HSK Weapon Blueprints

@@ -311,6 +311,7 @@ namespace HSKTacticalAI
 
         public static void Postfix(Pawn pawn, ref Job __result)
         {
+            if (!TacticalAIMod.Settings.nolbRescueFilter) return;
             if (__result == null || pawn?.Map == null || !pawn.Map.IsPlayerHome || pawn.Faction == null || !pawn.Faction.HostileTo(Faction.OfPlayer)) return;
             // in the threat map's fire, or (contact reaction) in a defender's sight - the threat map lags behind a defender who
             // just stepped out
